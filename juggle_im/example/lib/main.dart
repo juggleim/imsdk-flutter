@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _juggleImPlugin = JuggleIm();
+  final _juggleImPlugin = JuggleIm.instance;
 
   @override
   void initState() {
@@ -33,6 +33,13 @@ class _MyAppState extends State<MyApp> {
     try {
       platformVersion =
           await _juggleImPlugin.getPlatformVersion() ?? 'Unknown platform version';
+      
+      await _juggleImPlugin.setServers(["wss://ws.juggleim.com"]);
+      await _juggleImPlugin.init('nsw3sue72begyv7y');
+      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
+      _juggleImPlugin.onConnectionStatusChange = (status, code, extra) {
+        print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
+      };
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
