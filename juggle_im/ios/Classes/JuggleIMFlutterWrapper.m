@@ -40,7 +40,7 @@
         [self setServers:call.arguments];
         result(nil);
     } else if ([@"disconnect" isEqualToString:call.method]) {
-        [self dis]
+        [self disconnect:call.arguments];
     } else {
         result(FlutterMethodNotImplemented);
     }
