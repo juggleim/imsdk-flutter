@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
+import 'package:juggle_im/model/conversation_info.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,8 +39,21 @@ class _MyAppState extends State<MyApp> {
       await _juggleImPlugin.setServers(["wss://ws.juggleim.com"]);
       await _juggleImPlugin.init('nsw3sue72begyv7y');
       await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
-      _juggleImPlugin.onConnectionStatusChange = (status, code, extra) {
+      _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
+        int? s = await _juggleImPlugin.getConnectionStatus();
+        print('getConnectionStatus status is ' + s.toString());
+        if (status == ConnectionStatus.connected) {
+          List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
+          int length = 0;
+          if (l != null) {
+            length = l.length;
+          }
+          print("getConversationInfoList, count is " + length.toString());
+        }
+      };
+      _juggleImPlugin.onDbOpen = (){
+        print('onDbOpen');
       };
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';

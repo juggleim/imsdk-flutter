@@ -7,6 +7,7 @@
 
 #import "JuggleIMFlutterWrapper.h"
 #import <JuggleIM/JuggleIM.h>
+#import "JModelFactory.h"
 
 @interface JuggleIMFlutterWrapper () <JConnectionDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
@@ -41,6 +42,10 @@
         result(nil);
     } else if ([@"disconnect" isEqualToString:call.method]) {
         [self disconnect:call.arguments];
+    } else if ([@"getConnectionStatus" isEqualToString:call.method]) {
+        result(@([self getConnectionStatus]));
+    } else if ([@"getConversationInfoList" isEqualToString:call.method]) {
+        result([self getConversationInfoList]);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -82,10 +87,32 @@
     }
 }
 
+- (int)getConnectionStatus {
+    return (int)[JIM.shared.connectionManager getConnectionStatus];
+}
+
+- (NSArray *)getConversationInfoList {
+    NSArray<JConversationInfo *> *list = [JIM.shared.conversationManager getConversationInfoList];
+    NSMutableArray *result = [NSMutableArray array];
+    for (JConversationInfo *info in list) {
+        NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
+        [result addObject:infoDic];
+    }
+    return [result copy];
+}
+
 #pragma mark - JConnectionDelegate
 - (void)connectionStatusDidChange:(JConnectionStatus)status errorCode:(JErrorCode)code extra:(NSString *)extra {
     NSDictionary *dic = @{@"status":@(status), @"code":@(code), @"extra":extra};
     [self.channel invokeMethod:@"onConnectionStatusChange" arguments:dic];
+}
+
+- (void)dbDidOpen {
+    [self.channel invokeMethod:@"onDbOpen" arguments:nil];
+}
+
+- (void)dbDidClose {
+    [self.channel invokeMethod:@"onDbClose" arguments:nil];
 }
 
 @end
