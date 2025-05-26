@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)messageMentionInfoToDic:(JMessageMentionInfo *)info;
 + (NSDictionary *)messageToDic:(JMessage *)message;
 
++ (JConversation *)conversationFromDic:(NSDictionary *)dic;
+
 @end
 
 NS_ASSUME_NONNULL_END

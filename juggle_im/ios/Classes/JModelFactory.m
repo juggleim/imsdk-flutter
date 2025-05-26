@@ -9,6 +9,7 @@
 
 @implementation JModelFactory
 
+#pragma mark - model2Dic
 + (NSDictionary *)conversationToDic:(JConversation *)conversation {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     [dic setObject:@(conversation.conversationType) forKey:@"conversationType"];
@@ -142,5 +143,14 @@
     [dic setObject:@(message.isEdit) forKey:@"isEdit"];
     return [dic copy];
 }
+
+#pragma mark - dic2Model
++ (JConversation *)conversationFromDic:(NSDictionary *)dic {
+    JConversation *c = [JConversation new];
+    c.conversationType = [dic[@"conversationType"] intValue];
+    c.conversationId = dic[@"conversationId"];
+    return c;
+}
+
 
 @end

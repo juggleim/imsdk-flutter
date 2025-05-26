@@ -24,4 +24,8 @@ class Conversation {
     String conversationId = map['conversationId'];
     return Conversation(conversationType, conversationId);
   }
+
+  Map toMap() {
+    return {"conversationType": conversationType, "conversationId": conversationId};
+  }
 }

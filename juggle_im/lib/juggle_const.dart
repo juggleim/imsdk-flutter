@@ -1,7 +1,12 @@
 class ConnectionStatus {
-  static int idle = 0;
-  static int connected = 1;
-  static int disconnected = 2;
-  static int connecting = 3;
-  static int failure = 4;
+  static const int idle = 0;
+  static const int connected = 1;
+  static const int disconnected = 2;
+  static const int connecting = 3;
+  static const int failure = 4;
+}
+
+class PullDirection {
+  static const int newer = 0;
+  static const int older = 1;
 }

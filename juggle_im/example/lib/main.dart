@@ -4,7 +4,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
+import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
+import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/result.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,10 +53,50 @@ class _MyAppState extends State<MyApp> {
             length = l.length;
           }
           print("getConversationInfoList, count is " + length.toString());
+
+          Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
+          Result<void>? r = await _juggleImPlugin.setMute(c1, true);
+          ConversationInfo? info1 = await _juggleImPlugin.getConversationInfo(c1);
+
+          r = await _juggleImPlugin.setTop(c1, true);
+          info1 = await _juggleImPlugin.getConversationInfo(c1);
+          
+
+          GetConversationInfoOption option = GetConversationInfoOption();
+          option.conversationTypes = [2];
+          option.count = 100;
+          option.timestamp = 0;
+          option.direction = 1;
+          l = await _juggleImPlugin.getConversationInfoListByOption(option);
+          length = 0;
+          if (l != null) {
+            length = l.length;
+          }
+          print("getConversationInfoListByOption, count is " + length.toString());
+
+
+
+          
+
+
+          print('end');
+
         }
       };
       _juggleImPlugin.onDbOpen = (){
         print('onDbOpen');
+      };
+      _juggleImPlugin.onConversationInfoAdd = (list) {
+        print('onConversationInfoAdd, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onConversationInfoUpdate = (list) {
+        print('onConversationInfoUpdate, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onConversationInfoDelete = (list) {
+        print('onConversationInfoDelete, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onTotalUnreadMessageCountUpdate = (count) {
+        print('onTotalUnreadMessageCountUpdate, count is ' + count.toString());
       };
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';

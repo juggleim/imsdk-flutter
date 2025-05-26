@@ -1,7 +1,4 @@
 
-
-import 'dart:convert';
-
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_mention_info.dart';
 import 'package:juggle_im/model/message.dart';
