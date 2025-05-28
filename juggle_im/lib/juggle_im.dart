@@ -1,15 +1,20 @@
 
 import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
+import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/message_content.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/send_message_option.dart';
 
 class JuggleIm {
   static final JuggleIm _instance = JuggleIm._internal();
   final _methodChannel = const MethodChannel('juggle_im');
+  final Map<int, DataCallback<Message>> _sendMessageCallbackMap = {};
 
   JuggleIm._internal() {
     _registerMessages();
@@ -170,8 +175,19 @@ class JuggleIm {
   }
 
   //message
-  void registerMessageType(String contentType, MessageDecoder decoder) {
-    ContentTypeCenter.registerMessageType(contentType, decoder);
+  void registerMessageType(MessageFactory factory) {
+    ContentTypeCenter.registerMessageType(factory);
+  }
+
+  Future<Message?> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
+    Map map = {'contentType': content.getContentType(), "content": content.encode(), "conversation": conversation.toMap()};
+    if (option != null) {
+      map['option'] = option.toMap();
+    }
+    Map resultMap = await _methodChannel.invokeMethod('sendMessage', map);
+    Message message = Message.fromMap(resultMap);
+    _sendMessageCallbackMap[message.clientMsgNo!] = callback;
+    return message;
   }
 
 
@@ -237,16 +253,27 @@ class JuggleIm {
           onTotalUnreadMessageCountUpdate!(count);
         }
 
+      case 'onMessageSendSuccess':
+        Map map = call.arguments;
+        Message message = Message.fromMap(map['message']);
+        int clientMsgNo = message.clientMsgNo!;
+        _sendMessageCallbackMap[clientMsgNo]!(message, 0);
+        _sendMessageCallbackMap.remove(clientMsgNo);
+
+      case 'onMessageSendError':
+        Map map = call.arguments;
+        int errorCode = map['errorCode'];
+        Message message = Message.fromMap(map['message']);
+        int clientMsgNo = message.clientMsgNo!;
+        _sendMessageCallbackMap[clientMsgNo]!(message, errorCode);
+        _sendMessageCallbackMap.remove(clientMsgNo);
+
     }
     return Future.value(null);
   }
 
   void _registerMessages() {
-    registerMessageType(TextMessage.getContentType(), (str) {
-      TextMessage m = TextMessage();
-      m.decode(str);
-      return m;
-    });
+    registerMessageType(() => TextMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;

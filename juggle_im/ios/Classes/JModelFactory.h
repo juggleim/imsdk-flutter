@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)messageToDic:(JMessage *)message;
 
 + (JConversation *)conversationFromDic:(NSDictionary *)dic;
++ (JTextMessage *)textMessageFromDic:(NSDictionary *)dic;
++ (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic;
 
 @end
 

@@ -7,6 +7,8 @@ import 'package:juggle_im/juggle_im.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/message.dart';
+import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/result.dart';
 
 void main() {
@@ -74,6 +76,18 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoListByOption, count is " + length.toString());
 
+
+          // TextMessage textMessage = TextMessage.content('flutter text');
+          // callback(message, errorCode) {
+          //     if (errorCode == 0) {
+          //       print("sendMessage success, messageId is " + message.messageId!);
+          //     } else {
+          //       print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
+          //     }
+          // }
+
+          // Message? message = await _juggleImPlugin.sendMessage(textMessage, c1, callback);
+          // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
 
 
           

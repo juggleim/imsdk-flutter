@@ -152,5 +152,59 @@
     return c;
 }
 
++ (JTextMessage *)textMessageFromDic:(NSDictionary *)dic {
+    JTextMessage *text = [JTextMessage new];
+    text.content = dic[@"content"];
+    text.extra = dic[@"extra"];
+    return text;
+}
+
++ (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic {
+    if (!dic) {
+        return nil;
+    }
+    JMessageOptions *option = [JMessageOptions new];
+    if (dic[@"mentionInfo"]) {
+        option.mentionInfo = [self messageMentionInfoFromDic:dic[@"mentionInfo"]];
+    }
+    option.referredMsgId = dic[@"referredMsgId"];
+    if (dic[@"pushData"]) {
+        option.pushData = [self pushDataFromDic:dic[@"pushData"]];
+    }
+    return option;
+}
+
++ (JMessageMentionInfo *)messageMentionInfoFromDic:(NSDictionary *)dic {
+    JMessageMentionInfo *info = [JMessageMentionInfo new];
+    info.type = [dic[@"type"] intValue];
+    NSArray *targetUsersDic = dic[@"targetUsers"];
+    if (targetUsersDic) {
+        NSMutableArray *userList = [NSMutableArray array];
+        for (NSDictionary *userDic in targetUsersDic) {
+            JUserInfo *userInfo = [self userInfoFromDic:userDic];
+            [userList addObject:userInfo];
+        }
+        info.targetUsers = userList;
+    }
+    return info;
+}
+
++ (JUserInfo *)userInfoFromDic:(NSDictionary *)dic {
+    JUserInfo *info = [JUserInfo new];
+    info.userId = dic[@"userId"];
+    info.userName = dic[@"userName"];
+    info.portrait = dic[@"portrait"];
+    info.extraDic = dic[@"extraDic"];
+    info.type = [dic[@"type"] intValue];
+    return info;
+}
+
++ (JPushData *)pushDataFromDic:(NSDictionary *)dic {
+    JPushData *data = [JPushData new];
+    data.content = dic[@"content"];
+    data.extra = dic[@"extra"];
+    return data;
+}
+
 
 @end

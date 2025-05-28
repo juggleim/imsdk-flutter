@@ -69,8 +69,18 @@
         [self clearTotalUnreadCount:result];
     } else if ([@"setUnread" isEqualToString:call.method]) {
         [self setUnread:call.arguments result:result];
+    } else if ([@"sendMessage" isEqualToString:call.method]) {
+        [self sendMessage:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
+    }
+}
+
+- (void)setServers:(id)arg {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        NSArray *list = d[@"list"];
+        [JIM.shared setServerUrls:list];
     }
 }
 
@@ -86,19 +96,12 @@
     }
 }
 
+#pragma mark - connection
 - (void)connectWithToken:(id)arg {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
         NSString *token = d[@"token"];
         [JIM.shared.connectionManager connectWithToken:token];
-    }
-}
-
-- (void)setServers:(id)arg {
-    if ([arg isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *d = (NSDictionary *)arg;
-        NSArray *list = d[@"list"];
-        [JIM.shared setServerUrls:list];
     }
 }
 
@@ -114,6 +117,8 @@
     return (int)[JIM.shared.connectionManager getConnectionStatus];
 }
 
+
+#pragma mark - conversation
 - (NSArray *)getConversationInfoList {
     NSArray<JConversationInfo *> *list = [JIM.shared.conversationManager getConversationInfoList];
     NSMutableArray *result = [NSMutableArray array];
@@ -291,6 +296,38 @@
    } else {
        result(@(JErrorCodeInvalidParam));
    }
+}
+
+#pragma mark - message
+- (void)sendMessage:(id)arg
+             result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        NSDictionary *contentDic = d[@"content"];
+        NSString *contentType = d[@"contentType"];
+        JMessageContent *content;
+        if ([contentType isEqualToString:@"jg:text"]) {
+            content = [JModelFactory textMessageFromDic:contentDic];
+        }
+        if (content) {
+            JMessage *message = [JIM.shared.messageManager sendMessage:content
+                                                        messageOption:[JModelFactory sendMessageOptionFromDic:d[@"option"]]
+                                                       inConversation:[JModelFactory conversationFromDic:d[@"conversation"]]
+                                                              success:^(JMessage *message) {
+                NSDictionary *messageDic = [JModelFactory messageToDic:message];
+                NSDictionary *dic = @{@"message": messageDic};
+                [self.channel invokeMethod:@"onMessageSendSuccess" arguments:dic];
+            } error:^(JErrorCode errorCode, JMessage *message) {
+                NSDictionary *messageDic = [JModelFactory messageToDic:message];
+                NSDictionary *dic = @{@"message": messageDic, @"errorCode": @(errorCode)};
+                [self.channel invokeMethod:@"onMessageSendError" arguments:dic];
+            }];
+            NSDictionary *messageDic = [JModelFactory messageToDic:message];
+            result(messageDic);
+        }
+    } else {
+        result(@{});
+    }
 }
 
 #pragma mark - JConnectionDelegate

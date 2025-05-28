@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:juggle_im/model/message_content.dart';
 
@@ -10,14 +9,15 @@ class TextMessage extends MessageContent {
   TextMessage();
   TextMessage.content(this.content);
 
-  static String getContentType() {
+  @override
+  String getContentType() {
     return "jg:text";
   }
 
   @override
-  String encode() {
+  Map encode() {
     Map map = {"content": content, "extra": extra};
-    return json.encode(map);
+    return map;
   }
 
   @override

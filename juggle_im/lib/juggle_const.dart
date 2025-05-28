@@ -10,3 +10,5 @@ class PullDirection {
   static const int newer = 0;
   static const int older = 1;
 }
+
+typedef DataCallback<T> = void Function(T t, int errorCode);

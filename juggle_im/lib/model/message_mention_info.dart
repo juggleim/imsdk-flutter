@@ -25,4 +25,17 @@ class MessageMentionInfo {
     info.targetUsers = list;
     return info;
   }
+
+  Map toMap() {
+    Map map = {'type': type};
+    if (targetUsers != null) {
+      var list = [];
+      for (UserInfo userInfo in targetUsers!) {
+        Map userInfoMap = userInfo.toMap();
+        list.add(userInfoMap);
+      }
+      map['targetUsers'] = list;
+    }
+    return map;
+  }
 }

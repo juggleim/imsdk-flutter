@@ -19,4 +19,9 @@ class UserInfo {
     info.type = map['type'];
     return info;
   }
+
+  Map toMap() {
+    Map map = {'userId': userId, 'userName': userName, 'portrait': portrait, 'extraMap': extraMap, 'type': type};
+    return map;
+  }
 }

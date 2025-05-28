@@ -1,5 +1,5 @@
 abstract class MessageContent {
-  static String getContentType() {
+  String getContentType() {
     return "jg:unknown";
   }
 
@@ -7,7 +7,7 @@ abstract class MessageContent {
     return "";
   }
 
-  String encode();
+  Map encode();
 
   void decode(Map map);
 
