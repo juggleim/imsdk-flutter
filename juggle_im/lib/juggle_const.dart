@@ -1,3 +1,5 @@
+import 'package:juggle_im/model/message.dart';
+
 class ConnectionStatus {
   static const int idle = 0;
   static const int connected = 1;
@@ -12,3 +14,4 @@ class PullDirection {
 }
 
 typedef DataCallback<T> = void Function(T t, int errorCode);
+typedef SendMessageProgressCallback = void Function(Message message, int progress);

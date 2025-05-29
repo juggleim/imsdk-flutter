@@ -14,12 +14,7 @@ class Conversation {
 
   Conversation(this.conversationType, this.conversationId);
 
-  static Conversation conversationFromString(String str) {
-    Map map = json.decode(str);
-    return conversationFromMap(map);
-  }
-
-  static Conversation conversationFromMap(Map map) {
+  static Conversation fromMap(Map map) {
     int conversationType = map["conversationType"];
     String conversationId = map['conversationId'];
     return Conversation(conversationType, conversationId);

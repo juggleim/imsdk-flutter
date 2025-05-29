@@ -37,7 +37,7 @@ class Message {
   static Message fromMap(Map map) {
     Message m = Message();
     Map conversationMap = map["conversation"];
-    m.conversation = Conversation.conversationFromMap(conversationMap);
+    m.conversation = Conversation.fromMap(conversationMap);
     m.contentType = map['contentType'];
     m.clientMsgNo = map['clientMsgNo'];
     m.messageId = map['messageId'];

@@ -21,10 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info;
 + (NSDictionary *)messageMentionInfoToDic:(JMessageMentionInfo *)info;
 + (NSDictionary *)messageToDic:(JMessage *)message;
++ (NSDictionary *)messageReactionToDic:(JMessageReaction *)reaction;
 
 + (JConversation *)conversationFromDic:(NSDictionary *)dic;
-+ (JTextMessage *)textMessageFromDic:(NSDictionary *)dic;
 + (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic;
++ (JGetMessageOptions *)getMessageOptionFromDic:(NSDictionary *)dic;
+
++ (JMessageContent *)messageContentFromDic:(NSDictionary *)dic
+                                      type:(NSString *)contentType;
++ (JMediaMessageContent *)mediaMessageContentFromDic:(NSDictionary *)dic
+                                                type:(NSString *)contentType;
 
 @end
 

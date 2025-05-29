@@ -1,20 +1,34 @@
 
+
 import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/get_message_option.dart';
+import 'package:juggle_im/model/get_message_result.dart';
+import 'package:juggle_im/model/group_message_read_detail.dart';
+import 'package:juggle_im/model/group_message_read_info.dart';
+import 'package:juggle_im/model/media_message_content.dart';
 import 'package:juggle_im/model/message.dart';
+import 'package:juggle_im/model/message/file_message.dart';
+import 'package:juggle_im/model/message/image_message.dart';
+import 'package:juggle_im/model/message/recall_info_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/message/video_message.dart';
+import 'package:juggle_im/model/message/voice_message.dart';
 import 'package:juggle_im/model/message_content.dart';
+import 'package:juggle_im/model/message_reaction.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
+import 'package:juggle_im/model/user_info.dart';
 
 class JuggleIm {
   static final JuggleIm _instance = JuggleIm._internal();
   final _methodChannel = const MethodChannel('juggle_im');
   final Map<int, DataCallback<Message>> _sendMessageCallbackMap = {};
+  final Map<int, SendMessageProgressCallback> _sendMessageProgressCallbackMap = {};
 
   JuggleIm._internal() {
     _registerMessages();
@@ -190,6 +204,203 @@ class JuggleIm {
     return message;
   }
 
+  Future<Message?> sendMediaMessage(MediaMessageContent content, Conversation conversation, DataCallback<Message> callback, SendMessageProgressCallback progressCallback, [SendMessageOption? option]) async {
+    Map map = {'contentType': content.getContentType(), "content": content.encode(), "conversation": conversation.toMap()};
+    if (option != null) {
+      map['option'] = option.toMap();
+    }
+    Map resultMap = await _methodChannel.invokeMethod('sendMediaMessage', map);
+    Message message = Message.fromMap(resultMap);
+    _sendMessageCallbackMap[message.clientMsgNo!] = callback;
+    _sendMessageProgressCallbackMap[message.clientMsgNo!] = progressCallback;
+    return message;
+  }
+
+  Future<GetMessageResult<List<Message>>?> getMessages(Conversation conversation, int direction, GetMessageOption option) async {
+    Map map = {'conversation': conversation.toMap(), 'direction': direction, 'option': option.toMap()};
+    Map resultMap = await _methodChannel.invokeMethod('getMessages', map);
+    var result = GetMessageResult<List<Message>>();
+    result.errorCode = resultMap['errorCode'] ?? 0;
+    result.hasMore = resultMap['hasMore'] ?? true;
+    result.timestamp = resultMap['timestamp'];
+    List<Message> list = [];
+    if (resultMap['messages'] != null) {
+      for (Map messageMap in resultMap['messages']) {
+        Message message = Message.fromMap(messageMap);
+        list.add(message);
+      }
+    }
+    result.t = list;
+
+    return result;
+  }
+
+  Future<int?> deleteMessagesByClientMsgNoList(Conversation conversation, List<int> clientMsgNoList, [bool? forAllUsers]) async {
+    Map map = {'conversation': conversation.toMap(), 'clientMsgNoList': clientMsgNoList};
+    if (forAllUsers != null) {
+      map['forAllUsers'] = forAllUsers;
+    }
+    int result = await _methodChannel.invokeMethod('deleteMessagesByClientMsgNoList', map);
+    return result;
+  }
+
+  Future<int?> deleteMessagesByMessageIdList(Conversation conversation, List<String> messageIdList, [bool? forAllUsers]) async {
+    Map map = {'conversation': conversation.toMap(), 'messageIdList': messageIdList};
+    if (forAllUsers != null) {
+      map['forAllUsers'] = forAllUsers;
+    }
+    int result = await _methodChannel.invokeMethod('deleteMessagesByMessageIdList', map);
+    return result;
+  }
+
+  Future<Result<Message>?> recallMessage(String messageId, [Map? extra]) async {
+    Map map = {'messageId': messageId};
+    if (extra != null) {
+      map['extra'] = extra;
+    }
+    Map resultMap = await _methodChannel.invokeMethod('recallMessage', map);
+    var result = Result<Message>();
+    result.errorCode = resultMap['errorCode'];
+    if (resultMap['message'] != null) {
+      result.t = Message.fromMap(resultMap['message']);
+    }
+    return result;
+  }
+
+  Future<int?> clearMessages(Conversation conversation, int startTime, [bool? forAllUsers]) async {
+    Map map = {'conversation': conversation.toMap(), 'startTime': startTime};
+    if (forAllUsers != null) {
+      map['forAllUsers'] = forAllUsers;
+    }
+    return await _methodChannel.invokeMethod('clearMessages', map);
+  }
+
+  Future<List<Message>?> getMessagesByMessageIdList(List<String> messageIdList) async {
+    Map map = {'messageIdList': messageIdList};
+    List resultList = await _methodChannel.invokeMethod('getMessagesByMessageIdList', map);
+    List<Message> messageList = [];
+    for (Map messageMap in resultList) {
+      Message message = Message.fromMap(messageMap);
+      messageList.add(message);
+    }
+    return messageList;
+  }
+
+  Future<List<Message>?> getMessagesByClientMsgNoList(List<int> clientMsgNoList) async {
+    Map map = {'clientMsgNoList': clientMsgNoList};
+    List resultList = await _methodChannel.invokeMethod('getMessagesByClientMsgNoList', map);
+    List<Message> messageList = [];
+    for (Map messageMap in resultList) {
+      Message message = Message.fromMap(messageMap);
+      messageList.add(message);
+    }
+    return messageList;
+  }
+
+  Future<int?> sendReadReceipt(Conversation conversation, List<String> messageIdList) async {
+    Map map = {'conversation': conversation.toMap(), 'messageIdList': messageIdList};
+    return await _methodChannel.invokeMethod('sendReadReceipt', map);
+  }
+
+  Future<Result<GroupMessageReadDetail>?> getGroupMessageReadDetail(String messageId, Conversation conversation) async {
+    Map map = {'conversation': conversation.toMap(), 'messageId': messageId};
+    Map resultMap = await _methodChannel.invokeMethod('getGroupMessageReadDetail', map);
+    var result = Result<GroupMessageReadDetail>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      GroupMessageReadDetail detail = GroupMessageReadDetail();
+      List readMembersMapList = resultMap['readMembers'];
+      List unreadMembersMapList = resultMap['unreadMembers'];
+      List<UserInfo> readMembers = [];
+      List<UserInfo> unreadMembers = [];
+      for (Map readMemberMap in readMembersMapList) {
+        UserInfo userInfo = UserInfo.fromMap(readMemberMap);
+        readMembers.add(userInfo);
+      }
+      for (Map unreadMemberMap in unreadMembersMapList) {
+        UserInfo userInfo = UserInfo.fromMap(unreadMemberMap);
+        unreadMembers.add(userInfo);
+      }
+      detail.readMembers = readMembers;
+      detail.unreadMembers = unreadMembers;
+      result.t = detail;
+    }
+    return result;
+  }
+
+  Future<Result<List<Message>>?> getMergedMessageList(String messageId) async {
+    Map map = {'messageId': messageId};
+    Map resultMap = await _methodChannel.invokeMethod('getMergedMessageList', map);
+    var result = Result<List<Message>>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      List messageMapList = resultMap['messages'];
+      List<Message> messages = [];
+      for (Map messageMap in messageMapList) {
+        Message message = Message.fromMap(messageMap);
+        messages.add(message);
+      }
+      result.t = messages;
+    }
+    return result;
+  }
+
+  Future<GetMessageResult<List<Message>>?> getMentionMessages(Conversation conversation, int count, int timestamp, int direction) async {
+    Map map = {'conversation': conversation.toMap(), 'count': count, 'timestamp': timestamp, 'direction': direction};
+    Map resultMap = await _methodChannel.invokeMethod('getMentionMessages', map);
+    var result = GetMessageResult<List<Message>>();
+    result.errorCode = resultMap['errorcode'];
+    if (result.errorCode == 0) {
+      result.hasMore = !resultMap['isFinished'];
+      List messageMapList = resultMap['messages'];
+      List<Message> messages = [];
+      for (Map messageMap in messageMapList) {
+        Message message = Message.fromMap(messageMap);
+        messages.add(message);
+      }
+      result.t = messages;
+    }
+    return result;
+  }
+
+  Future<int?> addMessageReaction(String messageId, Conversation conversation, String reactionId) async {
+    Map map = {'messageId': messageId, 'conversation': conversation.toMap(), 'reactionId': reactionId};
+    return await _methodChannel.invokeMethod('addMessageReaction', map);
+  }
+
+  Future<int?> removeMessageReaction(String messageId, Conversation conversation, String reactionId) async {
+    Map map = {'messageId': messageId, 'conversation': conversation.toMap(), 'reactionId': reactionId};
+    return await _methodChannel.invokeMethod('removeMessageReaction', map);
+  }
+
+  Future<Result<List<MessageReaction>>?> getMessagesReaction(List<String> messageIdList, Conversation conversation) async {
+    Map map = {'messageIdList': messageIdList, 'conversation': conversation.toMap()};
+    Map resultMap = await _methodChannel.invokeMethod('getMessagesReaction', map);
+    var result = Result<List<MessageReaction>>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      List mapList = resultMap['reactionList'];
+      List<MessageReaction> reactionList = [];
+      for (Map reactionMap in mapList) {
+        MessageReaction reaction = MessageReaction.fromMap(reactionMap);
+        reactionList.add(reaction);
+      }
+      result.t = reactionList;
+    }
+    return result;
+  }
+
+  Future<Result<Message>?> updateMessage(String messageId, MessageContent content, Conversation conversation) async {
+    Map map = {'contentType': content.getContentType(), 'messageId': messageId, "content": content.encode(), "conversation": conversation.toMap()};
+    Map resultMap = await _methodChannel.invokeMethod('updateMessage', map);
+    var result = Result<Message>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      Message message = Message.fromMap(resultMap['message']);
+      result.t = message;
+    }
+    return result;
+  }
 
   //internal
   Future<dynamic> _methodCallHandler(MethodCall call) {
@@ -259,6 +470,7 @@ class JuggleIm {
         int clientMsgNo = message.clientMsgNo!;
         _sendMessageCallbackMap[clientMsgNo]!(message, 0);
         _sendMessageCallbackMap.remove(clientMsgNo);
+        _sendMessageProgressCallbackMap.remove(clientMsgNo);
 
       case 'onMessageSendError':
         Map map = call.arguments;
@@ -267,6 +479,84 @@ class JuggleIm {
         int clientMsgNo = message.clientMsgNo!;
         _sendMessageCallbackMap[clientMsgNo]!(message, errorCode);
         _sendMessageCallbackMap.remove(clientMsgNo);
+        _sendMessageProgressCallbackMap.remove(clientMsgNo);
+
+      case 'onMessageProgress':
+        Map map = call.arguments;
+        int progress = map['progress'];
+        Message message = Message.fromMap(map['message']);
+        int clientMsgNo = message.clientMsgNo!;
+        _sendMessageProgressCallbackMap[clientMsgNo]!(message, progress);
+
+      case 'onMessageReceive':
+        Map map = call.arguments;
+        Message message = Message.fromMap(map);
+        if (onMessageReceive != null) {
+          onMessageReceive!(message);
+        }
+
+      case 'onMessageRecall':
+        Map map = call.arguments;
+        Message message = Message.fromMap(map);
+        if (onMessageRecall != null) {
+          onMessageRecall!(message);
+        }
+
+      case 'onMessageDelete':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        if (onMessageDelete != null) {
+          onMessageDelete!(conversation, map['clientMsgNoList']);
+        }
+
+      case 'onMessageClear':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        if (onMessageClear != null) {
+          onMessageClear!(conversation, map['timestamp'], map['senderId']);
+        }
+
+      case 'onMessageUpdate':
+        Map map = call.arguments;
+        Message message = Message.fromMap(map);
+        if (onMessageUpdate != null) {
+          onMessageUpdate!(message);
+        }
+
+      case 'onMessageReactionAdd':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        MessageReaction reaction = MessageReaction.fromMap(map['reaction']);
+        if (onMessageReactionAdd != null) {
+          onMessageReactionAdd!(conversation, reaction);
+        }
+
+      case 'onMessageReactionRemove':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        MessageReaction reaction = MessageReaction.fromMap(map['reaction']);
+        if (onMessageReactionRemove != null) {
+          onMessageReactionRemove!(conversation, reaction);
+        }
+
+      case 'onMessagesRead':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        if (onMessagesRead != null) {
+          onMessagesRead!(conversation, map['messageIdList']);
+        }
+
+      case 'onGroupMessagesRead':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        Map<String, Map> messagesMap = map['messages'];
+        Map<String, GroupMessageReadInfo> messages = {};
+        messagesMap.forEach((messageId, infoMap) {
+          messages[messageId] = GroupMessageReadInfo.fromMap(infoMap);
+        });
+        if (onGroupMessagesRead != null) {
+          onGroupMessagesRead!(conversation, messages);
+        }
 
     }
     return Future.value(null);
@@ -274,6 +564,11 @@ class JuggleIm {
 
   void _registerMessages() {
     registerMessageType(() => TextMessage());
+    registerMessageType(() => ImageMessage());
+    registerMessageType(() => FileMessage());
+    registerMessageType(() => RecallInfoMessage());
+    registerMessageType(() => VideoMessage());
+    registerMessageType(() => VoiceMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;
@@ -284,5 +579,16 @@ class JuggleIm {
   Function(List<ConversationInfo> conversationInfoList)? onConversationInfoUpdate;
   Function(List<ConversationInfo> conversationInfoList)? onConversationInfoDelete;
   Function(int count)? onTotalUnreadMessageCountUpdate;
+
+  Function(Message message)? onMessageReceive;
+  Function(Message message)? onMessageRecall;
+  Function(Conversation conversation, List<int> clientMsgNoList)? onMessageDelete;
+  Function(Conversation conversation, int timestamp, String? senderId)? onMessageClear;
+  Function(Message message)? onMessageUpdate;
+  Function(Conversation conversation, MessageReaction reaction)? onMessageReactionAdd;
+  Function(Conversation conversation, MessageReaction reaction)? onMessageReactionRemove;
+  Function(Conversation conversation, List<String> messageIdList)? onMessagesRead;
+  Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
+
 
 }

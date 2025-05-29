@@ -7,6 +7,7 @@ import 'package:juggle_im/juggle_im.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/result.dart';
@@ -76,6 +77,21 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoListByOption, count is " + length.toString());
 
+          // var cml = [11];
+          // int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml);
+
+          // Result<Message>? rm = await _juggleImPlugin.recallMessage('nzcyxtgktxqjxmya');
+
+          GetMessageOption o = GetMessageOption();
+          o.count = 20;
+          Result<List<Message>>? messageListResult = await _juggleImPlugin.getMessages(c1, 1, o);
+          print('getMessages');
+
+          List<String> llll = ["nzcyxtgktxqjxmya", "nzc3rmccbzyjxmya"];
+          List<Message>? l2 = await _juggleImPlugin.getMessagesByMessageIdList(llll);
+          print('getMessagesByMessageIdList');
+
+
 
           // TextMessage textMessage = TextMessage.content('flutter text');
           // callback(message, errorCode) {
@@ -111,6 +127,9 @@ class _MyAppState extends State<MyApp> {
       };
       _juggleImPlugin.onTotalUnreadMessageCountUpdate = (count) {
         print('onTotalUnreadMessageCountUpdate, count is ' + count.toString());
+      };
+      _juggleImPlugin.onMessageReceive = (message) {
+        print('onMessageReceive');
       };
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';

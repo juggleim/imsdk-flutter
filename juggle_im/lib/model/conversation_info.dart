@@ -18,7 +18,7 @@ class ConversationInfo {
   static ConversationInfo fromMap(Map map) {
     Map conversationMap = map['conversation'];
     var result = ConversationInfo();
-    result.conversation = Conversation.conversationFromMap(conversationMap);
+    result.conversation = Conversation.fromMap(conversationMap);
     result.unreadCount = map['unreadCount'];
     result.hasUnread = map['hasUnread'];
     result.sortTime = map['sortTime'];
