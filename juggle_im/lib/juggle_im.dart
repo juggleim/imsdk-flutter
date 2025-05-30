@@ -8,6 +8,8 @@ import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/get_message_result.dart';
+import 'package:juggle_im/model/group_info.dart';
+import 'package:juggle_im/model/group_member.dart';
 import 'package:juggle_im/model/group_message_read_detail.dart';
 import 'package:juggle_im/model/group_message_read_info.dart';
 import 'package:juggle_im/model/media_message_content.dart';
@@ -400,6 +402,26 @@ class JuggleIm {
       result.t = message;
     }
     return result;
+  }
+
+  //userInfo
+  Future<UserInfo?> getUserInfo(String userId) async {
+    var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
+    UserInfo userInfo = UserInfo.fromMap(resultMap);
+    return userInfo;
+  }
+
+  Future<GroupInfo?> getGroupInfo(String groupId) async {
+    var resultMap = await _methodChannel.invokeMethod('getGroupInfo', groupId);
+    GroupInfo groupInfo = GroupInfo.fromMap(resultMap);
+    return groupInfo;
+  }
+
+  Future<GroupMember?> getGroupMember(String groupId, String userId) async {
+    var map = {'groupId': groupId, 'userId': userId};
+    var resultMap = await _methodChannel.invokeMethod('getGroupMember', map);
+    GroupMember member = GroupMember.fromMap(resultMap);
+    return member;
   }
 
   //internal

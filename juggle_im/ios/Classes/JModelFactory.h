@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)messageContentToDic:(JMessageContent *)content;
 + (NSDictionary *)groupMessageReadInfoToDic:(JGroupMessageReadInfo *)info;
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info;
++ (NSDictionary *)groupInfoToDic:(JGroupInfo *)info;
++ (NSDictionary *)groupMemberToDic:(JGroupMember *)member;
 + (NSDictionary *)messageMentionInfoToDic:(JMessageMentionInfo *)info;
 + (NSDictionary *)messageToDic:(JMessage *)message;
 + (NSDictionary *)messageReactionToDic:(JMessageReaction *)reaction;

@@ -11,6 +11,7 @@ import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/user_info.dart';
 
 void main() {
   runApp(const MyApp());
@@ -90,6 +91,9 @@ class _MyAppState extends State<MyApp> {
           List<String> llll = ["nzcyxtgktxqjxmya", "nzc3rmccbzyjxmya"];
           List<Message>? l2 = await _juggleImPlugin.getMessagesByMessageIdList(llll);
           print('getMessagesByMessageIdList');
+
+          UserInfo? userInfo = await _juggleImPlugin.getUserInfo('YvoGswbXyqU');
+
 
 
 

@@ -93,6 +93,40 @@
     return [dic copy];
 }
 
++ (NSDictionary *)groupInfoToDic:(JGroupInfo *)info {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (info.groupId) {
+        [dic setObject:info.groupId forKey:@"groupId"];
+    }
+    if (info.groupName) {
+        [dic setObject:info.groupName forKey:@"groupName"];
+    }
+    if (info.portrait) {
+        [dic setObject:info.portrait forKey:@"portrait"];
+    }
+    if (info.extraDic) {
+        [dic setObject:info.extraDic forKey:@"extraDic"];
+    }
+    return [dic copy];
+}
+
++ (NSDictionary *)groupMemberToDic:(JGroupMember *)member {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (member.groupId) {
+        [dic setObject:member.groupId forKey:@"groupId"];
+    }
+    if (member.userId) {
+        [dic setObject:member.userId forKey:@"userId"];
+    }
+    if (member.groupDisplayName) {
+        [dic setObject:member.groupDisplayName forKey:@"groupDisplayName"];
+    }
+    if (member.extraDic) {
+        [dic setObject:member.extraDic forKey:@"extraDic"];
+    }
+    return [dic copy];
+}
+
 + (NSDictionary *)messageMentionInfoToDic:(JMessageMentionInfo *)info {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     [dic setObject:@(info.type) forKey:@"type"];

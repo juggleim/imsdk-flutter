@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class ConversationType {
   static const int unknown = 0;

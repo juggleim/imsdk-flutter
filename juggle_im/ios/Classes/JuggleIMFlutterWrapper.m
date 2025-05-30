@@ -103,6 +103,12 @@
         [self getMessagesReaction:call.arguments result:result];
     } else if ([@"updateMessage" isEqualToString:call.method]) {
         [self updateMessage:call.arguments result:result];
+    } else if ([@"getUserInfo" isEqualToString:call.method]) {
+        [self getUserInfo:call.arguments result:result];
+    } else if ([@"getGroupInfo" isEqualToString:call.method]) {
+        [self getGroupInfo:call.arguments result:result];
+    } else if ([@"getGroupMember" isEqualToString:call.method]) {
+        [self getGroupMember:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -690,6 +696,32 @@
             result(@{@"errorCode": @(code)});
         }];
     }
+}
+
+- (void)getUserInfo:(id)arg
+             result:(FlutterResult)result {
+    NSString *userId = arg;
+    JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:userId];
+    NSDictionary *dic = [JModelFactory userInfoToDic:userInfo];
+    result(dic);
+}
+
+- (void)getGroupInfo:(id)arg
+              result:(FlutterResult)result {
+    NSString *groupId = arg;
+    JGroupInfo *groupInfo = [JIM.shared.userInfoManager getGroupInfo:groupId];
+    NSDictionary *dic = [JModelFactory groupInfoToDic:groupInfo];
+    result(dic);
+}
+
+- (void)getGroupMember:(id)arg
+                result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *groupId = dic[@"groupId"];
+    NSString *userId = dic[@"userId"];
+    JGroupMember *member = [JIM.shared.userInfoManager getGroupMember:groupId userId:userId];
+    NSDictionary *resultDic = [JModelFactory groupMemberToDic:member];
+    result(resultDic);
 }
 
 #pragma mark - JConnectionDelegate
