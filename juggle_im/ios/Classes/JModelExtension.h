@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
         forConversationInfo:(JConversationInfo *)info;
 
 + (NSDictionary *)extendDic:(NSDictionary *)dic
-                 forMessage:(JMessage *)info;
+                 forMessage:(JMessage *)message;
 
 @end
 

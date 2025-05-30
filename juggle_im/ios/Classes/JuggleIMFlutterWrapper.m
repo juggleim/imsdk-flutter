@@ -424,6 +424,7 @@
                 NSMutableArray *arr = [NSMutableArray array];
                 for (JMessage *m in messages) {
                     NSDictionary *messageDic = [JModelFactory messageToDic:m];
+                    messageDic = [JModelExtension extendDic:messageDic forMessage:m];
                     [arr addObject:messageDic];
                 }
                 [resultDic setObject:arr forKey:@"messages"];
@@ -511,6 +512,7 @@
         NSMutableArray *resultList = [NSMutableArray array];
         for (JMessage *message in messageList) {
             NSDictionary *messageDic = [JModelFactory messageToDic:message];
+            messageDic = [JModelExtension extendDic:messageDic forMessage:message];
             [resultList addObject:messageDic];
         }
         result(resultList);
@@ -525,6 +527,7 @@
         NSMutableArray *resultList = [NSMutableArray array];
         for (JMessage *message in messageList) {
             NSDictionary *messageDic = [JModelFactory messageToDic:message];
+            messageDic = [JModelExtension extendDic:messageDic forMessage:message];
             [resultList addObject:messageDic];
         }
         result(resultList);
@@ -585,6 +588,7 @@
             NSMutableArray *messageDicList = [NSMutableArray array];
             for (JMessage *message in mergedMessages) {
                 NSDictionary *messageDic = [JModelFactory messageToDic:message];
+                messageDic = [JModelExtension extendDic:messageDic forMessage:message];
                 [messageDicList addObject:messageDic];
             }
             [resultDic setObject:messageDicList forKey:@"messages"];
@@ -612,6 +616,7 @@
             NSMutableArray *messageDicList = [NSMutableArray array];
             for (JMessage *message in messages) {
                 NSDictionary *messageDic = [JModelFactory messageToDic:message];
+                messageDic = [JModelExtension extendDic:messageDic forMessage:message];
                 [messageDicList addObject:messageDic];
             }
             [resultDic setObject:messageDicList forKey:@"messages"];
@@ -784,11 +789,15 @@
 
 #pragma mark - JMessageDelegate
 - (void)messageDidReceive:(JMessage *)message {
-    [self.channel invokeMethod:@"onMessageReceive" arguments:[JModelFactory messageToDic:message]];
+    NSDictionary *messageDic = [JModelFactory messageToDic:message];
+    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
+    [self.channel invokeMethod:@"onMessageReceive" arguments:messageDic];
 }
 
 - (void)messageDidRecall:(JMessage *)message {
-    [self.channel invokeMethod:@"onMessageRecall" arguments:[JModelFactory messageToDic:message]];
+    NSDictionary *messageDic = [JModelFactory messageToDic:message];
+    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
+    [self.channel invokeMethod:@"onMessageRecall" arguments:messageDic];
 }
 
 - (void)messageDidDelete:(JConversation *)conversation clientMsgNos:(NSArray<NSNumber *> *)clientMsgNos {
@@ -807,7 +816,9 @@
 }
 
 - (void)messageDidUpdate:(JMessage *)message {
-    [self.channel invokeMethod:@"onMessageUpdate" arguments:[JModelFactory messageToDic:message]];
+    NSDictionary *messageDic = [JModelFactory messageToDic:message];
+    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
+    [self.channel invokeMethod:@"onMessageUpdate" arguments:messageDic];
 }
 
 - (void)messageReactionDidAdd:(JMessageReaction *)reaction inConversation:(JConversation *)conversation {

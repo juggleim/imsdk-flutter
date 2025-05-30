@@ -16,6 +16,7 @@ class ConversationInfo {
   ConversationMentionInfo? mentionInfo;
   String? name;
   String? portrait;
+  Map<String, String>? extra;
 
   static ConversationInfo fromMap(Map map) {
     Map conversationMap = map['conversation'];
@@ -38,6 +39,7 @@ class ConversationInfo {
     }
     result.name = map['name'];
     result.portrait = map['portrait'];
+    result.extra = map['extra'];
 
     return result;
   }

@@ -6,10 +6,12 @@
 //
 
 #import "JModelExtension.h"
+#import "JModelFactory.h"
 
 @implementation JModelExtension
 
-+ (NSDictionary *)extendDic:(NSDictionary *)dic forConversationInfo:(JConversationInfo *)info {
++ (NSDictionary *)extendDic:(NSDictionary *)dic
+        forConversationInfo:(JConversationInfo *)info {
     NSMutableDictionary *mDic = [dic mutableCopy];
     if (info.conversation.conversationType == JConversationTypePrivate) {
         JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:info.conversation.conversationId];
@@ -19,6 +21,9 @@
         if (userInfo.portrait.length > 0) {
             [mDic setObject:userInfo.portrait forKey:@"portrait"];
         }
+        if (userInfo.extraDic.count > 0) {
+            [mDic setObject:userInfo.extraDic forKey:@"extra"];
+        }
     } else if (info.conversation.conversationType == JConversationTypeGroup) {
         JGroupInfo *groupInfo = [JIM.shared.userInfoManager getGroupInfo:info.conversation.conversationId];
         if (groupInfo.groupName.length > 0) {
@@ -27,12 +32,22 @@
         if (groupInfo.portrait.length > 0) {
             [mDic setObject:groupInfo.portrait forKey:@"portrait"];
         }
+        if (groupInfo.extraDic.count > 0) {
+            [mDic setObject:groupInfo.extraDic forKey:@"extra"];
+        }
     }
     return [mDic copy];
 }
 
-//+ (NSDictionary *)extendDic:(NSDictionary *)dic forMessage:(JMessage *)info {
-//    
-//}
++ (NSDictionary *)extendDic:(NSDictionary *)dic
+                 forMessage:(JMessage *)message {
+    NSMutableDictionary *mDic = [dic mutableCopy];
+    JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:message.senderUserId];
+    if (userInfo) {
+        NSDictionary *userInfoDic = [JModelFactory userInfoToDic:userInfo];
+        [mDic setObject:userInfoDic forKey:@"sender"];
+    }
+    return [mDic copy];
+}
 
 @end

@@ -3,6 +3,7 @@ import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/group_message_read_info.dart';
 import 'package:juggle_im/model/message_content.dart';
 import 'package:juggle_im/model/message_mention_info.dart';
+import 'package:juggle_im/model/user_info.dart';
 
 class MessageDirection {
   static int send = 1;
@@ -33,6 +34,7 @@ class Message {
   Message? referredMsg;
   String? localAttribute;
   bool? isEdit;
+  UserInfo? sender;
 
   static Message fromMap(Map map) {
     Message m = Message();
@@ -63,6 +65,9 @@ class Message {
     }
     m.localAttribute = map['localAttribute'];
     m.isEdit = map['isEdit'];
+    if (map['sender'] != null) {
+      m.sender = UserInfo.fromMap(map['sender']);
+    }
 
     return m;
   }
