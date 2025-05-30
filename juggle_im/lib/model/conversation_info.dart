@@ -14,6 +14,8 @@ class ConversationInfo {
   bool? mute;
   String? draft;
   ConversationMentionInfo? mentionInfo;
+  String? name;
+  String? portrait;
 
   static ConversationInfo fromMap(Map map) {
     Map conversationMap = map['conversation'];
@@ -34,6 +36,8 @@ class ConversationInfo {
     if (mentionInfoMap != null) {
       result.mentionInfo = ConversationMentionInfo.fromMap(mentionInfoMap);
     }
+    result.name = map['name'];
+    result.portrait = map['portrait'];
 
     return result;
   }
