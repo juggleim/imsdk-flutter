@@ -11,11 +11,11 @@ class ContentTypeCenter {
     _contentTypeMap[content.getContentType()] = factory;
   }
 
-  static MessageContent? getContent(String? type, Map map) {
+  static MessageContent? getContent(String? type, String contentString) {
     final factory = _contentTypeMap[type] as MessageFactory?;
     if (factory != null) {
       MessageContent content = factory();
-      content.decode(map);
+      content.decode(contentString);
       return content;
     }
     return null;

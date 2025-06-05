@@ -20,15 +20,13 @@ public class JuggleImPlugin implements FlutterPlugin, MethodCallHandler {
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "juggle_im");
     channel.setMethodCallHandler(this);
+    JuggleIMFlutterWrapper.getInstance().setChannel(channel);
+    JuggleIMFlutterWrapper.getInstance().setContext(flutterPluginBinding.getApplicationContext());
   }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-    if (call.method.equals("getPlatformVersion")) {
-      result.success("Android " + android.os.Build.VERSION.RELEASE);
-    } else {
-      result.notImplemented();
-    }
+    JuggleIMFlutterWrapper.getInstance().onMethodCall(call, result);
   }
 
   @Override

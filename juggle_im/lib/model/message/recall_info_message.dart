@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:juggle_im/model/message_content.dart';
 
 class RecallInfoMessage extends MessageContent {
@@ -11,13 +13,15 @@ class RecallInfoMessage extends MessageContent {
   }
 
   @override
-  Map encode() {
+  String encode() {
     Map map = {'exts': exts};
-    return map;
+    return json.encode(map
+    );
   }
 
   @override
-  void decode(Map map) {
+  void decode(String string) {
+    Map map = json.decode(string);
     exts = map['exts'];
   }
 

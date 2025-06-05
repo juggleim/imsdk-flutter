@@ -12,6 +12,7 @@ import 'package:juggle_im/model/group_info.dart';
 import 'package:juggle_im/model/group_member.dart';
 import 'package:juggle_im/model/group_message_read_detail.dart';
 import 'package:juggle_im/model/group_message_read_info.dart';
+import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/media_message_content.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
@@ -48,8 +49,11 @@ class JuggleIm {
     await _methodChannel.invokeMethod('setServers', map);
   }
 
-  Future<void> init(String appKey) async {
+  Future<void> init(String appKey, [InitConfig? config]) async {
     Map map = {"appKey": appKey};
+    if (config != null) {
+      map['config'] = config.toMap();
+    }
     await _methodChannel.invokeMethod('init', map);
     _methodChannel.setMethodCallHandler(_methodCallHandler);
   }

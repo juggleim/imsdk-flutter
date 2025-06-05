@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:juggle_im/model/media_message_content.dart';
 
 class VoiceMessage extends MediaMessageContent {
@@ -12,13 +14,14 @@ class VoiceMessage extends MediaMessageContent {
   }
 
   @override
-  Map encode() {
+  String encode() {
     Map map = {'url': url, 'local': localPath, 'duration': duration, 'extra': extra};
-    return map;
+    return json.encode(map);
   }
 
   @override
-  void decode(Map map) {
+  void decode(String string) {
+    Map map = json.decode(string);
     url = map['url'];
     localPath = map['local'];
     duration = map['duration'];

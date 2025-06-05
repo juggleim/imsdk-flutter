@@ -13,5 +13,15 @@ class PullDirection {
   static const int older = 1;
 }
 
+class LogLevel {
+  static const int none = 0;
+  static const int fatal = 1;
+  static const int error = 2;
+  static const int warning = 3;
+  static const int info = 4;
+  static const int debug = 5;
+  static const int verbose = 6;
+}
+
 typedef DataCallback<T> = void Function(T t, int errorCode);
 typedef SendMessageProgressCallback = void Function(Message message, int progress);

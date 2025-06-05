@@ -127,7 +127,16 @@
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
         NSString *key = d[@"appKey"];
-        [JIM.shared setConsoleLogLevel:JLogLevelVerbose];
+        NSDictionary *config = d[@"config"];
+        if (config) {
+            NSDictionary *logConfig = config[@"logConfig"];
+            if (logConfig) {
+                NSNumber *consoleLevel = logConfig[@"consoleLevel"];
+                if (consoleLevel) {
+                    [JIM.shared setConsoleLogLevel:[consoleLevel intValue]];
+                }
+            }
+        }
         [JIM.shared initWithAppKey:key];
         
         [JIM.shared.connectionManager addDelegate:self];
@@ -348,9 +357,9 @@
              result:(FlutterResult)result {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
-        NSDictionary *contentDic = d[@"content"];
+        NSString *contentString = d[@"content"];
         NSString *contentType = d[@"contentType"];
-        JMessageContent *content = [JModelFactory messageContentFromDic:contentDic type:contentType];
+        JMessageContent *content = [JModelFactory messageContentFromString:contentString type:contentType];
         if (content) {
             JMessage *message = [JIM.shared.messageManager sendMessage:content
                                                         messageOption:[JModelFactory sendMessageOptionFromDic:d[@"option"]]
@@ -376,9 +385,9 @@
                   result:(FlutterResult)result {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
-        NSDictionary *contentDic = d[@"content"];
+        NSString *contentString = d[@"content"];
         NSString *contentType = d[@"contentType"];
-        JMediaMessageContent *content = [JModelFactory mediaMessageContentFromDic:contentDic type:contentType];
+        JMediaMessageContent *content = [JModelFactory mediaMessageContentFromString:contentString type:contentType];
         if (content) {
             JMessage *message = [JIM.shared.messageManager sendMediaMessage:content
                                                               messageOption:[JModelFactory sendMessageOptionFromDic:d[@"option"]]
@@ -689,9 +698,9 @@
                result:(FlutterResult)result {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
-        NSDictionary *contentDic = d[@"content"];
+        NSString *contentString = d[@"content"];
         NSString *contentType = d[@"contentType"];
-        JMessageContent *content = [JModelFactory messageContentFromDic:contentDic type:contentType];
+        JMessageContent *content = [JModelFactory messageContentFromString:contentString type:contentType];
         JConversation *conversation = [JModelFactory conversationFromDic:d[@"conversation"]];
         [JIM.shared.messageManager updateMessage:content
                                        messageId:d[@"messageId"]

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)conversationMentionMessageToDic:(JConversationMentionMessage *)message;
 + (NSDictionary *)conversationMentionInfoToDic:(JConversationMentionInfo *)info;
 + (NSDictionary *)conversationInfoToDic:(JConversationInfo *)conversationInfo;
-+ (NSDictionary *)messageContentToDic:(JMessageContent *)content;
++ (NSString *)messageContentToString:(JMessageContent *)content;
 + (NSDictionary *)groupMessageReadInfoToDic:(JGroupMessageReadInfo *)info;
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info;
 + (NSDictionary *)groupInfoToDic:(JGroupInfo *)info;
@@ -29,9 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic;
 + (JGetMessageOptions *)getMessageOptionFromDic:(NSDictionary *)dic;
 
-+ (JMessageContent *)messageContentFromDic:(NSDictionary *)dic
-                                      type:(NSString *)contentType;
-+ (JMediaMessageContent *)mediaMessageContentFromDic:(NSDictionary *)dic
++ (JMessageContent *)messageContentFromString:(NSString *)string
+                                         type:(nonnull NSString *)contentType;
++ (JMediaMessageContent *)mediaMessageContentFromString:(NSString *)string
                                                 type:(NSString *)contentType;
 
 @end

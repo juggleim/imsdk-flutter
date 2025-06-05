@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:juggle_im/model/media_message_content.dart';
 
 class VideoMessage extends MediaMessageContent {
@@ -17,13 +19,14 @@ class VideoMessage extends MediaMessageContent {
   }
 
   @override
-  Map encode() {
+  String encode() {
     Map map = {'url': url, 'snapshotLocalPath': snapshotLocalPath, 'local': localPath, 'width': width, 'height': height, 'size': size, 'extra': extra, 'poster': snapshotUrl, 'duration': duration};
-    return map;
+    return json.encode(map);
   }
 
   @override
-  void decode(Map map) {
+  void decode(String string) {
+    Map map = json.decode(string);
     url = map['url'];
     snapshotLocalPath = map['snapshotLocalPath'];
     localPath = map['local'];

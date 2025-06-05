@@ -48,9 +48,9 @@ class Message {
     m.hasRead = map['hasRead'];
     m.timestamp = map['timestamp'];
     m.senderUserId = map['senderUserId'];
-    Map? contentMap = map["content"];
-    if (contentMap != null) {
-      m.content = ContentTypeCenter.getContent(m.contentType, contentMap);
+    String? contentString = map["content"];
+    if (contentString != null) {
+      m.content = ContentTypeCenter.getContent(m.contentType, contentString);
     }
     Map? groupReadInfoMap = map['groupReadInfo'];
     if (groupReadInfoMap != null) {

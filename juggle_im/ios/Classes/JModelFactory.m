@@ -37,7 +37,6 @@
         [list addObject:[self conversationMentionMessageToDic:message]];
     }
     [dic setObject:list forKey:@"mentionMsgList"];
-    
     return [dic copy];
 }
 
@@ -60,12 +59,12 @@
     return [dic copy];
 }
 
-+ (NSDictionary *)messageContentToDic:(JMessageContent *)content {
++ (NSString *)messageContentToString:(JMessageContent *)content {
     NSData *data = [content encode];
     if (!data) {
         return nil;
     }
-    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 + (NSDictionary *)groupMessageReadInfoToDic:(JGroupMessageReadInfo *)info {
@@ -158,9 +157,9 @@
     if (message.senderUserId) {
         [dic setObject:message.senderUserId forKey:@"senderUserId"];
     }
-    NSDictionary *contentDic = [self messageContentToDic:message.content];
-    if (contentDic) {
-        [dic setObject:contentDic forKey:@"content"];
+    NSString *contentString = [self messageContentToString:message.content];
+    if (contentString) {
+        [dic setObject:contentString forKey:@"content"];
     }
     if (message.groupReadInfo) {
         [dic setObject:[self groupMessageReadInfoToDic:message.groupReadInfo] forKey:@"groupReadInfo"];
@@ -274,27 +273,31 @@
     return data;
 }
 
-+ (JMessageContent *)messageContentFromDic:(NSDictionary *)dic
-                                      type:(nonnull NSString *)contentType {
-    JMessageContent *content;
-    if ([contentType isEqualToString:@"jg:text"]) {
-        content = [self textMessageFromDic:dic];
-    } else if ([contentType isEqualToString:@"jg:file"]) {
-        content = [self fileMessageFromDic:dic];
-    } else if ([contentType isEqualToString:@"jg:img"]) {
-        content = [self imageMessageFromDic:dic];
-    } else if ([contentType isEqualToString:@"jg:recallinfo"]) {
-        content = [self recallInfoMessageFromDic:dic];
-    } else if ([contentType isEqualToString:@"jg:video"]) {
-        content = [self videoMessageFromDic:dic];
-    } else if ([contentType isEqualToString:@"jg:voice"]) {
-        content = [self voiceMessageFromDic:dic];
-    }
-    return content;
++ (JMessageContent *)messageContentFromString:(NSString *)string
+                                         type:(nonnull NSString *)contentType {
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+   JMessageContent *content;
+   if ([contentType isEqualToString:@"jg:text"]) {
+       content = [self textMessageFromDic:dic];
+   } else if ([contentType isEqualToString:@"jg:file"]) {
+       content = [self fileMessageFromDic:dic];
+   } else if ([contentType isEqualToString:@"jg:img"]) {
+       content = [self imageMessageFromDic:dic];
+   } else if ([contentType isEqualToString:@"jg:recallinfo"]) {
+       content = [self recallInfoMessageFromDic:dic];
+   } else if ([contentType isEqualToString:@"jg:video"]) {
+       content = [self videoMessageFromDic:dic];
+   } else if ([contentType isEqualToString:@"jg:voice"]) {
+       content = [self voiceMessageFromDic:dic];
+   }
+   return content;
 }
 
-+ (JMediaMessageContent *)mediaMessageContentFromDic:(NSDictionary *)dic
-                                                type:(nonnull NSString *)contentType {
++ (JMediaMessageContent *)mediaMessageContentFromString:(NSString *)string
+                                                   type:(nonnull NSString *)contentType {
+    NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
     JMediaMessageContent *content;
     if ([contentType isEqualToString:@"jg:img"]) {
         content = [JModelFactory imageMessageFromDic:dic];

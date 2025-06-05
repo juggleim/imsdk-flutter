@@ -7,9 +7,9 @@ abstract class MessageContent {
     return "";
   }
 
-  Map encode();
+  String encode();
 
-  void decode(Map map);
+  void decode(String map);
 
   String getSearchContent() {
     return '';
