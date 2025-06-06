@@ -15,6 +15,7 @@ import 'package:juggle_im/model/group_message_read_info.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/media_message_content.dart';
 import 'package:juggle_im/model/message.dart';
+import 'package:juggle_im/model/message/custom_message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/recall_info_message.dart';
@@ -589,6 +590,7 @@ class JuggleIm {
     registerMessageType(() => RecallInfoMessage());
     registerMessageType(() => VideoMessage());
     registerMessageType(() => VoiceMessage());
+    registerMessageType(() => CustomMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;
