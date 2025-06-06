@@ -18,7 +18,10 @@ import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupMessageReadInfo;
+import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
+import com.juggle.im.model.MessageContent;
+import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageReaction;
 
 import java.util.ArrayList;
@@ -102,6 +105,12 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "setUnread":
                 setUnread(call.arguments, result);
+                break;
+            case "sendMessage":
+                sendMessage(call.arguments, result);
+                break;
+            case "sendMediaMessage":
+                sendMediaMessage(call.arguments, result);
                 break;
 
             default:
@@ -378,6 +387,96 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+    private void sendMessage(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String contentString = (String) map.get("content");
+            String contentType = (String) map.get("contentType");
+            MessageContent content = ModelFactory.messageContentFromString(contentString, contentType);
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?,?>) Objects.requireNonNull(map.get("conversation")));
+            MessageOptions options = null;
+            Map<?, ?> optionsMap = (Map<?, ?>) map.get("option");
+            if (optionsMap != null) {
+                options = ModelFactory.sendMessageOptionFromMap(optionsMap);
+            }
+            if (content != null) {
+                Message message = JIM.getInstance().getMessageManager().sendMessage(content, conversation, options, new IMessageManager.ISendMessageCallback() {
+                    @Override
+                    public void onSuccess(Message message) {
+                        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                        Map<String, Object> resultMap = new HashMap<>();
+                        resultMap.put("message", messageMap);
+                        mChannel.invokeMethod("onMessageSendSuccess", resultMap);
+                    }
+
+                    @Override
+                    public void onError(Message message, int i) {
+                        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                        Map<String, Object> resultMap = new HashMap<>();
+                        resultMap.put("message", messageMap);
+                        resultMap.put("errorCode", i);
+                        mChannel.invokeMethod("onMessageSendError", resultMap);
+                    }
+                });
+                Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                result.success(messageMap);
+            }
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
+
+    private void sendMediaMessage(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String contentString = (String) map.get("content");
+            String contentType = (String) map.get("contentType");
+            MediaMessageContent content = ModelFactory.mediaMessageContentFromString(contentString, contentType);
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?,?>) Objects.requireNonNull(map.get("conversation")));
+            MessageOptions options = null;
+            Map<?, ?> optionsMap = (Map<?, ?>) map.get("option");
+            if (optionsMap != null) {
+                options = ModelFactory.sendMessageOptionFromMap(optionsMap);
+            }
+            if (content != null) {
+                Message message = JIM.getInstance().getMessageManager().sendMediaMessage(content, conversation, options, new IMessageManager.ISendMediaMessageCallback() {
+                    @Override
+                    public void onProgress(int i, Message message) {
+                        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                        Map<String, Object> resultMap = new HashMap<>();
+                        resultMap.put("message", messageMap);
+                        resultMap.put("progress", i);
+                        mChannel.invokeMethod("onMessageProgress", resultMap);
+                    }
+
+                    @Override
+                    public void onSuccess(Message message) {
+                        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                        Map<String, Object> resultMap = new HashMap<>();
+                        resultMap.put("message", messageMap);
+                        mChannel.invokeMethod("onMessageSendSuccess", resultMap);
+                    }
+
+                    @Override
+                    public void onError(Message message, int i) {
+                        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                        Map<String, Object> resultMap = new HashMap<>();
+                        resultMap.put("message", messageMap);
+                        resultMap.put("errorCode", i);
+                        mChannel.invokeMethod("onMessageSendError", resultMap);
+                    }
+
+                    @Override
+                    public void onCancel(Message message) {
+                    }
+                });
+                Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                result.success(messageMap);
+            }
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
 
 
 
@@ -417,17 +516,35 @@ import io.flutter.plugin.common.MethodChannel;
 
     @Override
     public void onConversationInfoUpdate(List<ConversationInfo> list) {
-
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        for (ConversationInfo info : list) {
+            Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
+            ModelExtension.extendMapForConversationInfo(infoMap, info);
+            mapList.add(infoMap);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversationInfoList", mapList);
+        mChannel.invokeMethod("onConversationInfoUpdate", map);
     }
 
     @Override
     public void onConversationInfoDelete(List<ConversationInfo> list) {
-
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        for (ConversationInfo info : list) {
+            Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
+            ModelExtension.extendMapForConversationInfo(infoMap, info);
+            mapList.add(infoMap);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversationInfoList", mapList);
+        mChannel.invokeMethod("onConversationInfoDelete", map);
     }
 
     @Override
     public void onTotalUnreadMessageCountUpdate(int i) {
-
+        Map<String, Object> map = new HashMap<>();
+        map.put("count", i);
+        mChannel.invokeMethod("onTotalUnreadMessageCountUpdate", map);
     }
 
     @Override

@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoList, count is " + length.toString());
 
-          // Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
+          Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
           // Result<void>? r = await _juggleImPlugin.setMute(c1, true);
           // ConversationInfo? info1 = await _juggleImPlugin.getConversationInfo(c1);
 
@@ -103,17 +103,17 @@ class _MyAppState extends State<MyApp> {
 
 
 
-          // TextMessage textMessage = TextMessage.content('flutter text');
-          // callback(message, errorCode) {
-          //     if (errorCode == 0) {
-          //       print("sendMessage success, messageId is " + message.messageId!);
-          //     } else {
-          //       print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
-          //     }
-          // }
+          TextMessage textMessage = TextMessage.content('flutter text Android');
+          callback(message, errorCode) {
+              if (errorCode == 0) {
+                print("sendMessage success, messageId is " + message.messageId!);
+              } else {
+                print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
+              }
+          }
 
-          // Message? message = await _juggleImPlugin.sendMessage(textMessage, c1, callback);
-          // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
+          Message? message = await _juggleImPlugin.sendMessage(textMessage, c1, callback);
+          print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
 
 
           
@@ -126,18 +126,18 @@ class _MyAppState extends State<MyApp> {
       _juggleImPlugin.onDbOpen = (){
         print('onDbOpen');
       };
-      // _juggleImPlugin.onConversationInfoAdd = (list) {
-      //   print('onConversationInfoAdd, length is ' + list.length.toString());
-      // };
-      // _juggleImPlugin.onConversationInfoUpdate = (list) {
-      //   print('onConversationInfoUpdate, length is ' + list.length.toString());
-      // };
-      // _juggleImPlugin.onConversationInfoDelete = (list) {
-      //   print('onConversationInfoDelete, length is ' + list.length.toString());
-      // };
-      // _juggleImPlugin.onTotalUnreadMessageCountUpdate = (count) {
-      //   print('onTotalUnreadMessageCountUpdate, count is ' + count.toString());
-      // };
+      _juggleImPlugin.onConversationInfoAdd = (list) {
+        print('onConversationInfoAdd, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onConversationInfoUpdate = (list) {
+        print('onConversationInfoUpdate, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onConversationInfoDelete = (list) {
+        print('onConversationInfoDelete, length is ' + list.length.toString());
+      };
+      _juggleImPlugin.onTotalUnreadMessageCountUpdate = (count) {
+        print('onTotalUnreadMessageCountUpdate, count is ' + count.toString());
+      };
       // _juggleImPlugin.onMessageReceive = (message) {
       //   print('onMessageReceive');
       // };
