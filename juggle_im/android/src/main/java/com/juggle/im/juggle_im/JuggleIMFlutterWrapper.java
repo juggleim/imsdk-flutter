@@ -64,10 +64,10 @@ import io.flutter.plugin.common.MethodChannel;
                 disconnect(call.arguments, result);
                 break;
             case "getConnectionStatus":
-                getConnectionStatus(call.arguments, result);
+                getConnectionStatus(result);
                 break;
             case "getConversationInfoList":
-                getConversationInfoList(call.arguments, result);
+                getConversationInfoList(result);
                 break;
             case "getConversationInfoListByOption":
                 getConversationInfoListByOption(call.arguments, result);
@@ -93,6 +93,15 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "setMute":
                 setMute(call.arguments, result);
+                break;
+            case "setTop":
+                setTop(call.arguments, result);
+                break;
+            case "clearTotalUnreadCount":
+                clearTotalUnreadCount(result);
+                break;
+            case "setUnread":
+                setUnread(call.arguments, result);
                 break;
 
             default:
@@ -156,12 +165,12 @@ import io.flutter.plugin.common.MethodChannel;
         result.success(null);
     }
 
-    private void getConnectionStatus(Object arg, MethodChannel.Result result) {
+    private void getConnectionStatus(MethodChannel.Result result) {
         int status = JIM.getInstance().getConnectionManager().getConnectionStatus().getStatus();
         result.success(status);
     }
 
-    private void getConversationInfoList(Object arg, MethodChannel.Result result) {
+    private void getConversationInfoList(MethodChannel.Result result) {
         List<ConversationInfo> list = JIM.getInstance().getConversationManager().getConversationInfoList();
         List<Map<String, Object>> resultList = new ArrayList<>();
         for (ConversationInfo info : list) {
@@ -314,6 +323,63 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+    private void setTop(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+            boolean isTop = (boolean) map.get("isTop");
+            JIM.getInstance().getConversationManager().setTop(conversation, isTop, new IConversationManager.ISimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(JErrorCode.NONE);
+                }
+
+                @Override
+                public void onError(int i) {
+                    result.success(i);
+                }
+            });
+        } else {
+            result.success(JErrorCode.INVALID_PARAM);
+        }
+    }
+
+    private void clearTotalUnreadCount(MethodChannel.Result result) {
+        JIM.getInstance().getConversationManager().clearTotalUnreadCount(new IConversationManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(JErrorCode.NONE);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void setUnread(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            JIM.getInstance().getConversationManager().setUnread(conversation, new IConversationManager.ISimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(JErrorCode.NONE);
+                }
+
+                @Override
+                public void onError(int i) {
+                    result.success(i);
+                }
+            });
+        } else {
+            result.success(JErrorCode.INVALID_PARAM);
+        }
+    }
+
+
+
 
 
 
@@ -338,6 +404,12 @@ import io.flutter.plugin.common.MethodChannel;
 
     @Override
     public void onConversationInfoAdd(List<ConversationInfo> list) {
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        for (ConversationInfo info : list) {
+            Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
+            ModelExtension.extendMapForConversationInfo(infoMap, info);
+            
+        }
 
     }
 

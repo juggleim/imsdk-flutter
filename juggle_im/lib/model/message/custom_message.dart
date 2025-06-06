@@ -1,36 +1,32 @@
-
 import 'dart:convert';
 
 import 'package:juggle_im/model/message_content.dart';
 
-class TextMessage extends MessageContent {
+class CustomMessage extends MessageContent {
+  String customType = '';
   String content = '';
   String extra = '';
 
-
-  TextMessage();
-  TextMessage.content(this.content);
+  CustomMessage();
+  CustomMessage.content(this.customType, this.content);
 
   @override
   String getContentType() {
-    return "jg:text";
+    return "jg:custom";
   }
 
   @override
   String encode() {
-    Map map = {"content": content, "extra": extra};
+    Map map = {'customType': customType, "content": content, "extra": extra};
     return json.encode(map);
   }
 
   @override
   void decode(String string) {
     Map map = json.decode(string);
+    customType = map['customType'] ?? '';
     content = map["content"] ?? '';
     extra = map["extra"] ?? '';
   }
 
-  @override
-  String conversationDigest() {
-    return content;
-  }
 }

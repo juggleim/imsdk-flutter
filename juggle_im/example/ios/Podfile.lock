@@ -1,0 +1,35 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - juggle_im (0.0.1):
+    - Flutter
+    - JuggleIM (= 1.8.11.1)
+  - JuggleIM (1.8.11.1)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - juggle_im (from `.symlinks/plugins/juggle_im/ios`)
+
+SPEC REPOS:
+  trunk:
+    - JuggleIM
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  juggle_im:
+    :path: ".symlinks/plugins/juggle_im/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  juggle_im: edf4948cbeb5f938205ffad1abab3f64ad4ffcff
+  JuggleIM: 8cc99b413736acb56e1501503405a521b89f0462
+
+PODFILE CHECKSUM: 6e700dec67e6deac9b1c69bb14c49a2217a12d15
+
+COCOAPODS: 1.16.2
