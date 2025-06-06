@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'package:juggle_im/model/message_content.dart';
 
 class TextMessage extends MessageContent {
-  String? content;
-  String? extra;
+  String content = '';
+  String extra = '';
 
 
   TextMessage();
@@ -26,12 +26,12 @@ class TextMessage extends MessageContent {
   @override
   void decode(String string) {
     Map map = json.decode(string);
-    content = map["content"];
-    extra = map["extra"];
+    content = map["content"] ?? '';
+    extra = map["extra"] ?? '';
   }
 
   @override
   String conversationDigest() {
-    return content ?? '';
+    return content;
   }
 }

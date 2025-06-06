@@ -1,14 +1,14 @@
 class GroupInfo {
-  String? groupId;
-  String? groupName;
-  String? portrait;
+  String groupId = '';
+  String groupName = '';
+  String portrait = '';
   Map<String, String>? extraMap;
 
   static GroupInfo fromMap(Map map) {
     GroupInfo info = GroupInfo();
-    info.groupId = map['groupId'];
-    info.groupName = map['groupName'];
-    info.portrait = map['portrait'];
+    info.groupId = map['groupId'] ?? '';
+    info.groupName = map['groupName'] ?? '';
+    info.portrait = map['portrait'] ?? '';
     info.extraMap = map['extraMap'];
     return info;
   }

@@ -72,17 +72,17 @@ class _MyAppState extends State<MyApp> {
           // info1 = await _juggleImPlugin.getConversationInfo(c1);
           
 
-          // GetConversationInfoOption option = GetConversationInfoOption();
-          // option.conversationTypes = [2];
-          // option.count = 100;
-          // option.timestamp = 0;
-          // option.direction = 1;
-          // l = await _juggleImPlugin.getConversationInfoListByOption(option);
-          // length = 0;
-          // if (l != null) {
-          //   length = l.length;
-          // }
-          // print("getConversationInfoListByOption, count is " + length.toString());
+          GetConversationInfoOption option = GetConversationInfoOption();
+          option.conversationTypes = [2];
+          option.count = 100;
+          option.timestamp = 0;
+          option.direction = 1;
+          l = await _juggleImPlugin.getConversationInfoListByOption(option);
+          length = 0;
+          if (l != null) {
+            length = l.length;
+          }
+          print("getConversationInfoListByOption, count is " + length.toString());
 
           // // var cml = [11];
           // // int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml);

@@ -1,11 +1,11 @@
 class GroupMessageReadInfo {
-  int? readCount;
-  int? memberCount;
+  int readCount = 0;
+  int memberCount = 0;
 
   static GroupMessageReadInfo fromMap(Map map) {
     GroupMessageReadInfo info = GroupMessageReadInfo();
-    info.readCount = map['readCount'];
-    info.memberCount = map['memberCount'];
+    info.readCount = map['readCount'] ?? 0;
+    info.memberCount = map['memberCount'] ?? 0;
     return info;
   }
 }

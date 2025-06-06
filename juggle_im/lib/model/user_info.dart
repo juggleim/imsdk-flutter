@@ -4,19 +4,19 @@ class UserType {
 }
 
 class UserInfo {
-  String? userId;
-  String? userName;
-  String? portrait;
+  String userId = '';
+  String userName = '';
+  String portrait = '';
   Map<String, String>? extraMap;
-  int? type;
+  int type = 0;
 
   static UserInfo fromMap(Map map) {
     UserInfo info = UserInfo();
-    info.userId = map['userId'];
-    info.userName = map['userName'];
-    info.portrait = map['portrait'];
+    info.userId = map['userId'] ?? '';
+    info.userName = map['userName'] ?? '';
+    info.portrait = map['portrait'] ?? '';
     info.extraMap = map['extraMap'];
-    info.type = map['type'];
+    info.type = map['type'] ?? 0;
     return info;
   }
 

@@ -19,35 +19,37 @@ class MessageState {
 }
 
 class Message {
-  Conversation? conversation;
-  String? contentType;
-  int? clientMsgNo;
-  String? messageId;
-  int? direction;
-  int? messageState;
-  bool? hasRead;
-  int? timestamp;
-  String? senderUserId;
+  Conversation conversation;
+  String contentType = '';
+  int clientMsgNo = -1;
+  String messageId = '';
+  int direction = 0;
+  int messageState = 0;
+  bool hasRead = false;
+  int timestamp = 0;
+  String senderUserId = '';
   MessageContent? content;
   GroupMessageReadInfo? groupReadInfo;
   MessageMentionInfo? mentionInfo;
   Message? referredMsg;
-  String? localAttribute;
-  bool? isEdit;
+  String localAttribute = '';
+  bool isEdit = false;
   UserInfo? sender;
 
+  Message(this.conversation);
+
   static Message fromMap(Map map) {
-    Message m = Message();
     Map conversationMap = map["conversation"];
-    m.conversation = Conversation.fromMap(conversationMap);
-    m.contentType = map['contentType'];
-    m.clientMsgNo = map['clientMsgNo'];
-    m.messageId = map['messageId'];
-    m.direction = map['direction'];
-    m.messageState = map['messageState'];
-    m.hasRead = map['hasRead'];
-    m.timestamp = map['timestamp'];
-    m.senderUserId = map['senderUserId'];
+    Conversation conversation = Conversation.fromMap(conversationMap);
+    Message m = Message(conversation);
+    m.contentType = map['contentType'] ?? '';
+    m.clientMsgNo = map['clientMsgNo'] ?? -1;
+    m.messageId = map['messageId'] ?? '';
+    m.direction = map['direction'] ?? 0;
+    m.messageState = map['messageState'] ?? 0;
+    m.hasRead = map['hasRead'] ?? false;
+    m.timestamp = map['timestamp'] ?? 0;
+    m.senderUserId = map['senderUserId'] ?? '';
     String? contentString = map["content"];
     if (contentString != null) {
       m.content = ContentTypeCenter.getContent(m.contentType, contentString);
@@ -63,8 +65,8 @@ class Message {
     if (map['referredMsg'] != null) {
       m.referredMsg = Message.fromMap(map['referredMsg']);
     }
-    m.localAttribute = map['localAttribute'];
-    m.isEdit = map['isEdit'];
+    m.localAttribute = map['localAttribute'] ?? '';
+    m.isEdit = map['isEdit'] ?? false;
     if (map['sender'] != null) {
       m.sender = UserInfo.fromMap(map['sender']);
     }

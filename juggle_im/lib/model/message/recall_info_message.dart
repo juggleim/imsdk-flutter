@@ -15,8 +15,7 @@ class RecallInfoMessage extends MessageContent {
   @override
   String encode() {
     Map map = {'exts': exts};
-    return json.encode(map
-    );
+    return json.encode(map);
   }
 
   @override

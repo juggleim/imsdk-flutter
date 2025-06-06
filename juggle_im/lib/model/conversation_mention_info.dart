@@ -1,22 +1,22 @@
 
 class ConversationMentionMessage {
-  String? senderId;
-  String? msgId;
-  int? msgTime;
-  int? type;
+  String senderId = '';
+  String msgId = '';
+  int msgTime = 0;
+  int type = 0;
 
   static ConversationMentionMessage fromMap(Map map) {
     ConversationMentionMessage m = ConversationMentionMessage();
-    m.senderId = map['senderId'];
-    m.msgId = map['msgId'];
-    m.msgTime = map['msgTime'];
-    m.type = map['type'];
+    m.senderId = map['senderId'] ?? '';
+    m.msgId = map['msgId'] ?? '';
+    m.msgTime = map['msgTime'] ?? 0;
+    m.type = map['type'] ?? 0;
     return m;
   } 
 }
 
 class ConversationMentionInfo {
-  List<ConversationMentionMessage>? mentionMsgList;
+  List<ConversationMentionMessage> mentionMsgList = [];
 
   static ConversationMentionInfo fromMap(Map map) {
     ConversationMentionInfo info = ConversationMentionInfo();

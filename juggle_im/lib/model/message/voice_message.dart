@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:juggle_im/model/media_message_content.dart';
 
 class VoiceMessage extends MediaMessageContent {
-  int? duration;
-  String? extra;
+  int duration = 0;
+  String extra = '';
 
   VoiceMessage();
 
@@ -22,10 +22,10 @@ class VoiceMessage extends MediaMessageContent {
   @override
   void decode(String string) {
     Map map = json.decode(string);
-    url = map['url'];
-    localPath = map['local'];
-    duration = map['duration'];
-    extra = map['extra'];
+    url = map['url'] ?? '';
+    localPath = map['local'] ?? '';
+    duration = map['duration'] ?? 0;
+    extra = map['extra'] ?? '';
   }
 
   @override

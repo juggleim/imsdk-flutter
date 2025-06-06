@@ -1,14 +1,14 @@
 class GroupMember {
-  String? groupId;
-  String? userId;
-  String? groupDisplayName;
+  String groupId = '';
+  String userId = '';
+  String groupDisplayName = '';
   Map<String, String>? extraMap;
 
   static GroupMember fromMap(Map map) {
     GroupMember info = GroupMember();
-    info.groupId = map['groupId'];
-    info.userId = map['userId'];
-    info.groupDisplayName = map['groupDisplayName'];
+    info.groupId = map['groupId'] ?? '';
+    info.userId = map['userId'] ?? '';
+    info.groupDisplayName = map['groupDisplayName'] ?? '';
     info.extraMap = map['extraMap'];
     return info;
   }

@@ -39,9 +39,9 @@ class JuggleIm {
 
   static JuggleIm get instance => _instance;
 
-  Future<String?> getPlatformVersion() async {
+  Future<String> getPlatformVersion() async {
     final version = await _methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
+    return version ?? '';
   }
 
   Future<void> setServers(List<String> servers) async {
@@ -69,17 +69,14 @@ class JuggleIm {
     await _methodChannel.invokeMethod('disconnect', map);
   }
 
-  Future<int?> getConnectionStatus() async {
-    final status = await _methodChannel.invokeMethod<int>('getConnectionStatus');
+  Future<int> getConnectionStatus() async {
+    final status = await _methodChannel.invokeMethod('getConnectionStatus');
     return status;
   }
 
   //conversation
-  Future<List<ConversationInfo>?> getConversationInfoList() async {
-    List? list = await _methodChannel.invokeMethod("getConversationInfoList");
-    if (list == null) {
-      return [];
-    }
+  Future<List<ConversationInfo>> getConversationInfoList() async {
+    List list = await _methodChannel.invokeMethod("getConversationInfoList");
     List<ConversationInfo> result = [];
     for (Map map in list) {
       ConversationInfo c = ConversationInfo.fromMap(map);
@@ -88,7 +85,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<List<ConversationInfo>?> getConversationInfoListByOption(GetConversationInfoOption option) async {
+  Future<List<ConversationInfo>> getConversationInfoListByOption(GetConversationInfoOption option) async {
     Map map = {'count': option.count??0, 'timestamp': option.timestamp??0, 'direction': option.direction??0};
     if (option.conversationTypes != null) {
       map['conversationTypes'] = option.conversationTypes;
@@ -96,10 +93,7 @@ class JuggleIm {
     if (option.tagId != null) {
       map['tagId'] = option.tagId;
     }
-    List? list = await _methodChannel.invokeListMethod('getConversationInfoListByOption', map);
-    if (list == null) {
-      return [];
-    }
+    List list = await _methodChannel.invokeMethod('getConversationInfoListByOption', map);
     List<ConversationInfo> result = [];
     for (Map map in list) {
       ConversationInfo c = ConversationInfo.fromMap(map);
@@ -108,14 +102,14 @@ class JuggleIm {
     return result;
   }
 
-  Future<ConversationInfo?> getConversationInfo(Conversation conversation) async {
+  Future<ConversationInfo> getConversationInfo(Conversation conversation) async {
     Map map = conversation.toMap();
     Map result = await _methodChannel.invokeMethod('getConversationInfo', map);
     ConversationInfo info = ConversationInfo.fromMap(result);
     return info;
   }
 
-  Future<Result<void>?> deleteConversationInfo(Conversation conversation) async {
+  Future<Result<void>> deleteConversationInfo(Conversation conversation) async {
     Map map = conversation.toMap();
     int errorCode = await _methodChannel.invokeMethod('deleteConversationInfo', map);
     var result = Result<void>();
@@ -129,7 +123,7 @@ class JuggleIm {
     await _methodChannel.invokeMethod('setDraft', map);
   }
 
-  Future<Result<ConversationInfo>?> createConversationInfo(Conversation conversation) async {
+  Future<Result<ConversationInfo>> createConversationInfo(Conversation conversation) async {
     Map map = conversation.toMap();
     Map resultMap = await _methodChannel.invokeMethod('createConversationInfo', map);
     var result =  Result<ConversationInfo>();
@@ -145,7 +139,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<int?> getTotalUnreadCount([List<int>? conversationTypes]) async {
+  Future<int> getTotalUnreadCount([List<int>? conversationTypes]) async {
     var map = {};
     if (conversationTypes != null) {
       map['conversationTypes'] = conversationTypes;
@@ -153,7 +147,7 @@ class JuggleIm {
     return await _methodChannel.invokeMethod('getTotalUnreadCount', map);
   }
 
-  Future<Result<void>?> clearUnreadCount(Conversation conversation) async {
+  Future<Result<void>> clearUnreadCount(Conversation conversation) async {
     Map map = conversation.toMap();
     int resultCode = await _methodChannel.invokeMethod('clearUnreadCount', map);
     var result = Result<void>();
@@ -161,14 +155,14 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<void>?> clearTotalUnreadCount() async {
+  Future<Result<void>> clearTotalUnreadCount() async {
     int resultCode = await _methodChannel.invokeMethod('clearTotalUnreadCount');
     var result = Result<void>();
     result.errorCode = resultCode;
     return result;
   }
 
-  Future<Result<void>?> setMute(Conversation conversation, bool isMute) async {
+  Future<Result<void>> setMute(Conversation conversation, bool isMute) async {
     Map conversationMap = conversation.toMap();
     Map map = {"conversation": conversationMap, "isMute": isMute};
     int code = await _methodChannel.invokeMethod('setMute', map);
@@ -177,7 +171,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<void>?> setTop(Conversation conversation, bool isTop) async {
+  Future<Result<void>> setTop(Conversation conversation, bool isTop) async {
     Map conversationMap = conversation.toMap();
     Map map = {"conversation": conversationMap, "isTop": isTop};
     int code = await _methodChannel.invokeMethod('setTop', map);
@@ -186,7 +180,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<void>?> setUnread(Conversation conversation) async {
+  Future<Result<void>> setUnread(Conversation conversation) async {
     Map map = conversation.toMap();
     int resultCode = await _methodChannel.invokeMethod('setUnread', map);
     var result = Result<void>();
@@ -199,30 +193,30 @@ class JuggleIm {
     ContentTypeCenter.registerMessageType(factory);
   }
 
-  Future<Message?> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
+  Future<Message> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
     Map map = {'contentType': content.getContentType(), "content": content.encode(), "conversation": conversation.toMap()};
     if (option != null) {
       map['option'] = option.toMap();
     }
     Map resultMap = await _methodChannel.invokeMethod('sendMessage', map);
     Message message = Message.fromMap(resultMap);
-    _sendMessageCallbackMap[message.clientMsgNo!] = callback;
+    _sendMessageCallbackMap[message.clientMsgNo] = callback;
     return message;
   }
 
-  Future<Message?> sendMediaMessage(MediaMessageContent content, Conversation conversation, DataCallback<Message> callback, SendMessageProgressCallback progressCallback, [SendMessageOption? option]) async {
+  Future<Message> sendMediaMessage(MediaMessageContent content, Conversation conversation, DataCallback<Message> callback, SendMessageProgressCallback progressCallback, [SendMessageOption? option]) async {
     Map map = {'contentType': content.getContentType(), "content": content.encode(), "conversation": conversation.toMap()};
     if (option != null) {
       map['option'] = option.toMap();
     }
     Map resultMap = await _methodChannel.invokeMethod('sendMediaMessage', map);
     Message message = Message.fromMap(resultMap);
-    _sendMessageCallbackMap[message.clientMsgNo!] = callback;
-    _sendMessageProgressCallbackMap[message.clientMsgNo!] = progressCallback;
+    _sendMessageCallbackMap[message.clientMsgNo] = callback;
+    _sendMessageProgressCallbackMap[message.clientMsgNo] = progressCallback;
     return message;
   }
 
-  Future<GetMessageResult<List<Message>>?> getMessages(Conversation conversation, int direction, GetMessageOption option) async {
+  Future<GetMessageResult<List<Message>>> getMessages(Conversation conversation, int direction, GetMessageOption option) async {
     Map map = {'conversation': conversation.toMap(), 'direction': direction, 'option': option.toMap()};
     Map resultMap = await _methodChannel.invokeMethod('getMessages', map);
     var result = GetMessageResult<List<Message>>();
@@ -241,7 +235,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<int?> deleteMessagesByClientMsgNoList(Conversation conversation, List<int> clientMsgNoList, [bool? forAllUsers]) async {
+  Future<int> deleteMessagesByClientMsgNoList(Conversation conversation, List<int> clientMsgNoList, [bool? forAllUsers]) async {
     Map map = {'conversation': conversation.toMap(), 'clientMsgNoList': clientMsgNoList};
     if (forAllUsers != null) {
       map['forAllUsers'] = forAllUsers;
@@ -250,7 +244,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<int?> deleteMessagesByMessageIdList(Conversation conversation, List<String> messageIdList, [bool? forAllUsers]) async {
+  Future<int> deleteMessagesByMessageIdList(Conversation conversation, List<String> messageIdList, [bool? forAllUsers]) async {
     Map map = {'conversation': conversation.toMap(), 'messageIdList': messageIdList};
     if (forAllUsers != null) {
       map['forAllUsers'] = forAllUsers;
@@ -259,7 +253,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<Message>?> recallMessage(String messageId, [Map? extra]) async {
+  Future<Result<Message>> recallMessage(String messageId, [Map? extra]) async {
     Map map = {'messageId': messageId};
     if (extra != null) {
       map['extra'] = extra;
@@ -273,7 +267,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<int?> clearMessages(Conversation conversation, int startTime, [bool? forAllUsers]) async {
+  Future<int> clearMessages(Conversation conversation, int startTime, [bool? forAllUsers]) async {
     Map map = {'conversation': conversation.toMap(), 'startTime': startTime};
     if (forAllUsers != null) {
       map['forAllUsers'] = forAllUsers;
@@ -281,7 +275,7 @@ class JuggleIm {
     return await _methodChannel.invokeMethod('clearMessages', map);
   }
 
-  Future<List<Message>?> getMessagesByMessageIdList(List<String> messageIdList) async {
+  Future<List<Message>> getMessagesByMessageIdList(List<String> messageIdList) async {
     Map map = {'messageIdList': messageIdList};
     List resultList = await _methodChannel.invokeMethod('getMessagesByMessageIdList', map);
     List<Message> messageList = [];
@@ -292,7 +286,7 @@ class JuggleIm {
     return messageList;
   }
 
-  Future<List<Message>?> getMessagesByClientMsgNoList(List<int> clientMsgNoList) async {
+  Future<List<Message>> getMessagesByClientMsgNoList(List<int> clientMsgNoList) async {
     Map map = {'clientMsgNoList': clientMsgNoList};
     List resultList = await _methodChannel.invokeMethod('getMessagesByClientMsgNoList', map);
     List<Message> messageList = [];
@@ -303,12 +297,12 @@ class JuggleIm {
     return messageList;
   }
 
-  Future<int?> sendReadReceipt(Conversation conversation, List<String> messageIdList) async {
+  Future<int> sendReadReceipt(Conversation conversation, List<String> messageIdList) async {
     Map map = {'conversation': conversation.toMap(), 'messageIdList': messageIdList};
     return await _methodChannel.invokeMethod('sendReadReceipt', map);
   }
 
-  Future<Result<GroupMessageReadDetail>?> getGroupMessageReadDetail(String messageId, Conversation conversation) async {
+  Future<Result<GroupMessageReadDetail>> getGroupMessageReadDetail(String messageId, Conversation conversation) async {
     Map map = {'conversation': conversation.toMap(), 'messageId': messageId};
     Map resultMap = await _methodChannel.invokeMethod('getGroupMessageReadDetail', map);
     var result = Result<GroupMessageReadDetail>();
@@ -334,7 +328,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<List<Message>>?> getMergedMessageList(String messageId) async {
+  Future<Result<List<Message>>> getMergedMessageList(String messageId) async {
     Map map = {'messageId': messageId};
     Map resultMap = await _methodChannel.invokeMethod('getMergedMessageList', map);
     var result = Result<List<Message>>();
@@ -351,7 +345,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<GetMessageResult<List<Message>>?> getMentionMessages(Conversation conversation, int count, int timestamp, int direction) async {
+  Future<GetMessageResult<List<Message>>> getMentionMessages(Conversation conversation, int count, int timestamp, int direction) async {
     Map map = {'conversation': conversation.toMap(), 'count': count, 'timestamp': timestamp, 'direction': direction};
     Map resultMap = await _methodChannel.invokeMethod('getMentionMessages', map);
     var result = GetMessageResult<List<Message>>();
@@ -369,17 +363,17 @@ class JuggleIm {
     return result;
   }
 
-  Future<int?> addMessageReaction(String messageId, Conversation conversation, String reactionId) async {
+  Future<int> addMessageReaction(String messageId, Conversation conversation, String reactionId) async {
     Map map = {'messageId': messageId, 'conversation': conversation.toMap(), 'reactionId': reactionId};
     return await _methodChannel.invokeMethod('addMessageReaction', map);
   }
 
-  Future<int?> removeMessageReaction(String messageId, Conversation conversation, String reactionId) async {
+  Future<int> removeMessageReaction(String messageId, Conversation conversation, String reactionId) async {
     Map map = {'messageId': messageId, 'conversation': conversation.toMap(), 'reactionId': reactionId};
     return await _methodChannel.invokeMethod('removeMessageReaction', map);
   }
 
-  Future<Result<List<MessageReaction>>?> getMessagesReaction(List<String> messageIdList, Conversation conversation) async {
+  Future<Result<List<MessageReaction>>> getMessagesReaction(List<String> messageIdList, Conversation conversation) async {
     Map map = {'messageIdList': messageIdList, 'conversation': conversation.toMap()};
     Map resultMap = await _methodChannel.invokeMethod('getMessagesReaction', map);
     var result = Result<List<MessageReaction>>();
@@ -396,7 +390,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<Message>?> updateMessage(String messageId, MessageContent content, Conversation conversation) async {
+  Future<Result<Message>> updateMessage(String messageId, MessageContent content, Conversation conversation) async {
     Map map = {'contentType': content.getContentType(), 'messageId': messageId, "content": content.encode(), "conversation": conversation.toMap()};
     Map resultMap = await _methodChannel.invokeMethod('updateMessage', map);
     var result = Result<Message>();
@@ -409,19 +403,19 @@ class JuggleIm {
   }
 
   //userInfo
-  Future<UserInfo?> getUserInfo(String userId) async {
+  Future<UserInfo> getUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
     UserInfo userInfo = UserInfo.fromMap(resultMap);
     return userInfo;
   }
 
-  Future<GroupInfo?> getGroupInfo(String groupId) async {
+  Future<GroupInfo> getGroupInfo(String groupId) async {
     var resultMap = await _methodChannel.invokeMethod('getGroupInfo', groupId);
     GroupInfo groupInfo = GroupInfo.fromMap(resultMap);
     return groupInfo;
   }
 
-  Future<GroupMember?> getGroupMember(String groupId, String userId) async {
+  Future<GroupMember> getGroupMember(String groupId, String userId) async {
     var map = {'groupId': groupId, 'userId': userId};
     var resultMap = await _methodChannel.invokeMethod('getGroupMember', map);
     GroupMember member = GroupMember.fromMap(resultMap);
@@ -493,7 +487,7 @@ class JuggleIm {
       case 'onMessageSendSuccess':
         Map map = call.arguments;
         Message message = Message.fromMap(map['message']);
-        int clientMsgNo = message.clientMsgNo!;
+        int clientMsgNo = message.clientMsgNo;
         _sendMessageCallbackMap[clientMsgNo]!(message, 0);
         _sendMessageCallbackMap.remove(clientMsgNo);
         _sendMessageProgressCallbackMap.remove(clientMsgNo);
@@ -502,7 +496,7 @@ class JuggleIm {
         Map map = call.arguments;
         int errorCode = map['errorCode'];
         Message message = Message.fromMap(map['message']);
-        int clientMsgNo = message.clientMsgNo!;
+        int clientMsgNo = message.clientMsgNo;
         _sendMessageCallbackMap[clientMsgNo]!(message, errorCode);
         _sendMessageCallbackMap.remove(clientMsgNo);
         _sendMessageProgressCallbackMap.remove(clientMsgNo);
@@ -511,7 +505,7 @@ class JuggleIm {
         Map map = call.arguments;
         int progress = map['progress'];
         Message message = Message.fromMap(map['message']);
-        int clientMsgNo = message.clientMsgNo!;
+        int clientMsgNo = message.clientMsgNo;
         _sendMessageProgressCallbackMap[clientMsgNo]!(message, progress);
 
       case 'onMessageReceive':

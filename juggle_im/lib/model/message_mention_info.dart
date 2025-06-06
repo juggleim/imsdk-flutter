@@ -8,12 +8,12 @@ class MentionType {
 }
 
 class MessageMentionInfo {
-  int? type;
-  List<UserInfo>? targetUsers;
+  int type = 0;
+  List<UserInfo> targetUsers = [];
 
   static MessageMentionInfo fromMap(Map map) {
     MessageMentionInfo info = MessageMentionInfo();
-    info.type = map['type'];
+    info.type = map['type'] ?? 0;
     List<UserInfo> list = [];
     List? targetUsersMap = map['targetUsers'];
     if (targetUsersMap != null) {
@@ -28,14 +28,12 @@ class MessageMentionInfo {
 
   Map toMap() {
     Map map = {'type': type};
-    if (targetUsers != null) {
-      var list = [];
-      for (UserInfo userInfo in targetUsers!) {
-        Map userInfoMap = userInfo.toMap();
-        list.add(userInfoMap);
-      }
-      map['targetUsers'] = list;
+    var list = [];
+    for (UserInfo userInfo in targetUsers) {
+      Map userInfoMap = userInfo.toMap();
+      list.add(userInfoMap);
     }
+    map['targetUsers'] = list;
     return map;
   }
 }

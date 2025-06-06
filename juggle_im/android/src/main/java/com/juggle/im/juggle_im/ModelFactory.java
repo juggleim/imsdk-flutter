@@ -409,7 +409,14 @@ class ModelFactory {
             return null;
         }
         GetConversationOptions options = new GetConversationOptions();
-        options.setConversationTypes((int[]) map.get("conversationTypes"));
+        List<Integer> conversationTypeList = (List) map.get("conversationTypes");
+        if (conversationTypeList != null) {
+            int[] conversationTypes = new int[conversationTypeList.size()];
+            for (int i = 0; i < conversationTypeList.size(); i++) {
+                conversationTypes[i] = conversationTypeList.get(i);
+            }
+            options.setConversationTypes(conversationTypes);
+        }
         Integer countObject = (Integer) map.get("count");
         int count = countObject != null ? countObject : 0;
         options.setCount(count);
@@ -423,7 +430,7 @@ class ModelFactory {
         } else if (directionValue == 1) {
             options.setPullDirection(JIMConst.PullDirection.OLDER);
         }
-        options.setTagId("tagId");
+        options.setTagId((String) map.get("tagId"));
         return options;
     }
 }
