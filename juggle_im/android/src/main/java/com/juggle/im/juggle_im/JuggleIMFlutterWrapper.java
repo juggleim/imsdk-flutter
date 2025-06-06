@@ -13,6 +13,8 @@ import com.juggle.im.internal.logger.JLogConfig;
 import com.juggle.im.internal.logger.JLogLevel;
 import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
+import com.juggle.im.model.GetConversationOptions;
+import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupMessageReadInfo;
 import com.juggle.im.model.Message;
 import com.juggle.im.model.MessageReaction;
@@ -63,6 +65,9 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "getConversationInfoList":
                 getConversationInfoList(call.arguments, result);
+                break;
+            case "getConversationInfoListByOption":
+                getConversationInfoListByOption(call.arguments, result);
                 break;
 
             default:
@@ -137,6 +142,23 @@ import io.flutter.plugin.common.MethodChannel;
         for (ConversationInfo info : list) {
             Map<String, Object> m = ModelFactory.conversationInfoToMap(info);
             resultList.add(m);
+        }
+        result.success(resultList);
+    }
+
+    private void getConversationInfoListByOption(Object arg, MethodChannel.Result result) {
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            GetConversationOptions options = ModelFactory.getConversationOptionsFromMap(map);
+
+            List<ConversationInfo> list = JIM.getInstance().getConversationManager().getConversationInfoList(options);
+            if (list != null) {
+                for (ConversationInfo info : list) {
+                    Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
+                    resultList.add(infoMap);
+                }
+            }
         }
         result.success(resultList);
     }

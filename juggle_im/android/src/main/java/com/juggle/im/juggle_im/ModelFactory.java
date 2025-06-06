@@ -2,10 +2,13 @@ package com.juggle.im.juggle_im;
 
 import android.text.TextUtils;
 
+import com.juggle.im.JIM;
+import com.juggle.im.JIMConst;
 import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.ConversationMentionInfo;
+import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupInfo;
 import com.juggle.im.model.GroupMessageReadInfo;
@@ -261,7 +264,7 @@ class ModelFactory {
         return option;
     }
 
-    static GetMessageOptions getMessageOptionFromMap(Map<String, Object> map) {
+    static GetMessageOptions getMessageOptionFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
@@ -399,5 +402,28 @@ class ModelFactory {
                 break;
         }
         return content;
+    }
+
+    static GetConversationOptions getConversationOptionsFromMap(Map<?, ?> map) {
+        if (map == null) {
+            return null;
+        }
+        GetConversationOptions options = new GetConversationOptions();
+        options.setConversationTypes((int[]) map.get("conversationTypes"));
+        Integer countObject = (Integer) map.get("count");
+        int count = countObject != null ? countObject : 0;
+        options.setCount(count);
+        Integer timestampObject = (Integer) map.get("timestamp");
+        long timestamp = timestampObject != null ? timestampObject : 0;
+        options.setTimestamp(timestamp);
+        Integer directionObject = (Integer) map.get("direction");
+        int directionValue = directionObject != null ? directionObject : 0;
+        if (directionValue == 0) {
+            options.setPullDirection(JIMConst.PullDirection.NEWER);
+        } else if (directionValue == 1) {
+            options.setPullDirection(JIMConst.PullDirection.OLDER);
+        }
+        options.setTagId("tagId");
+        return options;
     }
 }
