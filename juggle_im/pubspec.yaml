@@ -1,7 +1,8 @@
 name: juggle_im
-description: "A new Flutter plugin project."
+description: "Juggle IM SDK"
 version: 0.0.1
-homepage:
+homepage: https://www.juggle.im/
+repository: https://github.com/juggleim/im-flutter-sdk
 
 environment:
   sdk: ^3.7.2

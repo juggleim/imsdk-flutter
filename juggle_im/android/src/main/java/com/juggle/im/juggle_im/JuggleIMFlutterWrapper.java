@@ -408,9 +408,11 @@ import io.flutter.plugin.common.MethodChannel;
         for (ConversationInfo info : list) {
             Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
             ModelExtension.extendMapForConversationInfo(infoMap, info);
-            
+            mapList.add(infoMap);
         }
-
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversationInfoList", mapList);
+        mChannel.invokeMethod("onConversationInfoAdd", map);
     }
 
     @Override
