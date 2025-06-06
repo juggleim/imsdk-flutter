@@ -41,7 +41,7 @@ class ConversationInfo {
     }
     result.name = map['name'] ?? '';
     result.portrait = map['portrait'] ?? '';
-    result.extra = map['extra'];
+    result.extra = (map['extra'] as Map?)?.cast<String, String>() ?? {};
 
     return result;
   }

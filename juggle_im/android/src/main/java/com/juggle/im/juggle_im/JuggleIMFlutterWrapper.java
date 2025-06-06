@@ -4,11 +4,13 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.juggle.im.JErrorCode;
 import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
 import com.juggle.im.interfaces.IMessageManager;
+import com.juggle.im.internal.ConstInternal;
 import com.juggle.im.internal.logger.JLogConfig;
 import com.juggle.im.internal.logger.JLogLevel;
 import com.juggle.im.model.Conversation;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -68,6 +71,28 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "getConversationInfoListByOption":
                 getConversationInfoListByOption(call.arguments, result);
+                break;
+            case "getConversationInfo":
+                getConversationInfo(call.arguments, result);
+                break;
+            case "deleteConversationInfo":
+                deleteConversationInfo(call.arguments, result);
+                break;
+            case "setDraft":
+                setDraft(call.arguments, result);
+                break;
+            case "createConversationInfo":
+                createConversationInfo(call.arguments, result);
+                break;
+            case "getTotalUnreadCount":
+                int count = getTotalUnreadCount(call.arguments);
+                result.success(count);
+                break;
+            case "clearUnreadCount":
+                clearUnreadCount(call.arguments, result);
+                break;
+            case "setMute":
+                setMute(call.arguments, result);
                 break;
 
             default:
@@ -141,6 +166,7 @@ import io.flutter.plugin.common.MethodChannel;
         List<Map<String, Object>> resultList = new ArrayList<>();
         for (ConversationInfo info : list) {
             Map<String, Object> m = ModelFactory.conversationInfoToMap(info);
+            ModelExtension.extendMapForConversationInfo(m, info);
             resultList.add(m);
         }
         result.success(resultList);
@@ -156,12 +182,139 @@ import io.flutter.plugin.common.MethodChannel;
             if (list != null) {
                 for (ConversationInfo info : list) {
                     Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
+                    ModelExtension.extendMapForConversationInfo(infoMap, info);
                     resultList.add(infoMap);
                 }
             }
         }
         result.success(resultList);
     }
+
+    private void getConversationInfo(Object arg, MethodChannel.Result result) {
+        Map<String, Object> resultMap = new HashMap<>();
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            ConversationInfo info = JIM.getInstance().getConversationManager().getConversationInfo(conversation);
+            resultMap = ModelFactory.conversationInfoToMap(info);
+            ModelExtension.extendMapForConversationInfo(resultMap, info);
+        }
+        result.success(resultMap);
+    }
+
+    private void deleteConversationInfo(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            JIM.getInstance().getConversationManager().deleteConversationInfo(conversation, new IConversationManager.ISimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(JErrorCode.NONE);
+                }
+
+                @Override
+                public void onError(int code) {
+                    result.success(code);
+                }
+            });
+        } else {
+            result.success(JErrorCode.INVALID_PARAM);
+        }
+    }
+
+    private void setDraft(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+            String draft = (String) map.get("draft");
+            JIM.getInstance().getConversationManager().setDraft(conversation, draft);
+        }
+        result.success(null);
+    }
+
+    private void createConversationInfo(Object arg, MethodChannel.Result result) {
+        Map<String, Object> resultMap = new HashMap<>();
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            JIM.getInstance().getConversationManager().createConversationInfo(conversation, new IConversationManager.ICreateConversationInfoCallback() {
+                @Override
+                public void onSuccess(ConversationInfo conversationInfo) {
+                    Map<String, Object> conversationInfoMap = ModelFactory.conversationInfoToMap(conversationInfo);
+                    ModelExtension.extendMapForConversationInfo(conversationInfoMap, conversationInfo);
+                    resultMap.put("conversationInfo", conversationInfoMap);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(int code) {
+                    resultMap.put("errorCode", code);
+                    result.success(resultMap);
+                }
+            });
+        } else {
+            resultMap.put("errorCode", JErrorCode.INVALID_PARAM);
+            result.success(resultMap);
+        }
+    }
+
+    private int getTotalUnreadCount(Object arg) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            List<Integer> conversationTypeList = (List<Integer>) map.get("conversationTypes");
+            if (conversationTypeList != null) {
+                int[] conversationTypes = new int[conversationTypeList.size()];
+                for (int i = 0; i < conversationTypeList.size(); i++) {
+                    conversationTypes[i] = conversationTypeList.get(i);
+                }
+                return JIM.getInstance().getConversationManager().getUnreadCountWithTypes(conversationTypes);
+            }
+        }
+        return JIM.getInstance().getConversationManager().getTotalUnreadCount();
+    }
+
+    private void clearUnreadCount(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            JIM.getInstance().getConversationManager().clearUnreadCount(conversation, new IConversationManager.ISimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(JErrorCode.NONE);
+                }
+
+                @Override
+                public void onError(int i) {
+                    result.success(i);
+                }
+            });
+        } else {
+            result.success(JErrorCode.INVALID_PARAM);
+        }
+    }
+
+    private void setMute(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+            boolean isMute = (boolean) map.get("isMute");
+            JIM.getInstance().getConversationManager().setMute(conversation, isMute, new IConversationManager.ISimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    result.success(JErrorCode.NONE);
+                }
+
+                @Override
+                public void onError(int i) {
+                    result.success(i);
+                }
+            });
+        } else {
+            result.success(JErrorCode.INVALID_PARAM);
+        }
+    }
+
+
 
 
     @Override

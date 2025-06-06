@@ -2,7 +2,6 @@ package com.juggle.im.juggle_im;
 
 import android.text.TextUtils;
 
-import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
 import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.model.Conversation;
@@ -240,7 +239,7 @@ class ModelFactory {
         return map;
     }
 
-    static Conversation conversationFromMap(Map<String, Object> map) {
+    static Conversation conversationFromMap(Map<?, ?> map) {
         Integer valueObj = (Integer) map.get("conversationType");
         int value = valueObj != null ? valueObj : 0;
         Conversation.ConversationType type = Conversation.ConversationType.setValue(value);
@@ -248,18 +247,18 @@ class ModelFactory {
         return new Conversation(type, conversationId);
     }
 
-    static MessageOptions sendMessageOptionFromMap(Map<String, Object> map) {
+    static MessageOptions sendMessageOptionFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
         MessageOptions option = new MessageOptions();
         if (map.containsKey("mentionInfo")) {
-            Map<String, Object> mentionInfoMap = (Map) map.get("mentionInfo");
+            Map<?, ?> mentionInfoMap = (Map<?, ?>) map.get("mentionInfo");
             option.setMentionInfo(messageMentionInfoFromMap(mentionInfoMap));
         }
         option.setReferredMessageId((String) map.get("referredMsgId"));
         if (map.containsKey("pushData")) {
-            option.setPushData(pushDataFromMap((Map<String, Object>) map.get("pushData")));
+            option.setPushData(pushDataFromMap((Map<?, ?>) map.get("pushData")));
         }
         return option;
     }
@@ -281,7 +280,7 @@ class ModelFactory {
         return option;
     }
 
-    static MessageMentionInfo messageMentionInfoFromMap(Map<String, Object> map) {
+    static MessageMentionInfo messageMentionInfoFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
@@ -303,7 +302,7 @@ class ModelFactory {
         return info;
     }
 
-    static UserInfo userInfoFromMap(Map<String, Object> map) {
+    static UserInfo userInfoFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
@@ -315,7 +314,7 @@ class ModelFactory {
         return info;
     }
 
-    static PushData pushDataFromMap(Map<String, Object> map) {
+    static PushData pushDataFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
         }
