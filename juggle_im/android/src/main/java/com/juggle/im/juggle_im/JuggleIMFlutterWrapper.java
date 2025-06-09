@@ -1,12 +1,14 @@
 package com.juggle.im.juggle_im;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
 import com.juggle.im.JErrorCode;
 import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
+import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
 import com.juggle.im.interfaces.IMessageManager;
@@ -17,12 +19,14 @@ import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
+import com.juggle.im.model.GroupInfo;
 import com.juggle.im.model.GroupMessageReadInfo;
 import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
 import com.juggle.im.model.MessageContent;
 import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageReaction;
+import com.juggle.im.model.UserInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,6 +136,39 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "getMessagesByClientMsgNoList":
                 getMessagesByClientMsgNoList(call.arguments, result);
+                break;
+            case "sendReadReceipt":
+                sendReadReceipt(call.arguments, result);
+                break;
+            case "getGroupMessageReadDetail":
+                getGroupMessageReadDetail(call.arguments, result);
+                break;
+            case "getMergedMessageList":
+                getMergedMessageList(call.arguments, result);
+                break;
+            case "getMentionMessages":
+                getMentionMessages(call.arguments, result);
+                break;
+            case "addMessageReaction":
+                addMessageReaction(call.arguments, result);
+                break;
+            case "removeMessageReaction":
+                removeMessageReaction(call.arguments, result);
+                break;
+            case "getMessagesReaction":
+                getMessagesReaction(call.arguments, result);
+                break;
+            case "updateMessage":
+                updateMessage(call.arguments, result);
+                break;
+            case "getUserInfo":
+                getUserInfo(call.arguments, result);
+                break;
+            case "getGroupInfo":
+                getGroupInfo(call.arguments, result);
+                break;
+            case "getGroupMember":
+                getGroupMember(call.arguments, result);
                 break;
 
             default:
@@ -665,16 +702,256 @@ import io.flutter.plugin.common.MethodChannel;
          }
      }
 
+     private void sendReadReceipt(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             List<String> messageIdList = (List<String>) map.get("messageIdList");
+             JIM.getInstance().getMessageManager().sendReadReceipt(conversation, messageIdList, new IMessageManager.ISendReadReceiptCallback() {
+                 @Override
+                 public void onSuccess() {
+                     result.success(JErrorCode.NONE);
+                 }
 
+                 @Override
+                 public void onError(int i) {
+                    result.success(i);
+                 }
+             });
+         }
+     }
 
+     private void getGroupMessageReadDetail(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             String messageId = (String) map.get("messageId");
+             JIM.getInstance().getMessageManager().getGroupMessageReadDetail(conversation, messageId, new IMessageManager.IGetGroupMessageReadDetailCallback() {
+                 @Override
+                 public void onSuccess(List<UserInfo> readMembers, List<UserInfo> unreadMembers) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     List<Map<String, Object>> readMemberMapList = new ArrayList<>();
+                     List<Map<String, Object>> unreadMemberMapList = new ArrayList<>();
+                     for (UserInfo userInfo : readMembers) {
+                         Map<String, Object> readMemberMap = ModelFactory.userInfoToMap(userInfo);
+                         readMemberMapList.add(readMemberMap);
+                     }
+                     for (UserInfo userInfo : unreadMembers) {
+                         Map<String, Object> unreadMemberMap = ModelFactory.userInfoToMap(userInfo);
+                         unreadMemberMapList.add(unreadMemberMap);
+                     }
+                     resultMap.put("errorCode", JErrorCode.NONE);
+                     resultMap.put("readMembers", readMemberMapList);
+                     resultMap.put("unreadMembers", unreadMemberMapList);
+                     result.success(resultMap);
+                 }
 
+                 @Override
+                 public void onError(int i) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", i);
+                    result.success(resultMap);
+                 }
+             });
+         }
+     }
+
+     private void getMergedMessageList(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             String messageId = (String) map.get("messageId");
+             JIM.getInstance().getMessageManager().getMergedMessageList(messageId, new IMessageManager.IGetMessagesCallback() {
+                 @Override
+                 public void onSuccess(List<Message> mergedMessages) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", JErrorCode.NONE);
+                     List<Map<String, Object>> messageMapList = new ArrayList<>();
+                     for (Message message : mergedMessages) {
+                         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                         ModelExtension.extendMapForMessage(messageMap, message);
+                         messageMapList.add(messageMap);
+                     }
+                     resultMap.put("messages", messageMapList);
+                     result.success(resultMap);
+                 }
+
+                 @Override
+                 public void onError(int i) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", i);
+                     result.success(resultMap);
+                 }
+             });
+         }
+     }
+
+     private void getMentionMessages(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             int count = (int) map.get("count");
+             long timestamp = (long) map.get("timestamp");
+             int directionValue = (int) map.get("direction");
+             JIMConst.PullDirection direction = JIMConst.PullDirection.OLDER;
+             if (directionValue == 0) {
+                 direction = JIMConst.PullDirection.NEWER;
+             }
+             JIM.getInstance().getMessageManager().getMentionMessageList(conversation, count, timestamp, direction, new IMessageManager.IGetMessagesWithFinishCallback() {
+                 @Override
+                 public void onSuccess(List<Message> messages, boolean isFinished) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", JErrorCode.NONE);
+                     List<Map<String, Object>> messageMapList = new ArrayList<>();
+                     for (Message message : messages) {
+                         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                         ModelExtension.extendMapForMessage(messageMap, message);
+                         messageMapList.add(messageMap);
+                     }
+                     resultMap.put("messages", messageMapList);
+                     resultMap.put("isFinished", isFinished);
+                     result.success(resultMap);
+                 }
+
+                 @Override
+                 public void onError(int i) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", i);
+                     result.success(resultMap);
+                 }
+             });
+         }
+     }
+
+     private void addMessageReaction(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             String messageId = (String) map.get("messageId");
+             String reactionId = (String) map.get("reactionId");
+             JIM.getInstance().getMessageManager().addMessageReaction(messageId, conversation, reactionId, new IMessageManager.ISimpleCallback() {
+                 @Override
+                 public void onSuccess() {
+                     result.success(JErrorCode.NONE);
+                 }
+
+                 @Override
+                 public void onError(int i) {
+                     result.success(i);
+                 }
+             });
+         }
+     }
+
+     private void removeMessageReaction(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             String messageId = (String) map.get("messageId");
+             String reactionId = (String) map.get("reactionId");
+             JIM.getInstance().getMessageManager().removeMessageReaction(messageId, conversation, reactionId, new IMessageManager.ISimpleCallback() {
+                 @Override
+                 public void onSuccess() {
+                     result.success(JErrorCode.NONE);
+                 }
+
+                 @Override
+                 public void onError(int i) {
+                     result.success(i);
+                 }
+             });
+         }
+     }
+
+     private void getMessagesReaction(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+             List<String> messageIdList = (List<String>) map.get("messageIdList");
+             JIM.getInstance().getMessageManager().getMessagesReaction(messageIdList, conversation, new IMessageManager.IMessageReactionListCallback() {
+                 @Override
+                 public void onSuccess(List<MessageReaction> reactionList) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", JErrorCode.NONE);
+                     List<Map<String, Object>> reactionMapList = new ArrayList<>();
+                     for (MessageReaction reaction : reactionList) {
+                         Map<String, Object> reactionMap = ModelFactory.messageReactionToMap(reaction);
+                         reactionMapList.add(reactionMap);
+                     }
+                     resultMap.put("reactionList", reactionMapList);
+                     result.success(resultMap);
+                 }
+
+                 @Override
+                 public void onError(int i) {
+                     Map<String, Object> resultMap = new HashMap<>();
+                     resultMap.put("errorCode", i);
+                     result.success(resultMap);
+                 }
+             });
+         }
+     }
+
+    private void updateMessage(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+            String contentString = (String) map.get("content");
+            String contentType = (String) map.get("contentType");
+            MessageContent content = ModelFactory.messageContentFromString(contentString, contentType);
+            String messageId = (String) map.get("messageId");
+            JIM.getInstance().getMessageManager().updateMessage(messageId, content, conversation, new IMessageManager.IMessageCallback() {
+                @Override
+                public void onSuccess(Message message) {
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("errorCode", JErrorCode.NONE);
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                    resultMap.put("message", messageMap);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(int i) {
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("errorCode", i);
+                    result.success(resultMap);
+                }
+            });
+        }
+    }
+
+    private void getUserInfo(Object arg, MethodChannel.Result result) {
+        String userId = (String) arg;
+        UserInfo userInfo = JIM.getInstance().getUserInfoManager().getUserInfo(userId);
+        Map<String, Object> map = ModelFactory.userInfoToMap(userInfo);
+        result.success(map);
+    }
+
+    private void getGroupInfo(Object arg, MethodChannel.Result result) {
+        String groupId = (String) arg;
+        GroupInfo groupInfo = JIM.getInstance().getUserInfoManager().getGroupInfo(groupId);
+        Map<String, Object> map = ModelFactory.groupInfoToMap(groupInfo);
+        result.success(map);
+    }
+
+    private void getGroupMember(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String groupId = (String) map.get("groupId");
+            String userId = (String) map.get("userId");
+            GroupMember member = JIM.getInstance().getUserInfoManager().getGroupMember(groupId, userId);
+            Map<String, Object> resultMap = ModelFactory.groupMemberToMap(member);
+            result.success(resultMap);
+        }
+    }
 
     @Override
     public void onStatusChange(JIMConst.ConnectionStatus connectionStatus, int code, String extra) {
         Map<String, Object> map = new HashMap<>();
         map.put("status", connectionStatus.getStatus());
         map.put("code", code);
-        map.put("extra", extra);
+        if (!TextUtils.isEmpty(extra)) {
+            map.put("extra", extra);
+        }
         mChannel.invokeMethod("onConnectionStatusChange", map);
     }
 
@@ -736,47 +1013,89 @@ import io.flutter.plugin.common.MethodChannel;
 
     @Override
     public void onMessageReceive(Message message) {
-
+        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+        ModelExtension.extendMapForMessage(messageMap, message);
+        mChannel.invokeMethod("onMessageReceive", messageMap);
     }
 
     @Override
     public void onMessageRecall(Message message) {
-
+        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+        ModelExtension.extendMapForMessage(messageMap, message);
+        mChannel.invokeMethod("onMessageRecall", messageMap);
     }
 
     @Override
     public void onMessageDelete(Conversation conversation, List<Long> list) {
-
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversation", conversationMap);
+        map.put("clientMsgNoList", list);
+        mChannel.invokeMethod("onMessageDelete", map);
     }
 
     @Override
-    public void onMessageClear(Conversation conversation, long l, String s) {
-
+    public void onMessageClear(Conversation conversation, long timestamp, String senderId) {
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversation", conversationMap);
+        map.put("timestamp", timestamp);
+        if (!TextUtils.isEmpty(senderId)) {
+            map.put("senderId", senderId);
+        }
+        mChannel.invokeMethod("onMessageClear", map);
     }
 
     @Override
     public void onMessageUpdate(Message message) {
-
+        Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+        ModelExtension.extendMapForMessage(messageMap, message);
+        mChannel.invokeMethod("onMessageUpdate", messageMap);
     }
 
     @Override
     public void onMessageReactionAdd(Conversation conversation, MessageReaction messageReaction) {
-
+        Map<String, Object> reactionMap = ModelFactory.messageReactionToMap(messageReaction);
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> map = new HashMap<>();
+        map.put("reaction", reactionMap);
+        map.put("conversation", conversationMap);
+        mChannel.invokeMethod("onMessageReactionAdd", map);
     }
 
     @Override
     public void onMessageReactionRemove(Conversation conversation, MessageReaction messageReaction) {
-
+        Map<String, Object> reactionMap = ModelFactory.messageReactionToMap(messageReaction);
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> map = new HashMap<>();
+        map.put("reaction", reactionMap);
+        map.put("conversation", conversationMap);
+        mChannel.invokeMethod("onMessageReactionRemove", map);
     }
 
     @Override
     public void onMessagesRead(Conversation conversation, List<String> list) {
-
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversation", conversationMap);
+        map.put("messageIdList", list);
+        mChannel.invokeMethod("onMessagesRead", map);
     }
 
     @Override
-    public void onGroupMessagesRead(Conversation conversation, Map<String, GroupMessageReadInfo> map) {
-
+    public void onGroupMessagesRead(Conversation conversation, Map<String, GroupMessageReadInfo> msgs) {
+        Map<String, Object> conversationMap = ModelFactory.conversationToMap(conversation);
+        Map<String, Object> msgMap = new HashMap<>();
+        for (Map.Entry<String, GroupMessageReadInfo> entry : msgs.entrySet()) {
+            String messageId = entry.getKey();
+            GroupMessageReadInfo info = entry.getValue();
+            Map<String, Object> infoMap = ModelFactory.groupMessageReadInfoToMap(info);
+            msgMap.put(messageId, infoMap);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversation", conversationMap);
+        map.put("messages", msgMap);
+        mChannel.invokeMethod("onGroupMessagesRead", map);
     }
 
     private static class SingletonHolder {

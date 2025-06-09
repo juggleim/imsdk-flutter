@@ -745,7 +745,10 @@
 
 #pragma mark - JConnectionDelegate
 - (void)connectionStatusDidChange:(JConnectionStatus)status errorCode:(JErrorCode)code extra:(NSString *)extra {
-    NSDictionary *dic = @{@"status":@(status), @"code":@(code), @"extra":extra};
+    NSMutableDictionary *dic = [@{@"status":@(status), @"code":@(code)} mutableCopy];
+    if (extra.length > 0) {
+        [dic setObject:extra forKey:@"extra"];
+    }
     [self.channel invokeMethod:@"onConnectionStatusChange" arguments:dic];
 }
 
@@ -858,7 +861,7 @@
         NSDictionary *infoDic = [JModelFactory groupMessageReadInfoToDic:info];
         [msgDic setObject:infoDic forKey:messageId];
     }];
-    NSDictionary *dic = @{@"conversation": conversation, @"messages": msgDic};
+    NSDictionary *dic = @{@"conversation": conversationDic, @"messages": msgDic};
     [self.channel invokeMethod:@"onGroupMessagesRead" arguments:dic];
 }
 

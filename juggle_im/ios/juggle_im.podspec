@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'juggle_im'
-  s.version          = '0.0.1'
+  s.version          = '0.0.4'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC
 A new Flutter plugin project.
@@ -17,6 +17,7 @@ A new Flutter plugin project.
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
   s.platform = :ios, '12.0'
+  s.static_framework = false
 
   s.dependency 'JuggleIM', '1.8.12'
 
