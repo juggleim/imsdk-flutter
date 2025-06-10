@@ -87,7 +87,7 @@ class JuggleIm {
   }
 
   Future<List<ConversationInfo>> getConversationInfoListByOption(GetConversationInfoOption option) async {
-    Map map = {'count': option.count??0, 'timestamp': option.timestamp??0, 'direction': option.direction??0};
+    Map map = {'count': option.count??0, 'timestamp': option.timestamp??0, 'direction': option.direction??1};
     if (option.conversationTypes != null) {
       map['conversationTypes'] = option.conversationTypes;
     }
