@@ -7,7 +7,16 @@ class SendMessageOption {
   PushData? pushData;
 
   Map toMap() {
-    Map map = {'referredMessageId': referredMessageId, 'mentionInfo': mentionInfo?.toMap(), 'pushData': pushData?.toMap()};
+    Map map = {};
+    if (referredMessageId != null) {
+      map['referredMessageId'] = referredMessageId;
+    }
+    if (mentionInfo != null) {
+      map['mentionInfo'] = mentionInfo!.toMap();
+    }
+    if (pushData != null) {
+      map['pushData'] = pushData!.toMap();
+    }
     return map;
   }
 }
