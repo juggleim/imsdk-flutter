@@ -19,7 +19,7 @@ class RecallInfoMessage extends MessageContent {
   }
 
   @override
-  void decode(String string) {
+  void decode(String type, String string) {
     Map map = json.decode(string);
     exts = map['exts'];
   }

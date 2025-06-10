@@ -13,6 +13,7 @@ import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/user_info.dart';
+import 'package:juggle_im_example/group_notify_message.dart';
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +51,7 @@ class _MyAppState extends State<MyApp> {
       logConfig.consoleLevel = 6;
       config.logConfig = logConfig;
       await _juggleImPlugin.init('nsw3sue72begyv7y', config);
+      _juggleImPlugin.registerMessageType('jgd:grpntf', () => GroupNotifyMessage());
       await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {

@@ -15,7 +15,6 @@ import 'package:juggle_im/model/group_message_read_info.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/media_message_content.dart';
 import 'package:juggle_im/model/message.dart';
-import 'package:juggle_im/model/message/custom_message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/recall_info_message.dart';
@@ -190,8 +189,8 @@ class JuggleIm {
   }
 
   //message
-  void registerMessageType(MessageFactory factory) {
-    ContentTypeCenter.registerMessageType(factory);
+  void registerMessageType(String contentType, MessageFactory factory) {
+    ContentTypeCenter.registerMessageType(contentType, factory);
   }
 
   Future<Message> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
@@ -430,7 +429,7 @@ class JuggleIm {
         Map map = call.arguments;
         int status = map["status"];
         int code = map["code"];
-        String extra = map["extra"];
+        String extra = map["extra"] ?? '';
         if (onConnectionStatusChange != null) {
           onConnectionStatusChange!(status, code, extra);
         }
@@ -584,13 +583,12 @@ class JuggleIm {
   }
 
   void _registerMessages() {
-    registerMessageType(() => TextMessage());
-    registerMessageType(() => ImageMessage());
-    registerMessageType(() => FileMessage());
-    registerMessageType(() => RecallInfoMessage());
-    registerMessageType(() => VideoMessage());
-    registerMessageType(() => VoiceMessage());
-    registerMessageType(() => CustomMessage());
+    registerMessageType('jg:text', () => TextMessage());
+    registerMessageType('jg:img', () => ImageMessage());
+    registerMessageType('jg:file', () => FileMessage());
+    registerMessageType('jg:recallinfo', () => RecallInfoMessage());
+    registerMessageType('jg:video', () => VideoMessage());
+    registerMessageType('jg:voice', () => VoiceMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;

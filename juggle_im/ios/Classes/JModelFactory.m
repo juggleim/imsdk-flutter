@@ -290,6 +290,8 @@
        content = [self videoMessageFromDic:dic];
    } else if ([contentType isEqualToString:@"jg:voice"]) {
        content = [self voiceMessageFromDic:dic];
+   } else {
+       content = [self unknownMessageFromDic:dic type:contentType];
    }
    return content;
 }
@@ -426,6 +428,16 @@
         voice.duration = [dic[@"duration"] longValue];
     }
     return voice;
+}
+
++ (JUnknownMessage *)unknownMessageFromDic:(NSDictionary *)dic
+                                      type:(NSString *)contentType {
+    JUnknownMessage *unknown = [JUnknownMessage new];
+    if (dic[@"content"] && ![dic[@"content"] isKindOfClass:[NSNull class]]) {
+        unknown.content = dic[@"content"];
+    }
+    unknown.messageType = contentType;
+    return unknown;
 }
 
 @end
