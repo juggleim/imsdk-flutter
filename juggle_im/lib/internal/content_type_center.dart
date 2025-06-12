@@ -6,8 +6,9 @@ class ContentTypeCenter {
   
   static final Map<String, Function> _contentTypeMap = {};
 
-  static registerMessageType(String contentType, MessageFactory factory) {
-    _contentTypeMap[contentType] = factory;
+  static registerMessageType(MessageFactory factory) {
+    MessageContent content = factory();
+    _contentTypeMap[content.getContentType()] = factory;
   }
 
   static MessageContent? getContent(String? type, String contentString) {
@@ -17,7 +18,7 @@ class ContentTypeCenter {
     final factory = _contentTypeMap[type] as MessageFactory?;
     if (factory != null) {
       MessageContent content = factory();
-      content.decode(type, contentString);
+      content.decode(contentString);
       return content;
     }
     return null;

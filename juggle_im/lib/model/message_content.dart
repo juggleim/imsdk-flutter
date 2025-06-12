@@ -9,7 +9,7 @@ abstract class MessageContent {
 
   String encode();
 
-  void decode(String type, String content);
+  void decode(String content);
 
   String getSearchContent() {
     return '';

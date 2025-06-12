@@ -25,7 +25,7 @@ class VideoMessage extends MediaMessageContent {
   }
 
   @override
-  void decode(String type, String string) {
+  void decode(String string) {
     Map map = json.decode(string);
     url = map['url'] ?? '';
     snapshotLocalPath = map['snapshotLocalPath'] ?? '';

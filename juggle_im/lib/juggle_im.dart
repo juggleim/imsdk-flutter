@@ -189,8 +189,8 @@ class JuggleIm {
   }
 
   //message
-  void registerMessageType(String contentType, MessageFactory factory) {
-    ContentTypeCenter.registerMessageType(contentType, factory);
+  void registerMessageType(MessageFactory factory) {
+    ContentTypeCenter.registerMessageType(factory);
   }
 
   Future<Message> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
@@ -569,7 +569,7 @@ class JuggleIm {
       case 'onGroupMessagesRead':
         Map map = call.arguments;
         Conversation conversation = Conversation.fromMap(map['conversation']);
-        Map<String, Map> messagesMap = map['messages'];
+        Map messagesMap = map['messages'];
         Map<String, GroupMessageReadInfo> messages = {};
         messagesMap.forEach((messageId, infoMap) {
           messages[messageId] = GroupMessageReadInfo.fromMap(infoMap);
@@ -583,12 +583,12 @@ class JuggleIm {
   }
 
   void _registerMessages() {
-    registerMessageType('jg:text', () => TextMessage());
-    registerMessageType('jg:img', () => ImageMessage());
-    registerMessageType('jg:file', () => FileMessage());
-    registerMessageType('jg:recallinfo', () => RecallInfoMessage());
-    registerMessageType('jg:video', () => VideoMessage());
-    registerMessageType('jg:voice', () => VoiceMessage());
+    registerMessageType(() => TextMessage());
+    registerMessageType(() => ImageMessage());
+    registerMessageType(() => FileMessage());
+    registerMessageType(() => RecallInfoMessage());
+    registerMessageType(() => VideoMessage());
+    registerMessageType(() => VoiceMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;

@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       logConfig.consoleLevel = 6;
       config.logConfig = logConfig;
       await _juggleImPlugin.init('nsw3sue72begyv7y', config);
-      _juggleImPlugin.registerMessageType('jgd:grpntf', () => GroupNotifyMessage());
+      _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
       await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {

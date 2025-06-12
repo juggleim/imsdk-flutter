@@ -4,9 +4,15 @@ import 'package:juggle_im/model/message_content.dart';
 
 class GroupNotifyMessage extends MessageContent {
   String content = '';
-  String messageType = '';
+  // String messageType = '';
 
   GroupNotifyMessage();
+
+  @override
+  String getContentType() {
+    return "jgd:grpntf";
+  }
+  
 
   @override
   String encode() {
@@ -14,8 +20,8 @@ class GroupNotifyMessage extends MessageContent {
   }
 
   @override
-  void decode(String type, String string) {
+  void decode(String string) {
     content = string;
-    messageType = type;
+    // messageType = type;
   }
 }

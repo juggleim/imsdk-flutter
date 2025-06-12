@@ -23,7 +23,7 @@ class TextMessage extends MessageContent {
   }
 
   @override
-  void decode(String type, String string) {
+  void decode(String string) {
     Map map = json.decode(string);
     content = map["content"] ?? '';
     extra = map["extra"] ?? '';
