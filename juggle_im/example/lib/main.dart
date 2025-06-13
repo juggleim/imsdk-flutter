@@ -105,6 +105,7 @@ class _MyAppState extends State<MyApp> {
 
 
 
+          Conversation c2 = Conversation(1, 'YvoGswbXyqU');
           TextMessage textMessage = TextMessage.content('flutter text Android');
           callback(message, errorCode) {
               if (errorCode == 0) {
@@ -114,7 +115,7 @@ class _MyAppState extends State<MyApp> {
               }
           }
 
-          Message? message = await _juggleImPlugin.sendMessage(textMessage, c1, callback);
+          Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
           print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
 
 
@@ -143,6 +144,12 @@ class _MyAppState extends State<MyApp> {
       // _juggleImPlugin.onMessageReceive = (message) {
       //   print('onMessageReceive');
       // };
+      _juggleImPlugin.onMessagesRead = (conversation, list) {
+        print('onMessagesRead, count is ' + list.length.toString());
+      };
+      _juggleImPlugin.onMessageDelete = (conversation, list) {
+        print('onMessageDelete, count is ' + list.length.toString());
+      };
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }

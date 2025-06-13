@@ -525,8 +525,10 @@ class JuggleIm {
       case 'onMessageDelete':
         Map map = call.arguments;
         Conversation conversation = Conversation.fromMap(map['conversation']);
+        List<Object?> sourceList = map['clientMsgNoList'];
+        List<int> clientMsgNoList = sourceList.whereType<int>().toList();
         if (onMessageDelete != null) {
-          onMessageDelete!(conversation, map['clientMsgNoList']);
+          onMessageDelete!(conversation, clientMsgNoList);
         }
 
       case 'onMessageClear':
@@ -562,8 +564,10 @@ class JuggleIm {
       case 'onMessagesRead':
         Map map = call.arguments;
         Conversation conversation = Conversation.fromMap(map['conversation']);
+        List<Object?> sourceList = map['messageIdList'];
+        List<String> messageIdList = sourceList.map((item) => item.toString()).toList();
         if (onMessagesRead != null) {
-          onMessagesRead!(conversation, map['messageIdList']);
+          onMessagesRead!(conversation, messageIdList);
         }
 
       case 'onGroupMessagesRead':
