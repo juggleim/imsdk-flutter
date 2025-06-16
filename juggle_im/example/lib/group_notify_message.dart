@@ -4,24 +4,28 @@ import 'package:juggle_im/model/message_content.dart';
 
 class GroupNotifyMessage extends MessageContent {
   String content = '';
+  String aaa = '';
   // String messageType = '';
 
   GroupNotifyMessage();
 
   @override
   String getContentType() {
-    return "jgd:grpntf";
+    return "jgd:grpntf2";
   }
   
 
   @override
   String encode() {
-    return content;
+    Map map = {"content": content, "aaa": aaa};
+    return json.encode(map);
   }
 
   @override
   void decode(String string) {
-    content = string;
+    Map map = json.decode(string);
+    content = map['content'] ?? '';
+    aaa = map['aaa'] ?? '';
     // messageType = type;
   }
 }

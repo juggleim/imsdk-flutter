@@ -291,7 +291,7 @@
    } else if ([contentType isEqualToString:@"jg:voice"]) {
        content = [self voiceMessageFromDic:dic];
    } else {
-       content = [self unknownMessageFromDic:dic type:contentType];
+       content = [self unknownMessageFromString:string type:contentType];
    }
    return content;
 }
@@ -430,12 +430,10 @@
     return voice;
 }
 
-+ (JUnknownMessage *)unknownMessageFromDic:(NSDictionary *)dic
-                                      type:(NSString *)contentType {
++ (JUnknownMessage *)unknownMessageFromString:(NSString *)string
+                                         type:(NSString *)contentType {
     JUnknownMessage *unknown = [JUnknownMessage new];
-    if (dic[@"content"] && ![dic[@"content"] isKindOfClass:[NSNull class]]) {
-        unknown.content = dic[@"content"];
-    }
+    unknown.content = string;
     unknown.messageType = contentType;
     return unknown;
 }

@@ -24,6 +24,7 @@ import com.juggle.im.model.messages.FileMessage;
 import com.juggle.im.model.messages.ImageMessage;
 import com.juggle.im.model.messages.RecallInfoMessage;
 import com.juggle.im.model.messages.TextMessage;
+import com.juggle.im.model.messages.UnknownMessage;
 import com.juggle.im.model.messages.VideoMessage;
 import com.juggle.im.model.messages.VoiceMessage;
 
@@ -362,7 +363,10 @@ class ModelFactory {
                 content = voiceMessage;
                 break;
             default:
-                content = null;
+                UnknownMessage unknownMessage = new UnknownMessage();
+                unknownMessage.setContent(contentString);
+                unknownMessage.setMessageType(contentType);
+                content = unknownMessage;
                 break;
         }
         return content;

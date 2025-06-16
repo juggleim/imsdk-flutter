@@ -107,6 +107,9 @@ class _MyAppState extends State<MyApp> {
 
           Conversation c2 = Conversation(1, 'YvoGswbXyqU');
           TextMessage textMessage = TextMessage.content('flutter text Android');
+          GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
+          groupNotifyMessage.content = 'This is content';
+          groupNotifyMessage.aaa = 'This is aaa';
           callback(message, errorCode) {
               if (errorCode == 0) {
                 print("sendMessage success, messageId is " + message.messageId!);
@@ -115,7 +118,7 @@ class _MyAppState extends State<MyApp> {
               }
           }
 
-          Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
+          Message? message = await _juggleImPlugin.sendMessage(groupNotifyMessage, c2, callback);
           print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
 
 
