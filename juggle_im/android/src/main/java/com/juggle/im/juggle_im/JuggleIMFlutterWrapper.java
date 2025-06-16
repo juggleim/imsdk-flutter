@@ -688,11 +688,11 @@ import io.flutter.plugin.common.MethodChannel;
      private void getMessagesByClientMsgNoList(Object arg, MethodChannel.Result result) {
          if (arg instanceof Map<?, ?>) {
              Map<?, ?> map = (Map<?, ?>) arg;
-             List<Long> clientMsgNoList = (List<Long>) map.get("clientMsgNoList");
+             List<Integer> clientMsgNoList = (List<Integer>) map.get("clientMsgNoList");
              long[] clientMsgNos = new long[10000];
              if (clientMsgNoList != null && !clientMsgNoList.isEmpty()) {
                  for (int i = 0; i < clientMsgNoList.size(); i++) {
-                     clientMsgNos[i] = clientMsgNoList.get(i);
+                     clientMsgNos[i] = clientMsgNoList.get(i).longValue();
                  }
              }
              List<Message> messageList = JIM.getInstance().getMessageManager().getMessagesByClientMsgNos(clientMsgNos);
@@ -928,9 +928,10 @@ import io.flutter.plugin.common.MethodChannel;
     private void setMessageLocalAttribute(Object arg, MethodChannel.Result result) {
         if (arg instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) arg;
-            long clientMsgNo = (long) map.get("clientMsgNo");
+            Integer clientMsgNo = (Integer) map.get("clientMsgNo");
             String attribute = (String) map.get("attribute");
-            JIM.getInstance().getMessageManager().setLocalAttribute(clientMsgNo, attribute);
+            assert clientMsgNo != null;
+            JIM.getInstance().getMessageManager().setLocalAttribute(clientMsgNo.longValue(), attribute);
             result.success(null);
         }
     }
