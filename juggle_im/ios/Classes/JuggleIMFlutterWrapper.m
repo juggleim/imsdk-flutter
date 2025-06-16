@@ -104,6 +104,8 @@
         [self getMessagesReaction:call.arguments result:result];
     } else if ([@"updateMessage" isEqualToString:call.method]) {
         [self updateMessage:call.arguments result:result];
+    } else if ([@"setMessageLocalAttribute" isEqualToString:call.method]) {
+        [self setMessageLocalAttribute:call.arguments result:result];
     } else if ([@"getUserInfo" isEqualToString:call.method]) {
         [self getUserInfo:call.arguments result:result];
     } else if ([@"getGroupInfo" isEqualToString:call.method]) {
@@ -717,6 +719,18 @@
     }
 }
 
+- (void)setMessageLocalAttribute:(id)arg
+                          result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        int clientMsgNo = [d[@"clientMsgNo"] intValue];
+        NSString *attribute = d[@"attribute"];
+        [JIM.shared.messageManager setLocalAttribute:attribute forClientMsgNo:clientMsgNo];
+        result(nil);
+    }
+}
+
+#pragma mark - user
 - (void)getUserInfo:(id)arg
              result:(FlutterResult)result {
     NSString *userId = arg;

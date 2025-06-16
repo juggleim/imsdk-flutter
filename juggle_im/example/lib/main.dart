@@ -120,6 +120,9 @@ class _MyAppState extends State<MyApp> {
 
           Message? message = await _juggleImPlugin.sendMessage(groupNotifyMessage, c2, callback);
           print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
+          await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
+          List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
+          
 
 
           

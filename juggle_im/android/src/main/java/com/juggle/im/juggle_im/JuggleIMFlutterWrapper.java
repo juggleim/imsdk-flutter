@@ -161,6 +161,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "updateMessage":
                 updateMessage(call.arguments, result);
                 break;
+            case "setMessageLocalAttribute":
+                setMessageLocalAttribute(call.arguments, result);
+                break;
             case "getUserInfo":
                 getUserInfo(call.arguments, result);
                 break;
@@ -916,6 +919,16 @@ import io.flutter.plugin.common.MethodChannel;
                     result.success(resultMap);
                 }
             });
+        }
+    }
+
+    private void setMessageLocalAttribute(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            long clientMsgNo = (long) map.get("clientMsgNo");
+            String attribute = (String) map.get("attribute");
+            JIM.getInstance().getMessageManager().setLocalAttribute(clientMsgNo, attribute);
+            result.success(null);
         }
     }
 

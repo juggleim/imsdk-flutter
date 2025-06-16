@@ -402,6 +402,11 @@ class JuggleIm {
     return result;
   }
 
+  Future<void> setMessageLocalAttribute(int clientMsgNo, String attribute) async {
+    Map map = {'clientMsgNo': clientMsgNo, 'attribute': attribute};
+    await _methodChannel.invokeMethod('setMessageLocalAttribute', map);
+  }
+
   //userInfo
   Future<UserInfo> getUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
