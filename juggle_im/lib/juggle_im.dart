@@ -318,16 +318,12 @@ class JuggleIm {
       List<UserInfo> readMembers = [];
       List<UserInfo> unreadMembers = [];
       for (Map readMemberMap in readMembersMapList) {
-        UserInfo? userInfo = UserInfo.fromMap(readMemberMap);
-        if (userInfo != null) {
-          readMembers.add(userInfo);
-        }
+        UserInfo userInfo = UserInfo.fromMap(readMemberMap);
+        readMembers.add(userInfo);
       }
       for (Map unreadMemberMap in unreadMembersMapList) {
-        UserInfo? userInfo = UserInfo.fromMap(unreadMemberMap);
-        if (userInfo != null) {
-          unreadMembers.add(userInfo);
-        }
+        UserInfo userInfo = UserInfo.fromMap(unreadMemberMap);
+        unreadMembers.add(userInfo);
       }
       detail.readMembers = readMembers;
       detail.unreadMembers = unreadMembers;
@@ -418,20 +414,29 @@ class JuggleIm {
   //userInfo
   Future<UserInfo?> getUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
-    UserInfo? userInfo = UserInfo.fromMap(resultMap);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    UserInfo userInfo = UserInfo.fromMap(resultMap);
     return userInfo;
   }
 
   Future<GroupInfo?> getGroupInfo(String groupId) async {
     var resultMap = await _methodChannel.invokeMethod('getGroupInfo', groupId);
-    GroupInfo? groupInfo = GroupInfo.fromMap(resultMap);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    GroupInfo groupInfo = GroupInfo.fromMap(resultMap);
     return groupInfo;
   }
 
   Future<GroupMember?> getGroupMember(String groupId, String userId) async {
     var map = {'groupId': groupId, 'userId': userId};
     var resultMap = await _methodChannel.invokeMethod('getGroupMember', map);
-    GroupMember? member = GroupMember.fromMap(resultMap);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    GroupMember member = GroupMember.fromMap(resultMap);
     return member;
   }
 

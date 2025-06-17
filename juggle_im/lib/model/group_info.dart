@@ -4,10 +4,7 @@ class GroupInfo {
   String portrait = '';
   Map<String, String>? extraMap;
 
-  static GroupInfo? fromMap(Map map) {
-    if (map.isEmpty) {
-      return null;
-    }
+  static GroupInfo fromMap(Map map) {
     GroupInfo info = GroupInfo();
     info.groupId = map['groupId'] ?? '';
     info.groupName = map['groupName'] ?? '';
