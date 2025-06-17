@@ -42,6 +42,9 @@
 
 + (NSDictionary *)conversationInfoToDic:(JConversationInfo *)conversationInfo {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!conversationInfo) {
+        return dic;
+    }
     [dic setObject:[self conversationToDic:conversationInfo.conversation] forKey:@"conversation"];
     [dic setObject:@(conversationInfo.unreadCount) forKey:@"unreadCount"];
     [dic setObject:@(conversationInfo.hasUnread) forKey:@"hasUnread"];
@@ -276,157 +279,74 @@
 + (JMessageContent *)messageContentFromString:(NSString *)string
                                          type:(nonnull NSString *)contentType {
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-   JMessageContent *content;
-   if ([contentType isEqualToString:@"jg:text"]) {
-       content = [self textMessageFromDic:dic];
-   } else if ([contentType isEqualToString:@"jg:file"]) {
-       content = [self fileMessageFromDic:dic];
-   } else if ([contentType isEqualToString:@"jg:img"]) {
-       content = [self imageMessageFromDic:dic];
-   } else if ([contentType isEqualToString:@"jg:recallinfo"]) {
-       content = [self recallInfoMessageFromDic:dic];
-   } else if ([contentType isEqualToString:@"jg:video"]) {
-       content = [self videoMessageFromDic:dic];
-   } else if ([contentType isEqualToString:@"jg:voice"]) {
-       content = [self voiceMessageFromDic:dic];
-   } else {
+    JMessageContent *content;
+    if ([contentType isEqualToString:@"jg:text"]) {
+       content = [self textMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:file"]) {
+       content = [self fileMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:img"]) {
+       content = [self imageMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:recallinfo"]) {
+       content = [self recallInfoMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:video"]) {
+       content = [self videoMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:voice"]) {
+       content = [self voiceMessageFromData:data];
+    } else {
        content = [self unknownMessageFromString:string type:contentType];
-   }
-   return content;
+    }
+    return content;
 }
 
 + (JMediaMessageContent *)mediaMessageContentFromString:(NSString *)string
                                                    type:(nonnull NSString *)contentType {
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
     JMediaMessageContent *content;
     if ([contentType isEqualToString:@"jg:img"]) {
-        content = [JModelFactory imageMessageFromDic:dic];
+        content = [JModelFactory imageMessageFromData:data];
     } else if ([contentType isEqualToString:@"jg:video"]) {
-        content = [self videoMessageFromDic:dic];
+        content = [self videoMessageFromData:data];
     } else if ([contentType isEqualToString:@"jg:voice"]) {
-        content = [self voiceMessageFromDic:dic];
+        content = [self voiceMessageFromData:data];
     } else if ([contentType isEqualToString:@"jg:file"]) {
-        content = [self fileMessageFromDic:dic];
+        content = [self fileMessageFromData:data];
     }
     return content;
 }
 
-+ (JTextMessage *)textMessageFromDic:(NSDictionary *)dic {
++ (JTextMessage *)textMessageFromData:(NSData *)data {
     JTextMessage *text = [JTextMessage new];
-    text.content = dic[@"content"];
-    text.extra = dic[@"extra"];
+    [text decode:data];
     return text;
 }
 
-+ (JImageMessage *)imageMessageFromDic:(NSDictionary *)dic {
++ (JImageMessage *)imageMessageFromData:(NSData *)data {
     JImageMessage *image = [JImageMessage new];
-    if (dic[@"url"] && ![dic[@"url"] isKindOfClass:[NSNull class]]) {
-        image.url = dic[@"url"];
-    }
-    if (dic[@"thumbnail"] && ![dic[@"thumbnail"] isKindOfClass:[NSNull class]]) {
-        image.thumbnailUrl = dic[@"thumbnail"];
-    }
-    if (dic[@"local"] && ![dic[@"local"] isKindOfClass:[NSNull class]]) {
-        image.localPath = dic[@"local"];
-    }
-    if (dic[@"width"] && ![dic[@"width"] isKindOfClass:[NSNull class]]) {
-        image.width = [dic[@"width"] intValue];
-    }
-    if (dic[@"height"] && ![dic[@"height"] isKindOfClass:[NSNull class]]) {
-        image.height = [dic[@"height"] intValue];
-    }
-    if (dic[@"size"] && ![dic[@"size"] isKindOfClass:[NSNull class]]) {
-        image.size = [dic[@"size"] longLongValue];
-    }
-    if (dic[@"extra"] && ![dic[@"extra"] isKindOfClass:[NSNull class]]) {
-        image.extra = dic[@"extra"];
-    }
-    if (dic[@"thumbnailLocalPath"] && ![dic[@"thumbnailLocalPath"] isKindOfClass:[NSNull class]]) {
-        image.thumbnailLocalPath = dic[@"thumbnailLocalPath"];
-    }
+    [image decode:data];
     return image;
 }
 
-+ (JFileMessage *)fileMessageFromDic:(NSDictionary *)dic {
++ (JFileMessage *)fileMessageFromData:(NSData *)data {
     JFileMessage *file = [JFileMessage new];
-    if (dic[@"url"] && ![dic[@"url"] isKindOfClass:[NSNull class]]) {
-        file.url = dic[@"url"];
-    }
-    if (dic[@"size"] && ![dic[@"size"] isKindOfClass:[NSNull class]]) {
-        file.size = [dic[@"size"] longLongValue];
-    }
-    if (dic[@"local"] && ![dic[@"local"] isKindOfClass:[NSNull class]]) {
-        file.localPath = dic[@"local"];
-    }
-    if (dic[@"name"] && ![dic[@"name"] isKindOfClass:[NSNull class]]) {
-        file.name = dic[@"name"];
-    }
-    if (dic[@"type"] && ![dic[@"type"] isKindOfClass:[NSNull class]]) {
-        file.type = dic[@"type"];
-    }
-    if (dic[@"extra"] && ![dic[@"extra"] isKindOfClass:[NSNull class]]) {
-        file.extra = dic[@"extra"];
-    }
-    
+    [file decode:data];
     return file;
 }
 
-+ (JRecallInfoMessage *)recallInfoMessageFromDic:(NSDictionary *)dic {
++ (JRecallInfoMessage *)recallInfoMessageFromData:(NSData *)data {
     JRecallInfoMessage *recallInfo = [JRecallInfoMessage new];
-    if (dic[@"exts"] && ![dic[@"exts"] isKindOfClass:[NSNull class]]) {
-        recallInfo.exts = dic[@"exts"];
-    }
+    [recallInfo decode:data];
     return recallInfo;
 }
 
-+ (JVideoMessage *)videoMessageFromDic:(NSDictionary *)dic {
++ (JVideoMessage *)videoMessageFromData:(NSData *)data {
     JVideoMessage *video = [JVideoMessage new];
-    if (dic[@"url"] && ![dic[@"url"] isKindOfClass:[NSNull class]]) {
-        video.url = dic[@"url"];
-    }
-    if (dic[@"snapshotLocalPath"] && ![dic[@"snapshotLocalPath"] isKindOfClass:[NSNull class]]) {
-        video.snapshotLocalPath = dic[@"snapshotLocalPath"];
-    }
-    if (dic[@"local"] && ![dic[@"local"] isKindOfClass:[NSNull class]]) {
-        video.localPath = dic[@"local"];
-    }
-    if (dic[@"width"] && ![dic[@"width"] isKindOfClass:[NSNull class]]) {
-        video.width = [dic[@"width"] intValue];
-    }
-    if (dic[@"height"] && ![dic[@"height"] isKindOfClass:[NSNull class]]) {
-        video.height = [dic[@"height"] intValue];
-    }
-    if (dic[@"size"] && ![dic[@"size"] isKindOfClass:[NSNull class]]) {
-        video.size = [dic[@"size"] longLongValue];
-    }
-    if (dic[@"extra"] && ![dic[@"extra"] isKindOfClass:[NSNull class]]) {
-        video.extra = dic[@"extra"];
-    }
-    if (dic[@"poster"] && ![dic[@"poster"] isKindOfClass:[NSNull class]]) {
-        video.snapshotUrl = dic[@"poster"];
-    }
-    if (dic[@"duration"] && ![dic[@"duration"] isKindOfClass:[NSNull class]]) {
-        video.duration = [dic[@"duration"] intValue];
-    }
+    [video decode:data];
     return video;
 }
 
-+ (JVoiceMessage *)voiceMessageFromDic:(NSDictionary *)dic {
++ (JVoiceMessage *)voiceMessageFromData:(NSData *)data {
     JVoiceMessage *voice = [JVoiceMessage new];
-    if (dic[@"url"] && ![dic[@"url"] isKindOfClass:[NSNull class]]) {
-        voice.url = dic[@"url"];
-    }
-    if (dic[@"local"] && ![dic[@"local"] isKindOfClass:[NSNull class]]) {
-        voice.localPath = dic[@"local"];
-    }
-    if (dic[@"extra"] && ![dic[@"extra"] isKindOfClass:[NSNull class]]) {
-        voice.extra = dic[@"extra"];
-    }
-    if (dic[@"duration"] && ![dic[@"duration"] isKindOfClass:[NSNull class]]) {
-        voice.duration = [dic[@"duration"] longValue];
-    }
+    [voice decode:data];
     return voice;
 }
 

@@ -13,6 +13,9 @@ import java.util.Map;
 
 public class ModelExtension {
     static void extendMapForConversationInfo(Map<String, Object> map, ConversationInfo info) {
+        if (info == null) {
+            return;
+        }
         if (info.getConversation().getConversationType() == Conversation.ConversationType.PRIVATE) {
             UserInfo userInfo = JIM.getInstance().getUserInfoManager().getUserInfo(info.getConversation().getConversationId());
             if (userInfo != null && !TextUtils.isEmpty(userInfo.getUserName())) {

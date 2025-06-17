@@ -79,8 +79,10 @@ class JuggleIm {
     List list = await _methodChannel.invokeMethod("getConversationInfoList");
     List<ConversationInfo> result = [];
     for (Map map in list) {
-      ConversationInfo c = ConversationInfo.fromMap(map);
-      result.add(c);
+      ConversationInfo? c = ConversationInfo.fromMap(map);
+      if (c != null) {
+        result.add(c);
+      }
     }
     return result;
   }
@@ -96,16 +98,18 @@ class JuggleIm {
     List list = await _methodChannel.invokeMethod('getConversationInfoListByOption', map);
     List<ConversationInfo> result = [];
     for (Map map in list) {
-      ConversationInfo c = ConversationInfo.fromMap(map);
-      result.add(c);
+      ConversationInfo? c = ConversationInfo.fromMap(map);
+      if (c != null) {
+        result.add(c);
+      }
     }
     return result;
   }
 
-  Future<ConversationInfo> getConversationInfo(Conversation conversation) async {
+  Future<ConversationInfo?> getConversationInfo(Conversation conversation) async {
     Map map = conversation.toMap();
     Map result = await _methodChannel.invokeMethod('getConversationInfo', map);
-    ConversationInfo info = ConversationInfo.fromMap(result);
+    ConversationInfo? info = ConversationInfo.fromMap(result);
     return info;
   }
 
@@ -314,12 +318,16 @@ class JuggleIm {
       List<UserInfo> readMembers = [];
       List<UserInfo> unreadMembers = [];
       for (Map readMemberMap in readMembersMapList) {
-        UserInfo userInfo = UserInfo.fromMap(readMemberMap);
-        readMembers.add(userInfo);
+        UserInfo? userInfo = UserInfo.fromMap(readMemberMap);
+        if (userInfo != null) {
+          readMembers.add(userInfo);
+        }
       }
       for (Map unreadMemberMap in unreadMembersMapList) {
-        UserInfo userInfo = UserInfo.fromMap(unreadMemberMap);
-        unreadMembers.add(userInfo);
+        UserInfo? userInfo = UserInfo.fromMap(unreadMemberMap);
+        if (userInfo != null) {
+          unreadMembers.add(userInfo);
+        }
       }
       detail.readMembers = readMembers;
       detail.unreadMembers = unreadMembers;
@@ -408,22 +416,22 @@ class JuggleIm {
   }
 
   //userInfo
-  Future<UserInfo> getUserInfo(String userId) async {
+  Future<UserInfo?> getUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
-    UserInfo userInfo = UserInfo.fromMap(resultMap);
+    UserInfo? userInfo = UserInfo.fromMap(resultMap);
     return userInfo;
   }
 
-  Future<GroupInfo> getGroupInfo(String groupId) async {
+  Future<GroupInfo?> getGroupInfo(String groupId) async {
     var resultMap = await _methodChannel.invokeMethod('getGroupInfo', groupId);
-    GroupInfo groupInfo = GroupInfo.fromMap(resultMap);
+    GroupInfo? groupInfo = GroupInfo.fromMap(resultMap);
     return groupInfo;
   }
 
-  Future<GroupMember> getGroupMember(String groupId, String userId) async {
+  Future<GroupMember?> getGroupMember(String groupId, String userId) async {
     var map = {'groupId': groupId, 'userId': userId};
     var resultMap = await _methodChannel.invokeMethod('getGroupMember', map);
-    GroupMember member = GroupMember.fromMap(resultMap);
+    GroupMember? member = GroupMember.fromMap(resultMap);
     return member;
   }
 
@@ -453,8 +461,10 @@ class JuggleIm {
         Map map = call.arguments;
         List<ConversationInfo> list = [];
         for (Map conversationInfoMap in map['conversationInfoList']) {
-          ConversationInfo info = ConversationInfo.fromMap(conversationInfoMap);
-          list.add(info);
+          ConversationInfo? info = ConversationInfo.fromMap(conversationInfoMap);
+          if (info != null) {
+            list.add(info);
+          }
         }
         if (onConversationInfoAdd != null) {
           onConversationInfoAdd!(list);
@@ -464,8 +474,10 @@ class JuggleIm {
         Map map = call.arguments;
         List<ConversationInfo> list = [];
         for (Map conversationInfoMap in map['conversationInfoList']) {
-          ConversationInfo info = ConversationInfo.fromMap(conversationInfoMap);
-          list.add(info);
+          ConversationInfo? info = ConversationInfo.fromMap(conversationInfoMap);
+          if (info != null) {
+            list.add(info);
+          }
         }
         if (onConversationInfoUpdate != null) {
           onConversationInfoUpdate!(list);
@@ -475,8 +487,10 @@ class JuggleIm {
         Map map = call.arguments;
         List<ConversationInfo> list = [];
         for (Map conversationInfoMap in map['conversationInfoList']) {
-          ConversationInfo info = ConversationInfo.fromMap(conversationInfoMap);
-          list.add(info);
+          ConversationInfo? info = ConversationInfo.fromMap(conversationInfoMap);
+          if (info != null) {
+            list.add(info);
+          }
         }
         if (onConversationInfoDelete != null) {
           onConversationInfoDelete!(list);

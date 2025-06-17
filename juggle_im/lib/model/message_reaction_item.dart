@@ -10,8 +10,10 @@ class MessageReactionItem {
     List<UserInfo> uList = [];
     List userMapList = map['userInfoList'];
     for (Map userMap in userMapList) {
-      UserInfo userInfo = UserInfo.fromMap(userMap);
-      uList.add(userInfo);
+      UserInfo? userInfo = UserInfo.fromMap(userMap);
+      if (userInfo != null) {
+        uList.add(userInfo);
+      }
     }
     item.userInfoList = uList;
     return item;

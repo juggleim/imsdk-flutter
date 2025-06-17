@@ -10,7 +10,10 @@ class UserInfo {
   Map<String, String>? extraMap;
   int type = 0;
 
-  static UserInfo fromMap(Map map) {
+  static UserInfo? fromMap(Map map) {
+    if (map.isEmpty) {
+      return null;
+    }
     UserInfo info = UserInfo();
     info.userId = map['userId'] ?? '';
     info.userName = map['userName'] ?? '';

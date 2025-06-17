@@ -67,6 +67,9 @@ class ModelFactory {
 
     static Map<String, Object> conversationInfoToMap(ConversationInfo info) {
         Map<String, Object> map = new HashMap<>();
+        if (info == null) {
+            return map;
+        }
         map.put("conversation", conversationToMap(info.getConversation()));
         map.put("unreadCount", info.getUnreadCount());
         map.put("hasUnread", info.hasUnread());
@@ -100,6 +103,9 @@ class ModelFactory {
 
     static Map<String, Object> userInfoToMap(UserInfo info) {
         Map<String, Object> map = new HashMap<>();
+        if (info == null) {
+            return map;
+        }
         if (!TextUtils.isEmpty(info.getUserId())) {
             map.put("userId", info.getUserId());
         }
@@ -117,6 +123,9 @@ class ModelFactory {
 
     static Map<String, Object> groupInfoToMap(GroupInfo info) {
         Map<String, Object> map = new HashMap<>();
+        if (info == null) {
+            return map;
+        }
         if (!TextUtils.isEmpty(info.getGroupId())) {
             map.put("groupId", info.getGroupId());
         }
@@ -134,6 +143,9 @@ class ModelFactory {
 
     static Map<String, Object> groupMemberToMap(GroupMember member) {
         Map<String, Object> map = new HashMap<>();
+        if (member == null) {
+            return map;
+        }
         if (!TextUtils.isEmpty(member.getGroupId())) {
             map.put("groupId", member.getGroupId());
         }

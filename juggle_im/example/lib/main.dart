@@ -10,6 +10,7 @@ import 'package:juggle_im/model/get_conversation_info_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
+import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/user_info.dart';
@@ -107,6 +108,9 @@ class _MyAppState extends State<MyApp> {
 
           Conversation c2 = Conversation(1, 'YvoGswbXyqU');
           TextMessage textMessage = TextMessage.content('flutter text Android');
+          ImageMessage image = ImageMessage();
+          image.localPath = 'asdfadf';
+          image.thumbnailLocalPath = '23232';
           GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
           groupNotifyMessage.content = 'This is content';
           groupNotifyMessage.aaa = 'This is aaa';
@@ -117,11 +121,17 @@ class _MyAppState extends State<MyApp> {
                 print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
               }
           }
+          progressCallback(message, progress) {
 
-          Message? message = await _juggleImPlugin.sendMessage(groupNotifyMessage, c2, callback);
-          print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
-          await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
-          List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
+          }
+
+          Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
+          ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
+
+          // Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
+          // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
+          // await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
+          // List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
           GetMessageOption op = GetMessageOption();
           op.count = 20;
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);

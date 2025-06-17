@@ -20,7 +20,10 @@ class ConversationInfo {
 
   ConversationInfo(this.conversation);
 
-  static ConversationInfo fromMap(Map map) {
+  static ConversationInfo? fromMap(Map map) {
+    if (map.isEmpty) {
+      return null;
+    }
     Map conversationMap = map['conversation'];
     var conversation = Conversation.fromMap(conversationMap);
     var result = ConversationInfo(conversation);
