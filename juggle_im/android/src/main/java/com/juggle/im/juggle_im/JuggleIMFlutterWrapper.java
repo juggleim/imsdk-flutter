@@ -2,7 +2,6 @@ package com.juggle.im.juggle_im;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -13,7 +12,6 @@ import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
 import com.juggle.im.interfaces.IMessageManager;
-import com.juggle.im.internal.ConstInternal;
 import com.juggle.im.internal.logger.JLogConfig;
 import com.juggle.im.internal.logger.JLogLevel;
 import com.juggle.im.model.Conversation;
@@ -504,7 +502,6 @@ import io.flutter.plugin.common.MethodChannel;
                 Message message = JIM.getInstance().getMessageManager().sendMediaMessage(content, conversation, options, new IMessageManager.ISendMediaMessageCallback() {
                     @Override
                     public void onProgress(int i, Message message) {
-                        Log.i("send_media_message", "onProgress, progress is " + i);
                         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
                         Map<String, Object> resultMap = new HashMap<>();
                         resultMap.put("message", messageMap);
@@ -514,7 +511,6 @@ import io.flutter.plugin.common.MethodChannel;
 
                     @Override
                     public void onSuccess(Message message) {
-                        Log.i("send_media_message", "onSuccess");
                         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
                         Map<String, Object> resultMap = new HashMap<>();
                         resultMap.put("message", messageMap);

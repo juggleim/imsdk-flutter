@@ -490,13 +490,9 @@ class JuggleIm {
         }
 
       case 'onMessageSendSuccess':
-        print('onMessageSendSuccess');
         Map map = call.arguments;
         Message message = Message.fromMap(map['message']);
         int clientMsgNo = message.clientMsgNo;
-        if (_sendMessageCallbackMap[clientMsgNo] != null) {
-          print('onMessageSendSuccess not null');
-        }
         _sendMessageCallbackMap[clientMsgNo]!(message, 0);
         _sendMessageCallbackMap.remove(clientMsgNo);
         _sendMessageProgressCallbackMap.remove(clientMsgNo);

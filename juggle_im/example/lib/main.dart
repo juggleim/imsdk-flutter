@@ -122,6 +122,9 @@ class _MyAppState extends State<MyApp> {
           print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
           await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
           List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
+          GetMessageOption op = GetMessageOption();
+          op.count = 20;
+          var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
           
 
 

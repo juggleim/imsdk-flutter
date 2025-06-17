@@ -41,7 +41,7 @@ android {
     dependencies {
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.0.0")
-        implementation 'com.juggle.im:juggle:1.8.12'
+        implementation 'com.juggle.im:juggle:1.8.12.1'
     }
 
     testOptions {
