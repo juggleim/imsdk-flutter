@@ -645,7 +645,11 @@ import io.flutter.plugin.common.MethodChannel;
          if (arg instanceof Map<?, ?>) {
              Map<?, ?> map = (Map<?, ?>) arg;
              Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
-             long startTime = (long) map.get("startTime");
+             Integer startTimeInteger = (Integer) map.get("startTime");
+             long startTime = 0;
+             if (startTimeInteger != null) {
+                 startTime = startTimeInteger.longValue();
+             }
              boolean forAllUsers = false;
              if (map.containsKey("forAllUsers")) {
                  forAllUsers = (boolean) map.get("forAllUsers");
@@ -792,7 +796,11 @@ import io.flutter.plugin.common.MethodChannel;
              Map<?, ?> map = (Map<?, ?>) arg;
              Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
              int count = (int) map.get("count");
-             long timestamp = (long) map.get("timestamp");
+             long timestamp = 0;
+             Integer timestampInteger = (Integer) map.get("timestamp");
+             if (timestampInteger != null) {
+                 timestamp = timestampInteger.longValue();
+             }
              int directionValue = (int) map.get("direction");
              JIMConst.PullDirection direction = JIMConst.PullDirection.OLDER;
              if (directionValue == 0) {
