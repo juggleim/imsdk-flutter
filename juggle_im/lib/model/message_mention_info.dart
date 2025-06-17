@@ -18,10 +18,8 @@ class MessageMentionInfo {
     List? targetUsersMap = map['targetUsers'];
     if (targetUsersMap != null) {
       for (Map userMap in targetUsersMap) {
-        UserInfo? userInfo = UserInfo.fromMap(userMap);
-        if (userInfo != null) {
-          list.add(userInfo);
-        }
+        UserInfo userInfo = UserInfo.fromMap(userMap);
+        list.add(userInfo);
       }
     }
     info.targetUsers = list;
