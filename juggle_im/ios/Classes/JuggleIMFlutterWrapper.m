@@ -399,7 +399,9 @@
                 NSDictionary *dic = @{@"message": messageDic, @"progress": @(progress)};
                 [self.channel invokeMethod:@"onMessageProgress" arguments:dic];
             } success:^(JMessage *message) {
-                NSDictionary *messageDic = [JModelFactory messageToDic:message];
+                NSMutableDictionary *messageDic = [[JModelFactory messageToDic:message] mutableCopy];
+                //原生层 encode 的时候会把绝对路径换成相对路径
+                [messageDic setObject:contentString forKey:@"content"];
                 NSDictionary *dic = @{@"message": messageDic};
                 [self.channel invokeMethod:@"onMessageSendSuccess" arguments:dic];
             } error:^(JErrorCode errorCode, JMessage *message) {

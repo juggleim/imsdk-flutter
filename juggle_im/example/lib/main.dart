@@ -128,7 +128,8 @@ class _MyAppState extends State<MyApp> {
           Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
           ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
 
-          await _juggleImPlugin.clearMessages(c2, 0);
+          await _juggleImPlugin.setMute(c2, true);
+          
 
           // Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
           // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
