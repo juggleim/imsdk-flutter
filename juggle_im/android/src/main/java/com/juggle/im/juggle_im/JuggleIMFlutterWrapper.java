@@ -574,7 +574,13 @@ import io.flutter.plugin.common.MethodChannel;
         if (arg instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) arg;
             Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
-            List<Long> clientMsgNoList = (List<Long>) map.get("clientMsgNoList");
+            List<Number> clientMsgNoIntList = (List<Number>) map.get("clientMsgNoList");
+            List<Long> clientMsgNoList = new ArrayList<>();
+            if (clientMsgNoIntList != null) {
+                for (Number i : clientMsgNoIntList) {
+                    clientMsgNoList.add(i.longValue());
+                }
+            }
             boolean forAllUsers = false;
             if (map.containsKey("forAllUsers")) {
                 forAllUsers = (boolean) map.get("forAllUsers");
@@ -688,7 +694,7 @@ import io.flutter.plugin.common.MethodChannel;
      private void getMessagesByClientMsgNoList(Object arg, MethodChannel.Result result) {
          if (arg instanceof Map<?, ?>) {
              Map<?, ?> map = (Map<?, ?>) arg;
-             List<Integer> clientMsgNoList = (List<Integer>) map.get("clientMsgNoList");
+             List<Number> clientMsgNoList = (List<Number>) map.get("clientMsgNoList");
              long[] clientMsgNos = new long[10000];
              if (clientMsgNoList != null && !clientMsgNoList.isEmpty()) {
                  for (int i = 0; i < clientMsgNoList.size(); i++) {
@@ -797,9 +803,9 @@ import io.flutter.plugin.common.MethodChannel;
              Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
              int count = (int) map.get("count");
              long timestamp = 0;
-             Integer timestampInteger = (Integer) map.get("timestamp");
-             if (timestampInteger != null) {
-                 timestamp = timestampInteger.longValue();
+             Number timestampNumber = (Number) map.get("timestamp");
+             if (timestampNumber != null) {
+                 timestamp = timestampNumber.longValue();
              }
              int directionValue = (int) map.get("direction");
              JIMConst.PullDirection direction = JIMConst.PullDirection.OLDER;
@@ -932,7 +938,7 @@ import io.flutter.plugin.common.MethodChannel;
     private void setMessageLocalAttribute(Object arg, MethodChannel.Result result) {
         if (arg instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) arg;
-            Integer clientMsgNo = (Integer) map.get("clientMsgNo");
+            Number clientMsgNo = (Number) map.get("clientMsgNo");
             String attribute = (String) map.get("attribute");
             assert clientMsgNo != null;
             JIM.getInstance().getMessageManager().setLocalAttribute(clientMsgNo.longValue(), attribute);

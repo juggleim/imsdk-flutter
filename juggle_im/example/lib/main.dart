@@ -87,8 +87,13 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoListByOption, count is " + length.toString());
 
-          // // var cml = [11];
-          // // int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml);
+
+          GetMessageOption getMessageOption = GetMessageOption();
+          getMessageOption.count = 5;
+          var messages = await _juggleImPlugin.getMessages(c1, 1, getMessageOption);
+          var cml = [6];
+          int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml, true);
+
 
           // // Result<Message>? rm = await _juggleImPlugin.recallMessage('nzcyxtgktxqjxmya');
 

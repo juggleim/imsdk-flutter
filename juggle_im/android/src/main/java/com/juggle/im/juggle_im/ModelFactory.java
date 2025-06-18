@@ -435,8 +435,8 @@ class ModelFactory {
         Integer countObject = (Integer) map.get("count");
         int count = countObject != null ? countObject : 0;
         options.setCount(count);
-        Integer timestampObject = (Integer) map.get("timestamp");
-        long timestamp = timestampObject != null ? timestampObject : 0;
+        Number timestampObject = (Number) map.get("timestamp");
+        long timestamp = timestampObject != null ? timestampObject.longValue() : 0;
         options.setTimestamp(timestamp);
         Integer directionObject = (Integer) map.get("direction");
         int directionValue = directionObject != null ? directionObject : 0;
