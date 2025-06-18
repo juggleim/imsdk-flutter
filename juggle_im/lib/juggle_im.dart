@@ -3,6 +3,7 @@
 import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
 import 'package:juggle_im/juggle_const.dart';
+import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
@@ -32,6 +33,7 @@ class JuggleIm {
   final _methodChannel = const MethodChannel('juggle_im');
   final Map<int, DataCallback<Message>> _sendMessageCallbackMap = {};
   final Map<int, SendMessageProgressCallback> _sendMessageProgressCallbackMap = {};
+  final Map<String, ConnectionListener> _connectionListenerMap = {};
 
   JuggleIm._internal() {
     _registerMessages();
@@ -440,6 +442,14 @@ class JuggleIm {
     return member;
   }
 
+  void addConnectionListener(String key, ConnectionListener listener) {
+    _connectionListenerMap[key] = listener;
+  }
+
+  void removeConnectionListener(String key) {
+    _connectionListenerMap.remove(key);
+  }
+
   //internal
   Future<dynamic> _methodCallHandler(MethodCall call) {
     switch (call.method) {
@@ -451,15 +461,27 @@ class JuggleIm {
         if (onConnectionStatusChange != null) {
           onConnectionStatusChange!(status, code, extra);
         }
+        for (var entry in _connectionListenerMap.entries) {
+          ConnectionListener listener = entry.value;
+          listener.onConnectionStatusChange(status, code, extra);
+        }
 
       case "onDbOpen":
         if (onDbOpen != null) {
           onDbOpen!();
         }
+        for (var entry in _connectionListenerMap.entries) {
+          ConnectionListener listener = entry.value;
+          listener.onDbOpen();
+        }
 
       case "onDbClose":
         if (onDbClose != null) {
           onDbClose!();
+        }
+        for (var entry in _connectionListenerMap.entries) {
+          ConnectionListener listener = entry.value;
+          listener.onDbClose();
         }
 
       case "onConversationInfoAdd":

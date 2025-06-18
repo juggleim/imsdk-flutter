@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
+import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
@@ -18,6 +19,23 @@ import 'package:juggle_im_example/group_notify_message.dart';
 
 void main() {
   runApp(const MyApp());
+}
+
+class _MainConnectionListener implements ConnectionListener {
+  @override
+  void onConnectionStatusChange(int connectionStatus, int code, String extra) {
+    print("_MainConnectionListener, onConnectionStatusChange, status is " + connectionStatus.toString());
+  }
+
+  @override
+  void onDbOpen() {
+    print("_MainConnectionListener, onDbOpen");
+  }
+
+  @override
+  void onDbClose() {
+    print("_MainConnectionListener, onDbClose");
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -177,6 +195,9 @@ class _MyAppState extends State<MyApp> {
       _juggleImPlugin.onMessageDelete = (conversation, list) {
         print('onMessageDelete, count is ' + list.length.toString());
       };
+
+      final connectionListener = _MainConnectionListener();
+      _juggleImPlugin.addConnectionListener('main', connectionListener);
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
