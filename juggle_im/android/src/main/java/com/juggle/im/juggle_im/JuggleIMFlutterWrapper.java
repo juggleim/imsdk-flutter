@@ -244,7 +244,6 @@ import io.flutter.plugin.common.MethodChannel;
         List<Map<String, Object>> resultList = new ArrayList<>();
         for (ConversationInfo info : list) {
             Map<String, Object> m = ModelFactory.conversationInfoToMap(info);
-            ModelExtension.extendMapForConversationInfo(m, info);
             resultList.add(m);
         }
         result.success(resultList);
@@ -260,7 +259,6 @@ import io.flutter.plugin.common.MethodChannel;
             if (list != null) {
                 for (ConversationInfo info : list) {
                     Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
-                    ModelExtension.extendMapForConversationInfo(infoMap, info);
                     resultList.add(infoMap);
                 }
             }
@@ -275,7 +273,6 @@ import io.flutter.plugin.common.MethodChannel;
             Conversation conversation = ModelFactory.conversationFromMap(map);
             ConversationInfo info = JIM.getInstance().getConversationManager().getConversationInfo(conversation);
             resultMap = ModelFactory.conversationInfoToMap(info);
-            ModelExtension.extendMapForConversationInfo(resultMap, info);
         }
         result.success(resultMap);
     }
@@ -319,7 +316,6 @@ import io.flutter.plugin.common.MethodChannel;
                 @Override
                 public void onSuccess(ConversationInfo conversationInfo) {
                     Map<String, Object> conversationInfoMap = ModelFactory.conversationInfoToMap(conversationInfo);
-                    ModelExtension.extendMapForConversationInfo(conversationInfoMap, conversationInfo);
                     resultMap.put("conversationInfo", conversationInfoMap);
                     result.success(resultMap);
                 }
@@ -559,7 +555,6 @@ import io.flutter.plugin.common.MethodChannel;
                         List<Map<String, Object>> mapList = new ArrayList<>();
                         for (Message m : list) {
                             Map<String, Object> messageMap = ModelFactory.messageToMap(m);
-                            ModelExtension.extendMapForMessage(messageMap, m);
                             mapList.add(messageMap);
                         }
                         resultMap.put("messages", mapList);
@@ -683,7 +678,6 @@ import io.flutter.plugin.common.MethodChannel;
              if (messageList != null && !messageList.isEmpty()) {
                  for (Message message : messageList) {
                      Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-                     ModelExtension.extendMapForMessage(messageMap, message);
                      resultList.add(messageMap);
                  }
              }
@@ -706,7 +700,6 @@ import io.flutter.plugin.common.MethodChannel;
              if (messageList != null && !messageList.isEmpty()) {
                  for (Message message : messageList) {
                      Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-                     ModelExtension.extendMapForMessage(messageMap, message);
                      resultList.add(messageMap);
                  }
              }
@@ -780,7 +773,6 @@ import io.flutter.plugin.common.MethodChannel;
                      List<Map<String, Object>> messageMapList = new ArrayList<>();
                      for (Message message : mergedMessages) {
                          Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-                         ModelExtension.extendMapForMessage(messageMap, message);
                          messageMapList.add(messageMap);
                      }
                      resultMap.put("messages", messageMapList);
@@ -820,7 +812,6 @@ import io.flutter.plugin.common.MethodChannel;
                      List<Map<String, Object>> messageMapList = new ArrayList<>();
                      for (Message message : messages) {
                          Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-                         ModelExtension.extendMapForMessage(messageMap, message);
                          messageMapList.add(messageMap);
                      }
                      resultMap.put("messages", messageMapList);
@@ -997,7 +988,6 @@ import io.flutter.plugin.common.MethodChannel;
         List<Map<String, Object>> mapList = new ArrayList<>();
         for (ConversationInfo info : list) {
             Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
-            ModelExtension.extendMapForConversationInfo(infoMap, info);
             mapList.add(infoMap);
         }
         Map<String, Object> map = new HashMap<>();
@@ -1010,7 +1000,6 @@ import io.flutter.plugin.common.MethodChannel;
         List<Map<String, Object>> mapList = new ArrayList<>();
         for (ConversationInfo info : list) {
             Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
-            ModelExtension.extendMapForConversationInfo(infoMap, info);
             mapList.add(infoMap);
         }
         Map<String, Object> map = new HashMap<>();
@@ -1023,7 +1012,6 @@ import io.flutter.plugin.common.MethodChannel;
         List<Map<String, Object>> mapList = new ArrayList<>();
         for (ConversationInfo info : list) {
             Map<String, Object> infoMap = ModelFactory.conversationInfoToMap(info);
-            ModelExtension.extendMapForConversationInfo(infoMap, info);
             mapList.add(infoMap);
         }
         Map<String, Object> map = new HashMap<>();
@@ -1041,14 +1029,12 @@ import io.flutter.plugin.common.MethodChannel;
     @Override
     public void onMessageReceive(Message message) {
         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-        ModelExtension.extendMapForMessage(messageMap, message);
         mChannel.invokeMethod("onMessageReceive", messageMap);
     }
 
     @Override
     public void onMessageRecall(Message message) {
         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-        ModelExtension.extendMapForMessage(messageMap, message);
         mChannel.invokeMethod("onMessageRecall", messageMap);
     }
 
@@ -1076,7 +1062,6 @@ import io.flutter.plugin.common.MethodChannel;
     @Override
     public void onMessageUpdate(Message message) {
         Map<String, Object> messageMap = ModelFactory.messageToMap(message);
-        ModelExtension.extendMapForMessage(messageMap, message);
         mChannel.invokeMethod("onMessageUpdate", messageMap);
     }
 

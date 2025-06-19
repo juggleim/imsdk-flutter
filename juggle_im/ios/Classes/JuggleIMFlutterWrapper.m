@@ -8,7 +8,6 @@
 #import "JuggleIMFlutterWrapper.h"
 #import <JuggleIM/JuggleIM.h>
 #import "JModelFactory.h"
-#import "JModelExtension.h"
 
 @interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
@@ -176,7 +175,6 @@
     NSMutableArray *result = [NSMutableArray array];
     for (JConversationInfo *info in list) {
         NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-        infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
         [result addObject:infoDic];
     }
     return [result copy];
@@ -201,7 +199,6 @@
         NSArray<JConversationInfo *> *list = [JIM.shared.conversationManager getConversationInfoListWith:option];
         for (JConversationInfo *info in list) {
             NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-            infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
             [result addObject:infoDic];
         }
     }
@@ -214,7 +211,6 @@
         JConversation *conversation = [JModelFactory conversationFromDic:d];
         JConversationInfo *info = [JIM.shared.conversationManager getConversationInfo:conversation];
         NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-        infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
         return infoDic;
     }
     return [NSDictionary dictionary];
@@ -254,7 +250,6 @@
         [JIM.shared.conversationManager createConversationInfo:conversation
                                                        success:^(JConversationInfo *info) {
             NSDictionary *conversationInfoDic = [JModelFactory conversationInfoToDic:info];
-            conversationInfoDic = [JModelExtension extendDic:conversationInfoDic forConversationInfo:info];
             [resultDic setObject:conversationInfoDic forKey:@"conversationInfo"];
             result(resultDic);
         } error:^(JErrorCode code) {
@@ -443,7 +438,6 @@
                 NSMutableArray *arr = [NSMutableArray array];
                 for (JMessage *m in messages) {
                     NSDictionary *messageDic = [JModelFactory messageToDic:m];
-                    messageDic = [JModelExtension extendDic:messageDic forMessage:m];
                     [arr addObject:messageDic];
                 }
                 [resultDic setObject:arr forKey:@"messages"];
@@ -531,7 +525,6 @@
         NSMutableArray *resultList = [NSMutableArray array];
         for (JMessage *message in messageList) {
             NSDictionary *messageDic = [JModelFactory messageToDic:message];
-            messageDic = [JModelExtension extendDic:messageDic forMessage:message];
             [resultList addObject:messageDic];
         }
         result(resultList);
@@ -546,7 +539,6 @@
         NSMutableArray *resultList = [NSMutableArray array];
         for (JMessage *message in messageList) {
             NSDictionary *messageDic = [JModelFactory messageToDic:message];
-            messageDic = [JModelExtension extendDic:messageDic forMessage:message];
             [resultList addObject:messageDic];
         }
         result(resultList);
@@ -607,7 +599,6 @@
             NSMutableArray *messageDicList = [NSMutableArray array];
             for (JMessage *message in mergedMessages) {
                 NSDictionary *messageDic = [JModelFactory messageToDic:message];
-                messageDic = [JModelExtension extendDic:messageDic forMessage:message];
                 [messageDicList addObject:messageDic];
             }
             [resultDic setObject:messageDicList forKey:@"messages"];
@@ -635,7 +626,6 @@
             NSMutableArray *messageDicList = [NSMutableArray array];
             for (JMessage *message in messages) {
                 NSDictionary *messageDic = [JModelFactory messageToDic:message];
-                messageDic = [JModelExtension extendDic:messageDic forMessage:message];
                 [messageDicList addObject:messageDic];
             }
             [resultDic setObject:messageDicList forKey:@"messages"];
@@ -787,7 +777,6 @@
     NSMutableArray *arr = [NSMutableArray array];
     for (JConversationInfo *info in conversationInfoList) {
         NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-        infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
         [arr addObject:infoDic];
     }
     NSDictionary *dic = @{@"conversationInfoList": arr};
@@ -798,7 +787,6 @@
     NSMutableArray *arr = [NSMutableArray array];
     for (JConversationInfo *info in conversationInfoList) {
         NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-        infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
         [arr addObject:infoDic];
     }
     NSDictionary *dic = @{@"conversationInfoList": arr};
@@ -809,7 +797,6 @@
     NSMutableArray *arr = [NSMutableArray array];
     for (JConversationInfo *info in conversationInfoList) {
         NSDictionary *infoDic = [JModelFactory conversationInfoToDic:info];
-        infoDic = [JModelExtension extendDic:infoDic forConversationInfo:info];
         [arr addObject:infoDic];
     }
     NSDictionary *dic = @{@"conversationInfoList": arr};
@@ -824,13 +811,11 @@
 #pragma mark - JMessageDelegate
 - (void)messageDidReceive:(JMessage *)message {
     NSDictionary *messageDic = [JModelFactory messageToDic:message];
-    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
     [self.channel invokeMethod:@"onMessageReceive" arguments:messageDic];
 }
 
 - (void)messageDidRecall:(JMessage *)message {
     NSDictionary *messageDic = [JModelFactory messageToDic:message];
-    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
     [self.channel invokeMethod:@"onMessageRecall" arguments:messageDic];
 }
 
@@ -851,7 +836,6 @@
 
 - (void)messageDidUpdate:(JMessage *)message {
     NSDictionary *messageDic = [JModelFactory messageToDic:message];
-    messageDic = [JModelExtension extendDic:messageDic forMessage:message];
     [self.channel invokeMethod:@"onMessageUpdate" arguments:messageDic];
 }
 

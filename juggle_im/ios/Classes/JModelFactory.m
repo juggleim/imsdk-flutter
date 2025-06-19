@@ -46,6 +46,7 @@
         return dic;
     }
     [dic setObject:[self conversationToDic:conversationInfo.conversation] forKey:@"conversation"];
+    [self extendDic:dic forConversationInfo:conversationInfo];
     [dic setObject:@(conversationInfo.unreadCount) forKey:@"unreadCount"];
     [dic setObject:@(conversationInfo.hasUnread) forKey:@"hasUnread"];
     [dic setObject:@(conversationInfo.sortTime) forKey:@"sortTime"];
@@ -159,6 +160,7 @@
     [dic setObject:@(message.timestamp) forKey:@"timestamp"];
     if (message.senderUserId) {
         [dic setObject:message.senderUserId forKey:@"senderUserId"];
+        [self extendDic:dic forMessage:message];
     }
     NSString *contentString = [self messageContentToString:message.content];
     if (contentString) {
@@ -356,6 +358,42 @@
     unknown.content = string;
     unknown.messageType = contentType;
     return unknown;
+}
+
+#pragma mark - extension
++ (void)extendDic:(NSMutableDictionary *)dic forConversationInfo:(JConversationInfo *)info {
+    if (info.conversation.conversationType == JConversationTypePrivate) {
+        JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:info.conversation.conversationId];
+        if (userInfo.userName.length > 0) {
+            [dic setObject:userInfo.userName forKey:@"name"];
+        }
+        if (userInfo.portrait.length > 0) {
+            [dic setObject:userInfo.portrait forKey:@"portrait"];
+        }
+        if (userInfo.extraDic.count > 0) {
+            [dic setObject:userInfo.extraDic forKey:@"extra"];
+        }
+    } else if (info.conversation.conversationType == JConversationTypeGroup) {
+        JGroupInfo *groupInfo = [JIM.shared.userInfoManager getGroupInfo:info.conversation.conversationId];
+        if (groupInfo.groupName.length > 0) {
+            [dic setObject:groupInfo.groupName forKey:@"name"];
+        }
+        if (groupInfo.portrait.length > 0) {
+            [dic setObject:groupInfo.portrait forKey:@"portrait"];
+        }
+        if (groupInfo.extraDic.count > 0) {
+            [dic setObject:groupInfo.extraDic forKey:@"extra"];
+        }
+    }
+}
+
++ (void)extendDic:(NSMutableDictionary *)dic
+       forMessage:(JMessage *)message {
+    JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:message.senderUserId];
+    if (userInfo) {
+        NSDictionary *userInfoDic = [JModelFactory userInfoToDic:userInfo];
+        [dic setObject:userInfoDic forKey:@"sender"];
+    }
 }
 
 @end
