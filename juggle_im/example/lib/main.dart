@@ -147,6 +147,8 @@ class _MyAppState extends State<MyApp> {
           progressCallback(message, progress) {
 
           }
+          Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
+          Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
 
           Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
           ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);

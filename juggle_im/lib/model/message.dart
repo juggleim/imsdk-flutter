@@ -73,4 +73,36 @@ class Message {
 
     return m;
   }
+
+  Map toMap() {
+    Map map = {'contentType': contentType,
+      'clientMsgNo': clientMsgNo,
+      'messageId': messageId,
+      'direction': direction,
+      'messageState': messageState,
+      'hasRead': hasRead,
+      'timestamp': timestamp,
+      'senderUserId': senderUserId,
+      'localAttribute': localAttribute,
+      'isEdit': isEdit
+      };
+    map['conversation'] = conversation.toMap();
+    if (content != null) {
+      map['content'] = content!.encode();
+    }
+    // 不需要
+    // if (groupReadInfo != null) {
+    //   map['groupReadInfo'] = groupReadInfo.toMap();
+    // }
+    if (mentionInfo != null) {
+      map['mentionInfo'] = mentionInfo!.toMap();
+    }
+    if (referredMsg != null) {
+      map['referredMsg'] = referredMsg!.toMap();
+    }
+    if (sender != null) {
+      map['sender'] = sender!.toMap();
+    }
+    return map;
+  }
 }

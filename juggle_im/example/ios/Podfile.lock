@@ -4,8 +4,8 @@ PODS:
     - Flutter
   - juggle_im (0.0.21):
     - Flutter
-    - JuggleIM (= 1.8.12.3)
-  - JuggleIM (1.8.12.3)
+    - JuggleIM (= 1.8.12.4)
+  - JuggleIM (1.8.12.4)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -27,8 +27,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  juggle_im: 3f859fa84443640bcadca190d235c41f8ed7695a
-  JuggleIM: 3885bdf7db3944db279f36cf5d5d9facd2daafee
+  juggle_im: 162a3248cec1d026ab26d5e1c65a97a7fa88b179
+  JuggleIM: 478fb2e98a168cc22188dcd53e04977480df2ae8
 
 PODFILE CHECKSUM: 6e700dec67e6deac9b1c69bb14c49a2217a12d15
 

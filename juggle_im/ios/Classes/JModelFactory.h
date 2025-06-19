@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)messageReactionToDic:(JMessageReaction *)reaction;
 
 + (JConversation *)conversationFromDic:(NSDictionary *)dic;
++ (JMessage *)messageFromDic:(NSDictionary *)dic;
 + (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic;
 + (JGetMessageOptions *)getMessageOptionFromDic:(NSDictionary *)dic;
 

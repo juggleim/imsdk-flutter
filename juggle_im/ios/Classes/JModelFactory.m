@@ -214,6 +214,29 @@
     return c;
 }
 
++ (JMessage *)messageFromDic:(NSDictionary *)dic {
+    JMessage *message = [JMessage new];
+    message.conversation = [self conversationFromDic:dic[@"conversation"]];
+    message.contentType = dic[@"contentType"];
+    message.clientMsgNo = [dic[@"clientMsgNo"] longLongValue];
+    message.messageId = dic[@"messageId"];
+    message.direction = [dic[@"direction"] intValue];
+    message.messageState = [dic[@"messageState"] intValue];
+    message.hasRead = [dic[@"hasRead"] boolValue];
+    message.timestamp = [dic[@"timestamp"] longLongValue];
+    message.senderUserId = dic[@"senderUserId"];
+    message.content = [JModelFactory messageContentFromString:dic[@"content"] type:message.contentType];
+    if (dic[@"mentionInfo"]) {
+        message.mentionInfo = [self messageMentionInfoFromDic:dic[@"mentionInfo"]];
+    }
+    if (dic[@"referredMsg"]) {
+        message.referredMsg = [self messageFromDic:dic[@"referredMsg"]];
+    }
+    message.localAttribute = dic[@"localAttribute"];
+    message.isEdit = [dic[@"isEdit"] boolValue];
+    return message;
+}
+
 + (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic {
     if (!dic) {
         return nil;

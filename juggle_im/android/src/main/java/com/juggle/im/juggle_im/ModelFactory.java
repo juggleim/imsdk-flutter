@@ -263,6 +263,50 @@ class ModelFactory {
         return new Conversation(type, conversationId);
     }
 
+    static Message messageFromMap(Map<?, ?> map) {
+        Message message = new Message();
+        if (map == null) {
+            return message;
+        }
+        if (map.containsKey("conversation")) {
+            Map<?, ?> conversationMap = (Map<?, ?>) map.get("conversation");
+            assert conversationMap != null;
+            message.setConversation(conversationFromMap(conversationMap));
+        }
+        message.setContentType((String) map.get("contentType"));
+        Number clientMsgNo = (Number) map.get("clientMsgNo");
+        if (clientMsgNo != null) {
+            message.setClientMsgNo(clientMsgNo.longValue());
+        }
+        message.setMessageId((String) map.get("messageId"));
+        Number direction = (Number) map.get("direction");
+        if (direction != null) {
+            message.setDirection(Message.MessageDirection.setValue(direction.intValue()));
+        }
+        Number messageState = (Number) map.get("messageState");
+        if (messageState != null) {
+            message.setState(Message.MessageState.setValue(messageState.intValue()));
+        }
+        boolean hasRead = (boolean) map.get("hasRead");
+        message.setHasRead(hasRead);
+        Number timestamp = (Number) map.get("timestamp");
+        if (timestamp != null) {
+            message.setTimestamp(timestamp.longValue());
+        }
+        message.setSenderUserId((String) map.get("senderUserId"));
+        String contentString = (String) map.get("content");
+        message.setContent(messageContentFromString(contentString, message.getContentType()));
+        if (map.containsKey("mentionInfo")) {
+            message.setMentionInfo(messageMentionInfoFromMap((Map<?, ?>) map.get("mentionInfo")));
+        }
+        if (map.containsKey("referredMsg")) {
+            message.setReferredMessage(messageFromMap((Map<?, ?>) map.get("referredMsg")));
+        }
+        message.setLocalAttribute((String) map.get("localAttribute"));
+        message.setEdit((boolean) map.get("isEdit"));
+        return message;
+    }
+
     static MessageOptions sendMessageOptionFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;

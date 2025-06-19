@@ -73,6 +73,10 @@
         [self sendMessage:call.arguments result:result];
     } else if ([@"sendMediaMessage" isEqualToString:call.method]) {
         [self sendMediaMessage:call.arguments result:result];
+    } else if ([@"resendMessage" isEqualToString:call.method]) {
+        [self resendMessage:call.arguments result:result];
+    } else if ([@"resendMediaMessage" isEqualToString:call.method]) {
+        [self resendMediaMessage:call.arguments result:result];
     } else if ([@"getMessages" isEqualToString:call.method]) {
         [self getMessages:call.arguments result:result];
     } else if ([@"deleteMessagesByClientMsgNoList" isEqualToString:call.method]) {
@@ -415,6 +419,58 @@
         }
     } else {
         result(@{});
+    }
+}
+
+- (void)resendMessage:(id)arg result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        JMessage *message = [JModelFactory messageFromDic:d[@"message"]];
+        JMessage *returnMessage = [JIM.shared.messageManager resend:message
+                                                            success:^(JMessage *successMessage) {
+            NSDictionary *messageDic = [JModelFactory messageToDic:successMessage];
+            NSDictionary *dic = @{@"message": messageDic};
+            [self.channel invokeMethod:@"onMessageSendSuccess" arguments:dic];
+        } error:^(JErrorCode errorCode, JMessage *errorMessage) {
+            NSDictionary *messageDic = [JModelFactory messageToDic:errorMessage];
+            NSDictionary *dic = @{@"message": messageDic, @"errorCode": @(errorCode)};
+            [self.channel invokeMethod:@"onMessageSendError" arguments:dic];
+        }];
+        NSDictionary *messageDic = [JModelFactory messageToDic:returnMessage];
+        result(messageDic);
+    }
+}
+
+- (void)resendMediaMessage:(id)arg result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        NSDictionary *messageDictionary = d[@"message"];
+        NSString *contentString = messageDictionary[@"content"];
+        JMessage *message = [JModelFactory messageFromDic:messageDictionary];
+        JMessage *returnMessage = [JIM.shared.messageManager resendMediaMessage:message
+                                                                       progress:^(int progress, JMessage *progressMessage) {
+            NSMutableDictionary *messageDic = [[JModelFactory messageToDic:progressMessage] mutableCopy];
+            //原生层 encode 的时候会把绝对路径换成相对路径
+            [messageDic setObject:contentString forKey:@"content"];
+            NSDictionary *dic = @{@"message": messageDic, @"progress": @(progress)};
+            [self.channel invokeMethod:@"onMessageProgress" arguments:dic];
+        } success:^(JMessage *successMessage) {
+            NSMutableDictionary *messageDic = [[JModelFactory messageToDic:successMessage] mutableCopy];
+            //原生层 encode 的时候会把绝对路径换成相对路径
+            [messageDic setObject:contentString forKey:@"content"];
+            NSDictionary *dic = @{@"message": messageDic};
+            [self.channel invokeMethod:@"onMessageSendSuccess" arguments:dic];
+        } error:^(JErrorCode errorCode, JMessage *errorMessage) {
+            NSMutableDictionary *messageDic = [[JModelFactory messageToDic:errorMessage] mutableCopy];
+            //原生层 encode 的时候会把绝对路径换成相对路径
+            [messageDic setObject:contentString forKey:@"content"];
+            NSDictionary *dic = @{@"message": messageDic, @"errorCode": @(errorCode)};
+            [self.channel invokeMethod:@"onMessageSendError" arguments:dic];
+        } cancel:nil];
+        NSMutableDictionary *messageDic = [[JModelFactory messageToDic:returnMessage] mutableCopy];
+        //原生层 encode 的时候会把绝对路径换成相对路径
+        [messageDic setObject:contentString forKey:@"content"];
+        result(messageDic);
     }
 }
 

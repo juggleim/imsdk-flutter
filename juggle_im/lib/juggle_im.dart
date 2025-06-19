@@ -222,6 +222,23 @@ class JuggleIm {
     return message;
   }
 
+  Future<Message> resendMessage(Message message, DataCallback<Message> callback) async {
+    Map map = {'message': message.toMap()};
+    Map resultMap = await _methodChannel.invokeMethod('resendMessage', map);
+    Message returnMessage = Message.fromMap(resultMap);
+    _sendMessageCallbackMap[message.clientMsgNo] = callback;
+    return returnMessage;
+  }
+
+  Future<Message> resendMediaMessage(Message message, DataCallback<Message> callback, SendMessageProgressCallback progressCallback) async {
+    Map map = {'message': message.toMap()};
+    Map resultMap = await _methodChannel.invokeMethod('resendMediaMessage', map);
+    Message returnMessage = Message.fromMap(resultMap);
+    _sendMessageCallbackMap[message.clientMsgNo] = callback;
+    _sendMessageProgressCallbackMap[message.clientMsgNo] = progressCallback;
+    return returnMessage;
+  }
+
   Future<GetMessageResult<List<Message>>> getMessages(Conversation conversation, int direction, GetMessageOption option) async {
     Map map = {'conversation': conversation.toMap(), 'direction': direction, 'option': option.toMap()};
     Map resultMap = await _methodChannel.invokeMethod('getMessages', map);

@@ -115,6 +115,12 @@ import io.flutter.plugin.common.MethodChannel;
             case "sendMediaMessage":
                 sendMediaMessage(call.arguments, result);
                 break;
+            case "resendMessage":
+                resendMessage(call.arguments, result);
+                break;
+            case "resendMediaMessage":
+                resendMediaMessage(call.arguments, result);
+                break;
             case "getMessages":
                 getMessages(call.arguments, result);
                 break;
@@ -529,6 +535,78 @@ import io.flutter.plugin.common.MethodChannel;
                 Map<String, Object> messageMap = ModelFactory.messageToMap(message);
                 result.success(messageMap);
             }
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
+
+    private void resendMessage(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Message message = ModelFactory.messageFromMap((Map<?, ?>) map.get("message"));
+            Message returnMessage = JIM.getInstance().getMessageManager().resendMessage(message, new IMessageManager.ISendMessageCallback() {
+                @Override
+                public void onSuccess(Message successMessage) {
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(successMessage);
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", messageMap);
+                    mChannel.invokeMethod("onMessageSendSuccess", resultMap);
+                }
+
+                @Override
+                public void onError(Message errorMessage, int i) {
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(errorMessage);
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", messageMap);
+                    resultMap.put("errorCode", i);
+                    mChannel.invokeMethod("onMessageSendError", resultMap);
+                }
+            });
+            Map<String, Object> messageMap = ModelFactory.messageToMap(returnMessage);
+            result.success(messageMap);
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
+
+    private void resendMediaMessage(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Map<?, ?> messageMap = (Map<?, ?>) map.get("message");
+            Message message = ModelFactory.messageFromMap(messageMap);
+            Message returnMessage = JIM.getInstance().getMessageManager().resendMediaMessage(message, new IMessageManager.ISendMediaMessageCallback() {
+                @Override
+                public void onProgress(int i, Message message) {
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", messageMap);
+                    resultMap.put("progress", i);
+                    mChannel.invokeMethod("onMessageProgress", resultMap);
+                }
+
+                @Override
+                public void onSuccess(Message message) {
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", messageMap);
+                    mChannel.invokeMethod("onMessageSendSuccess", resultMap);
+                }
+
+                @Override
+                public void onError(Message message, int i) {
+                    Map<String, Object> messageMap = ModelFactory.messageToMap(message);
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("message", messageMap);
+                    resultMap.put("errorCode", i);
+                    mChannel.invokeMethod("onMessageSendError", resultMap);
+                }
+
+                @Override
+                public void onCancel(Message message) {
+                }
+            });
+            Map<String, Object> returnMessageMap = ModelFactory.messageToMap(returnMessage);
+            result.success(returnMessageMap);
         } else {
             result.success(new HashMap<>());
         }
