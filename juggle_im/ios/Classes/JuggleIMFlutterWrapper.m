@@ -7,9 +7,10 @@
 
 #import "JuggleIMFlutterWrapper.h"
 #import <JuggleIM/JuggleIM.h>
+#import <JuggleIM/JCallProtocol.h>
 #import "JModelFactory.h"
 
-@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate>
+@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JCallReceiveDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @end
 
@@ -115,6 +116,28 @@
         [self getGroupInfo:call.arguments result:result];
     } else if ([@"getGroupMember" isEqualToString:call.method]) {
         [self getGroupMember:call.arguments result:result];
+    } else if ([@"initZegoEngine" isEqualToString:call.method]) {
+        [self initZegoEngine:call.arguments result:result];
+    } else if ([@"startCall" isEqualToString:call.method]) {
+        [self startCall:call.arguments result:result];
+    } else if ([@"getCallSession" isEqualToString:call.method]) {
+        [self getCallSession:call.arguments result:result];
+    } else if ([@"callAccept" isEqualToString:call.method]) {
+        [self callAccept:call.arguments result:result];
+    } else if ([@"callHangup" isEqualToString:call.method]) {
+        [self callHangup:call.arguments result:result];
+    } else if ([@"callEnableCamera" isEqualToString:call.method]) {
+        [self callEnableCamera:call.arguments result:result];
+    } else if ([@"callMuteMicrophone" isEqualToString:call.method]) {
+        [self callMuteMicrophone:call.arguments result:result];
+    } else if ([@"callMuteSpeaker" isEqualToString:call.method]) {
+        [self callMuteSpeaker:call.arguments result:result];
+    } else if ([@"callSetSpeakerEnable" isEqualToString:call.method]) {
+        [self callSetSpeakerEnable:call.arguments result:result];
+    } else if ([@"callUseFrontCamera" isEqualToString:call.method]) {
+        [self callUseFrontCamera:call.arguments result:result];
+    } else if ([@"callInviteUsers" isEqualToString:call.method]) {
+        [self callInviteUsers:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -148,6 +171,7 @@
         [JIM.shared.conversationManager addDelegate:self];
         [JIM.shared.messageManager addDelegate:self];
         [JIM.shared.messageManager addReadReceiptDelegate:self];
+        [JIM.shared.callManager addReceiveDelegate:self];
     }
 }
 
@@ -163,7 +187,7 @@
 - (void)disconnect:(id)arg {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
-        BOOL receivePush = d[@"receivePush"];
+        BOOL receivePush = [d[@"receivePush"] boolValue];
         [JIM.shared.connectionManager disconnect:receivePush];
     }
 }
@@ -794,6 +818,123 @@
     result(resultDic);
 }
 
+#pragma mark - call
+- (void)initZegoEngine:(id)arg
+                result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    int appId = [dic[@"appId"] intValue];
+    NSString *appSign = dic[@"appSign"];
+    [JIM.shared.callManager initZegoEngineWith:appId appSign:appSign];
+    result(nil);
+}
+
+- (void)startCall:(id)arg
+           result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSArray<NSString *> *userIdList = dic[@"userIdList"];
+    JCallMediaType mediaType = [dic[@"mediaType"] intValue];
+    id<JCallSession> callSession = nil;
+    if (userIdList.count > 1) {
+        callSession = [JIM.shared.callManager startMultiCall:userIdList mediaType:mediaType delegate:nil];
+    } else if (userIdList.count == 1) {
+        callSession = [JIM.shared.callManager startSingleCall:userIdList[0] mediaType:mediaType delegate:nil];
+    }
+    if (callSession) {
+        NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
+        result(resultDic);
+    } else {
+        result([NSDictionary dictionary]);
+    }
+}
+
+- (void)getCallSession:(id)arg
+                result:(FlutterResult)result {
+    NSString *callId = arg;
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    if (callSession) {
+        NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
+        result(resultDic);
+    } else {
+        result([NSDictionary dictionary]);
+    }
+}
+
+- (void)callAccept:(id)arg
+            result:(FlutterResult)result {
+    NSString *callId = arg;
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession accept];
+    result(nil);
+}
+
+- (void)callHangup:(id)arg
+            result:(FlutterResult)result {
+    NSString *callId = arg;
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession hangup];
+    result(nil);
+}
+
+- (void)callEnableCamera:(id)arg
+                  result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    BOOL isEnable = [dic[@"isEnable"] boolValue];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession enableCamera:isEnable];
+    result(nil);
+}
+
+- (void)callMuteMicrophone:(id)arg
+                    result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    BOOL isMute = [dic[@"isMute"] boolValue];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession muteMicrophone:isMute];
+    result(nil);
+}
+
+- (void)callMuteSpeaker:(id)arg
+                 result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    BOOL isMute = [dic[@"isMute"] boolValue];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession muteSpeaker:isMute];
+    result(nil);
+}
+
+- (void)callSetSpeakerEnable:(id)arg
+                      result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    BOOL isEnable = [dic[@"isEnable"] boolValue];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession setSpeakerEnable:isEnable];
+    result(nil);
+}
+
+- (void)callUseFrontCamera:(id)arg
+                    result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    BOOL isEnable = [dic[@"isEnable"] boolValue];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession useFrontCamera:isEnable];
+    result(nil);
+}
+
+- (void)callInviteUsers:(id)arg
+                 result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    NSArray<NSString *> *userIdList = dic[@"userIdList"];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession inviteUsers:userIdList];
+    result(nil);
+}
+
 #pragma mark - JConnectionDelegate
 - (void)connectionStatusDidChange:(JConnectionStatus)status errorCode:(JErrorCode)code extra:(NSString *)extra {
     NSMutableDictionary *dic = [@{@"status":@(status), @"code":@(code)} mutableCopy];
@@ -908,6 +1049,12 @@
     }];
     NSDictionary *dic = @{@"conversation": conversationDic, @"messages": msgDic};
     [self.channel invokeMethod:@"onGroupMessagesRead" arguments:dic];
+}
+
+#pragma mark - JCallReceiveDelegate
+- (void)callDidReceive:(id<JCallSession>)callSession {
+    NSDictionary *callSessionDic = [JModelFactory callSessionToDic:callSession];
+    [self.channel invokeMethod:@"onCallReceive" arguments:callSessionDic];
 }
 
 @end

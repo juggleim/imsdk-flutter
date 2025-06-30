@@ -3,6 +3,7 @@
 import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
 import 'package:juggle_im/juggle_const.dart';
+import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
@@ -459,6 +460,35 @@ class JuggleIm {
     return member;
   }
 
+  //call
+  Future<void> initZegoEngine(int appId, String appSign) async {
+    var map = {'appId': appId, 'appSign': appSign};
+    await _methodChannel.invokeMethod('initZegoEngine', map);
+  }
+
+  Future<CallSession?> startCall(List<String> userIdList, int mediaType) async {
+    var map = {'userIdList': userIdList, 'mediaType': mediaType};
+    var resultMap = await _methodChannel.invokeMethod('startCall', map);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    CallSession callSession = CallSession.fromMap(resultMap);
+    return callSession;
+  }
+
+Future<CallSession?> getCallSession(String callId) async {
+    var resultMap = await _methodChannel.invokeMethod('getCallSession', callId);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    CallSession callSession = CallSession.fromMap(resultMap);
+    return callSession;
+  }
+
+
+
+
+
   void addConnectionListener(String key, ConnectionListener listener) {
     _connectionListenerMap[key] = listener;
   }
@@ -645,6 +675,13 @@ class JuggleIm {
           onGroupMessagesRead!(conversation, messages);
         }
 
+      case 'onCallReceive':
+        Map map = call.arguments;
+        CallSession callSession = CallSession.fromMap(map);
+        if (onCallReceive != null) {
+          onCallReceive!(callSession);
+        }
+
     }
     return Future.value(null);
   }
@@ -676,6 +713,8 @@ class JuggleIm {
   Function(Conversation conversation, MessageReaction reaction)? onMessageReactionRemove;
   Function(Conversation conversation, List<String> messageIdList)? onMessagesRead;
   Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
+
+  Function(CallSession callSession)? onCallReceive;
 
 
 }

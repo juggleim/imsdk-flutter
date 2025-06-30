@@ -206,6 +206,50 @@
     return [dic copy];
 }
 
++ (NSDictionary *)callMemberToDic:(JCallMember *)callMember {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (callMember.userInfo) {
+        [dic setObject:[JModelFactory userInfoToDic:callMember.userInfo] forKey:@"userInfo"];
+    }
+    [dic setObject:@(callMember.callStatus) forKey:@"callStatus"];
+    [dic setObject:@(callMember.startTime) forKey:@"startTime"];
+    [dic setObject:@(callMember.connectTime) forKey:@"connectTime"];
+    [dic setObject:@(callMember.finishTime) forKey:@"finishTime"];
+    if (callMember.inviter) {
+        [dic setObject:[JModelFactory userInfoToDic:callMember.inviter] forKey:@"inviter"];
+    }
+
+    return [dic copy];
+}
+
++ (NSDictionary *)callSessionToDic:(id<JCallSession>)callSession {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (callSession.callId) {
+        [dic setObject:callSession.callId forKey:@"callId"];
+    }
+    [dic setObject:@(callSession.isMultiCall) forKey:@"isMultiCall"];
+    [dic setObject:@(callSession.mediaType) forKey:@"mediaType"];
+    [dic setObject:@(callSession.callStatus) forKey:@"callStatus"];
+    [dic setObject:@(callSession.startTime) forKey:@"startTime"];
+    [dic setObject:@(callSession.connectTime) forKey:@"connectTime"];
+    [dic setObject:@(callSession.finishTime) forKey:@"finishTime"];
+    if (callSession.owner) {
+        [dic setObject:callSession.owner forKey:@"owner"];
+    }
+    if (callSession.inviterId) {
+        [dic setObject:callSession.inviterId forKey:@"inviterId"];
+    }
+    [dic setObject:@(callSession.finishReason) forKey:@"finishReason"];
+    NSMutableArray *memberDicArray = [NSMutableArray array];
+    for (JCallMember *member in callSession.members) {
+        NSDictionary *memberDic = [self callMemberToDic:member];
+        [memberDicArray addObject:memberDic];
+    }
+    [dic setObject:memberDicArray forKey:@"members"];
+    
+    return [dic copy];
+}
+
 #pragma mark - dic2Model
 + (JConversation *)conversationFromDic:(NSDictionary *)dic {
     JConversation *c = [JConversation new];

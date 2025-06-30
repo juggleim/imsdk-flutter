@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
+import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
@@ -70,6 +71,7 @@ class _MyAppState extends State<MyApp> {
       logConfig.consoleLevel = 6;
       config.logConfig = logConfig;
       await _juggleImPlugin.init('nsw3sue72begyv7y', config);
+      await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
       await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
 
@@ -163,6 +165,10 @@ class _MyAppState extends State<MyApp> {
           GetMessageOption op = GetMessageOption();
           op.count = 20;
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
+
+          var userIdList = ['YvoGswbXyqU'];
+          // CallSession? callSession = await _juggleImPlugin.startCall(userIdList, 0);
+          // CallSession? callSession2 = await _juggleImPlugin.getCallSession(callSession!.callId);
           
 
 
@@ -196,6 +202,11 @@ class _MyAppState extends State<MyApp> {
       };
       _juggleImPlugin.onMessageDelete = (conversation, list) {
         print('onMessageDelete, count is ' + list.length.toString());
+      };
+
+      _juggleImPlugin.onCallReceive = (callSession) {
+        print('onCallReceive');
+        callSession.accept();
       };
 
       final connectionListener = _MainConnectionListener();

@@ -20,6 +20,7 @@ A new Flutter plugin project.
   s.static_framework = false
 
   s.dependency 'JuggleIM', '1.8.12.5'
+  s.dependency 'JZegoCall', '1.8.13'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
