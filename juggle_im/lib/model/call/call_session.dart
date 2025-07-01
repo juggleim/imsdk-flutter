@@ -1,7 +1,8 @@
 
+
 import 'package:flutter/services.dart';
 import 'package:juggle_im/model/call/call_member.dart';
-import 'package:juggle_im/model/user_info.dart';
+
 
 
 class CallSession {
@@ -32,6 +33,7 @@ class CallSession {
 
   static CallSession fromMap(Map map) {
     var result = CallSession();
+    result._methodChannel.setMethodCallHandler(result._methodCallHandler);
     if (map.isEmpty) {
       return result;
     }
@@ -107,4 +109,100 @@ class CallSession {
     Map map = {'callId': callId, 'userIdList': userIdList};
     await _methodChannel.invokeMethod('callInviteUsers', map);
   }
+
+  Future<dynamic> _methodCallHandler(MethodCall call) {
+    switch (call.method) {
+      case "onCallConnect":
+        String callId = call.arguments;
+        if (callId == this.callId) {
+          if (onCallConnect != null) {
+            onCallConnect!();
+          }
+        }
+
+      case "onCallFinish":
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          int finishReason = map['finishReason'];
+          if (onCallFinish != null) {
+            onCallFinish!(finishReason);
+          }
+        }
+
+      case "onUsersInvite":
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          List<String> userIdList = map['userIdList'];
+          String inviterId = map['inviterId'];
+          if (onUsersInvite != null) {
+            onUsersInvite!(userIdList, inviterId);
+          }
+        }
+
+      case "onUsersConnect":
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          List<String> userIdList = map['userIdList'];
+          if (onUsersConnect != null) {
+            onUsersConnect!(userIdList);
+          }
+        }
+
+      case 'onUsersLeave':
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          List<String> userIdList = map['userIdList'];
+          if (onUsersLeave != null) {
+            onUsersLeave!(userIdList);
+          }
+        }
+
+      case 'onUserCameraChange':
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          String userId = map['userId'];
+          bool enable = map['enable'];
+          if (onUserCameraChange != null) {
+            onUserCameraChange!(userId, enable);
+          }
+        }
+
+      case 'onUserMicrophoneChange':
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          String userId = map['userId'];
+          bool enable = map['enable'];
+          if (onUserMicrophoneChange != null) {
+            onUserMicrophoneChange!(userId, enable);
+          }
+        }
+
+      case 'onErrorOccur':
+        Map map = call.arguments;
+        String callId = map['callId'];
+        if (callId == this.callId) {
+          int errorCode = map['errorCode'];
+          if (onErrorOccur != null) {
+            onErrorOccur!(errorCode);
+          }
+        }
+
+    }
+    return Future.value(null);
+  }
+
+  Function()? onCallConnect;
+  Function(int finishReason)? onCallFinish;
+  Function(List<String> userIdList, String inviterId)? onUsersInvite;
+  Function(List<String> userIdList)? onUsersConnect;
+  Function(List<String> userIdList)? onUsersLeave;
+  Function(String userId, bool enable)? onUserCameraChange;
+  Function(String userId, bool enable)? onUserMicrophoneChange;
+  Function(int errorCode)? onErrorOccur;
 }

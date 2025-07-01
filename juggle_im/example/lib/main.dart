@@ -49,6 +49,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final _juggleImPlugin = JuggleIm.instance;
+  CallSession? _callSession;
 
   @override
   void initState() {
@@ -167,9 +168,11 @@ class _MyAppState extends State<MyApp> {
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
           var userIdList = ['YvoGswbXyqU'];
-          // CallSession? callSession = await _juggleImPlugin.startCall(userIdList, 0);
-          // CallSession? callSession2 = await _juggleImPlugin.getCallSession(callSession!.callId);
-          
+          CallSession? callSession = await _juggleImPlugin.startCall(userIdList, 0);
+          _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
+          _callSession?.onCallFinish = (finishReason){
+            print('onCallFinish ' + finishReason.toString());
+          };
 
 
           
@@ -208,6 +211,7 @@ class _MyAppState extends State<MyApp> {
         print('onCallReceive');
         callSession.accept();
       };
+      
 
       final connectionListener = _MainConnectionListener();
       _juggleImPlugin.addConnectionListener('main', connectionListener);

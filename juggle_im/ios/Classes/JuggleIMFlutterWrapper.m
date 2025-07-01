@@ -9,9 +9,11 @@
 #import <JuggleIM/JuggleIM.h>
 #import <JuggleIM/JCallProtocol.h>
 #import "JModelFactory.h"
+#import "JCallSessionDelegateImpl.h"
 
-@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JCallReceiveDelegate>
+@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
+@property (nonatomic, copy) NSMutableDictionary <NSString *, JCallSessionDelegateImpl *> *callSessionDelegateDic;
 @end
 
 @implementation JuggleIMFlutterWrapper
@@ -841,6 +843,7 @@
     }
     if (callSession) {
         NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
+        [self addCallSessionDelegate:callSession];
         result(resultDic);
     } else {
         result([NSDictionary dictionary]);
@@ -1054,7 +1057,30 @@
 #pragma mark - JCallReceiveDelegate
 - (void)callDidReceive:(id<JCallSession>)callSession {
     NSDictionary *callSessionDic = [JModelFactory callSessionToDic:callSession];
+    [self addCallSessionDelegate:callSession];
     [self.channel invokeMethod:@"onCallReceive" arguments:callSessionDic];
 }
+
+#pragma mark - JCallSessionDelegateDestruct
+- (void)destructCallSessionDelegate:(NSString *)callId {
+    [self.callSessionDelegateDic removeObjectForKey:callId];
+}
+
+#pragma mark - private
+- (void)addCallSessionDelegate:(id<JCallSession>)callSession {
+    JCallSessionDelegateImpl *impl = [JCallSessionDelegateImpl delegateWithChannel:self.channel callId:callSession.callId];
+    [callSession addDelegate:impl];
+    
+    impl.destruct = self;
+    [self.callSessionDelegateDic setObject:impl forKey:callSession.callId];
+}
+
+- (NSMutableDictionary<NSString *,JCallSessionDelegateImpl *> *)callSessionDelegateDic {
+    if (!_callSessionDelegateDic) {
+        _callSessionDelegateDic = [NSMutableDictionary dictionary];
+    }
+    return _callSessionDelegateDic;
+}
+
 
 @end
