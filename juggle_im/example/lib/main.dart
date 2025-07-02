@@ -14,8 +14,6 @@ import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
-import 'package:juggle_im/model/result.dart';
-import 'package:juggle_im/model/user_info.dart';
 import 'package:juggle_im_example/group_notify_message.dart';
 
 void main() {

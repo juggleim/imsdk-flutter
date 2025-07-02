@@ -10,10 +10,12 @@
 #import <JuggleIM/JCallProtocol.h>
 #import "JModelFactory.h"
 #import "JCallSessionDelegateImpl.h"
+#import "JVideoPlatformView.h"
 
 @interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, copy) NSMutableDictionary <NSString *, JCallSessionDelegateImpl *> *callSessionDelegateDic;
+@property (nonatomic, strong) JVideoPlatformViewFactory *factory;
 @end
 
 @implementation JuggleIMFlutterWrapper
@@ -29,6 +31,10 @@
 
 - (void)setFlutterChannel:(FlutterMethodChannel *)channel {
     self.channel = channel;
+}
+
+- (void)setVideoPlatformViewFactory:(JVideoPlatformViewFactory *)factory {
+    self.factory = factory;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
@@ -140,6 +146,10 @@
         [self callUseFrontCamera:call.arguments result:result];
     } else if ([@"callInviteUsers" isEqualToString:call.method]) {
         [self callInviteUsers:call.arguments result:result];
+    } else if ([@"callSetVideoView" isEqualToString:call.method]) {
+        [self callSetVideoView:call.arguments result:result];
+    } else if ([@"callStartPreview" isEqualToString:call.method]) {
+        [self callStartPreview:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -936,6 +946,29 @@
     id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
     [callSession inviteUsers:userIdList];
     result(nil);
+}
+
+- (void)callSetVideoView:(id)arg
+                  result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    NSString *userId = dic[@"userId"];
+    NSString *viewId = dic[@"viewId"];
+    
+    JVideoPlatformView *view = (JVideoPlatformView *)[self.factory getViewById:viewId];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession setVideoView:view.view forUserId:userId];
+}
+
+- (void)callStartPreview:(id)arg
+                  result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *callId = dic[@"callId"];
+    NSString *viewId = dic[@"viewId"];
+    
+    JVideoPlatformView *view = (JVideoPlatformView *)[self.factory getViewById:viewId];
+    id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
+    [callSession startPreview:view.view];
 }
 
 #pragma mark - JConnectionDelegate

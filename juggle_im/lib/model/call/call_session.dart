@@ -2,6 +2,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:juggle_im/model/call/call_member.dart';
+import 'package:juggle_im/model/call/video_view.dart';
 
 
 
@@ -73,7 +74,17 @@ class CallSession {
     await _methodChannel.invokeMethod('callEnableCamera', map);
   }
 
-  //todo setVideoView, startPreview
+  /// 设置用户的视频 view
+  Future<void> setVideoView(String userId, VideoView view) async {
+    Map map = {'callId': callId, 'userId': userId, 'viewId': view.viewId};
+    await _methodChannel.invokeMethod('callSetVideoView', map);
+  }
+
+  /// 开始预览
+  Future<void> startPreview(VideoView view) async {
+    Map map = {'callId': callId, 'viewId': view.viewId};
+    await _methodChannel.invokeMethod('callStartPreview', map);
+  }
 
   /// 设置麦克风静音
   /// - Parameter isMute: 是否静音
