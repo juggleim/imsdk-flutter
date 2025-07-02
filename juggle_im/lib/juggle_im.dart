@@ -466,9 +466,9 @@ class JuggleIm {
     await _methodChannel.invokeMethod('initZegoEngine', map);
   }
 
-  Future<CallSession?> startCall(List<String> userIdList, int mediaType) async {
-    var map = {'userIdList': userIdList, 'mediaType': mediaType};
-    var resultMap = await _methodChannel.invokeMethod('startCall', map);
+  Future<CallSession?> startSingleCall(String userId, int mediaType) async {
+    var map = {'userId': userId, 'mediaType': mediaType};
+    var resultMap = await _methodChannel.invokeMethod('startSingleCall', map);
     if (resultMap.isEmpty) {
       return null;
     }
@@ -476,7 +476,17 @@ class JuggleIm {
     return callSession;
   }
 
-Future<CallSession?> getCallSession(String callId) async {
+  Future<CallSession?> startMultiCall(List<String> userIdList, int mediaType) async {
+    var map = {'userIdList': userIdList, 'mediaType': mediaType};
+    var resultMap = await _methodChannel.invokeMethod('startMultiCall', map);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    CallSession callSession = CallSession.fromMap(resultMap);
+    return callSession;
+  }
+
+  Future<CallSession?> getCallSession(String callId) async {
     var resultMap = await _methodChannel.invokeMethod('getCallSession', callId);
     if (resultMap.isEmpty) {
       return null;
@@ -484,10 +494,6 @@ Future<CallSession?> getCallSession(String callId) async {
     CallSession callSession = CallSession.fromMap(resultMap);
     return callSession;
   }
-
-
-
-
 
   void addConnectionListener(String key, ConnectionListener listener) {
     _connectionListenerMap[key] = listener;
@@ -715,7 +721,7 @@ Future<CallSession?> getCallSession(String callId) async {
   Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
 
   Function(CallSession callSession)? onCallReceive;
-  
+
 
 
 }

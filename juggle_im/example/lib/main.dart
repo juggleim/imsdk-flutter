@@ -166,7 +166,8 @@ class _MyAppState extends State<MyApp> {
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
           var userIdList = ['YvoGswbXyqU'];
-          CallSession? callSession = await _juggleImPlugin.startCall(userIdList, 0);
+          var userId = 'YvoGswbXyqU';
+          CallSession? callSession = await _juggleImPlugin.startSingleCall(userId, 0);
           _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
           _callSession?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());

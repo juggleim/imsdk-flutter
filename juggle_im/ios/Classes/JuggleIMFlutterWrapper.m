@@ -126,8 +126,10 @@
         [self getGroupMember:call.arguments result:result];
     } else if ([@"initZegoEngine" isEqualToString:call.method]) {
         [self initZegoEngine:call.arguments result:result];
-    } else if ([@"startCall" isEqualToString:call.method]) {
-        [self startCall:call.arguments result:result];
+    } else if ([@"startSingleCall" isEqualToString:call.method]) {
+        [self startSingleCall:call.arguments result:result];
+    } else if ([@"startMultiCall" isEqualToString:call.method]) {
+        [self startMultiCall:call.arguments result:result];
     } else if ([@"getCallSession" isEqualToString:call.method]) {
         [self getCallSession:call.arguments result:result];
     } else if ([@"callAccept" isEqualToString:call.method]) {
@@ -840,17 +842,29 @@
     result(nil);
 }
 
-- (void)startCall:(id)arg
-           result:(FlutterResult)result {
+- (void)startSingleCall:(id)arg
+                 result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *userId = dic[@"userId"];
+    JCallMediaType mediaType = [dic[@"mediaType"] intValue];
+    id<JCallSession> callSession = nil;
+    callSession = [JIM.shared.callManager startSingleCall:userId mediaType:mediaType delegate:nil];
+    if (callSession) {
+        NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
+        [self addCallSessionDelegate:callSession];
+        result(resultDic);
+    } else {
+        result([NSDictionary dictionary]);
+    }
+}
+
+- (void)startMultiCall:(id)arg
+                result:(FlutterResult)result {
     NSDictionary *dic = arg;
     NSArray<NSString *> *userIdList = dic[@"userIdList"];
     JCallMediaType mediaType = [dic[@"mediaType"] intValue];
     id<JCallSession> callSession = nil;
-    if (userIdList.count > 1) {
-        callSession = [JIM.shared.callManager startMultiCall:userIdList mediaType:mediaType delegate:nil];
-    } else if (userIdList.count == 1) {
-        callSession = [JIM.shared.callManager startSingleCall:userIdList[0] mediaType:mediaType delegate:nil];
-    }
+    callSession = [JIM.shared.callManager startMultiCall:userIdList mediaType:mediaType delegate:nil];
     if (callSession) {
         NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
         [self addCallSessionDelegate:callSession];

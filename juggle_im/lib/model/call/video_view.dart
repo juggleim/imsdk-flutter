@@ -18,8 +18,6 @@ class VideoView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _VideoViewState();
-  
-  
 }
 
 class _VideoViewState extends State<VideoView> {
@@ -30,7 +28,7 @@ class _VideoViewState extends State<VideoView> {
       width: widget.width,
       height: widget.height,
       child: _buildPlatformView(widget.viewId),
-    ); 
+    );
   }
 
   Widget _buildPlatformView(String? viewId) {
@@ -61,5 +59,4 @@ class _VideoViewState extends State<VideoView> {
       widget.onViewCreated!();
     }
   }
-  
 }
