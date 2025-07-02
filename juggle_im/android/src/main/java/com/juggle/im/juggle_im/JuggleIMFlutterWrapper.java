@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 import com.juggle.im.JErrorCode;
 import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
+import com.juggle.im.call.CallConst;
+import com.juggle.im.call.ICallManager;
+import com.juggle.im.call.ICallSession;
 import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
@@ -36,7 +39,7 @@ import java.util.Objects;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
- class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener {
+ class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener, ICallManager.ICallReceiveListener, CallSessionListenerImpl.ICallSessionListenerDestruct {
     public static JuggleIMFlutterWrapper getInstance() {
         return SingletonHolder.sInstance;
     }
@@ -51,6 +54,7 @@ import io.flutter.plugin.common.MethodChannel;
 
     private MethodChannel mChannel;
     private Context mContext;
+    private final Map<String, CallSessionListenerImpl> mCallSessionListenerMap = new HashMap<>();
 
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
         switch (call.method) {
@@ -178,6 +182,49 @@ import io.flutter.plugin.common.MethodChannel;
             case "getGroupMember":
                 getGroupMember(call.arguments, result);
                 break;
+            case "initZegoEngine":
+                initZegoEngine(call.arguments, result);
+                break;
+            case "startSingleCall":
+                startSingleCall(call.arguments, result);
+                break;
+            case "startMultiCall":
+                startMultiCall(call.arguments, result);
+                break;
+            case "getCallSession":
+                getCallSession(call.arguments, result);
+                break;
+            case "callAccept":
+                callAccept(call.arguments, result);
+                break;
+            case "callHangup":
+                callHangup(call.arguments, result);
+                break;
+            case "callEnableCamera":
+                callEnableCamera(call.arguments, result);
+                break;
+            case "callMuteMicrophone":
+                callMuteMicrophone(call.arguments, result);
+                break;
+            case "callMuteSpeaker":
+                callMuteSpeaker(call.arguments, result);
+                break;
+            case "callSetSpeakerEnable":
+                callSetSpeakerEnable(call.arguments, result);
+                break;
+            case "callUseFrontCamera":
+                callUseFrontCamera(call.arguments, result);
+                break;
+            case "callInviteUsers":
+                callInviteUsers(call.arguments, result);
+                break;
+                //todo
+//            case "callSetVideoView":
+//                callSetVideoView(call.arguments, result);
+//                break;
+//            case "callStartPreview":
+//                callStartPreview(call.arguments, result);
+//                break;
 
             default:
                 result.notImplemented();
@@ -210,6 +257,7 @@ import io.flutter.plugin.common.MethodChannel;
         JIM.getInstance().getConversationManager().addListener("Flutter", this);
         JIM.getInstance().getMessageManager().addListener("Flutter", this);
         JIM.getInstance().getMessageManager().addReadReceiptListener("Flutter", this);
+        JIM.getInstance().getCallManager().addReceiveListener("Flutter", this);
         result.success(null);
     }
 
@@ -1040,6 +1088,151 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+    private void initZegoEngine(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Number appId = (Number) map.get("appId");
+//            String appSign = (String) map.get("appSign");
+            if (appId != null) {
+                JIM.getInstance().getCallManager().initZegoEngine(appId.intValue(), mContext);
+            }
+            result.success(null);
+        }
+    }
+
+    private void startSingleCall(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String userId = (String) map.get("userId");
+            CallConst.CallMediaType mediaType = CallConst.CallMediaType.VOICE;
+            Number mediaTypeValue = (Number) map.get("mediaType");
+            if (mediaTypeValue != null) {
+                mediaType = CallConst.CallMediaType.setValue(mediaTypeValue.intValue());
+            }
+            ICallSession callSession = JIM.getInstance().getCallManager().startSingleCall(userId, mediaType, null);
+            if (callSession != null) {
+                Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
+                addCallSessionListener(callSession);
+                result.success(resultMap);
+            } else {
+                result.success(new HashMap<>());
+            }
+        }
+    }
+
+    private void startMultiCall(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            List<String> userIdList = (List<String>) map.get("userIdList");
+            CallConst.CallMediaType mediaType = CallConst.CallMediaType.VOICE;
+            Number mediaTypeValue = (Number) map.get("mediaType");
+            if (mediaTypeValue != null) {
+                mediaType = CallConst.CallMediaType.setValue(mediaTypeValue.intValue());
+            }
+            ICallSession callSession = JIM.getInstance().getCallManager().startMultiCall(userIdList, mediaType, null);
+            if (callSession != null) {
+                Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
+                addCallSessionListener(callSession);
+                result.success(resultMap);
+            } else {
+                result.success(new HashMap<>());
+            }
+        }
+    }
+
+    private void getCallSession(Object arg, MethodChannel.Result result) {
+        String callId = (String) arg;
+        ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+        if (callSession != null) {
+            Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
+            result.success(resultMap);
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
+
+    private void callAccept(Object arg, MethodChannel.Result result) {
+        String callId = (String) arg;
+        ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+        callSession.accept();
+        result.success(null);
+    }
+
+    private void callHangup(Object arg, MethodChannel.Result result) {
+        String callId = (String) arg;
+        ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+        callSession.hangup();
+        result.success(null);
+    }
+
+    private void callEnableCamera(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            boolean isEnable = (boolean) map.get("isEnable");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.enableCamera(isEnable);
+            result.success(null);
+        }
+    }
+
+    private void callMuteMicrophone(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            boolean isMute = (boolean) map.get("isMute");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.muteMicrophone(isMute);
+            result.success(null);
+        }
+    }
+
+    private void callMuteSpeaker(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            boolean isMute = (boolean) map.get("isMute");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.muteSpeaker(isMute);
+            result.success(null);
+        }
+    }
+
+    private void callSetSpeakerEnable(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            boolean isEnable = (boolean) map.get("isEnable");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.setSpeakerEnable(isEnable);
+            result.success(null);
+        }
+    }
+
+    private void callUseFrontCamera(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            boolean isEnable = (boolean) map.get("isEnable");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.useFrontCamera(isEnable);
+            result.success(null);
+        }
+    }
+
+    private void callInviteUsers(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            List<String> userIdList = (List<String>) map.get("userIdList");
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            callSession.inviteUsers(userIdList);
+            result.success(null);
+        }
+    }
+
+    //todo callSetVideoView, callStartPreview
+
     @Override
     public void onStatusChange(JIMConst.ConnectionStatus connectionStatus, int code, String extra) {
         Map<String, Object> map = new HashMap<>();
@@ -1188,7 +1381,30 @@ import io.flutter.plugin.common.MethodChannel;
         mChannel.invokeMethod("onGroupMessagesRead", map);
     }
 
-    private static class SingletonHolder {
+     @Override
+     public void onCallReceive(ICallSession callSession) {
+        Map<String, Object> map = ModelFactory.callSessionToMap(callSession);
+        addCallSessionListener(callSession);
+        mChannel.invokeMethod("onCallReceive", map);
+     }
+
+     @Override
+     public void destructCallSessionListener(String callId) {
+        mCallSessionListenerMap.remove(callId);
+        ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+        if (callSession != null) {
+            callSession.removeListener("Flutter");
+        }
+     }
+
+     private void addCallSessionListener(ICallSession callSession) {
+         CallSessionListenerImpl impl = new CallSessionListenerImpl(mChannel, callSession.getCallId());
+         callSession.addListener("Flutter", impl);
+         impl.setDestruct(this);
+         mCallSessionListenerMap.put(callSession.getCallId(), impl);
+     }
+
+     private static class SingletonHolder {
         static final JuggleIMFlutterWrapper sInstance = new JuggleIMFlutterWrapper();
     }
 }

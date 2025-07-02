@@ -19,6 +19,7 @@ rootProject.allprojects {
         maven {
             url "https://repo.juggle.im/repository/maven-releases/"
         }
+        maven { url 'https://storage.zego.im/maven' }
     }
 }
 
@@ -41,7 +42,9 @@ android {
     dependencies {
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.0.0")
-        implementation 'com.juggle.im:juggle:1.8.12.1'
+        implementation 'com.juggle.im:juggle:1.8.14.2'
+        implementation 'com.juggle.call.zego:juggle:1.8.14'
+        implementation 'im.zego:express-video:3.17.3'
     }
 
     testOptions {

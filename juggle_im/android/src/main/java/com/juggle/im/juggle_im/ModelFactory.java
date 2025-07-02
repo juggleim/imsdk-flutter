@@ -4,6 +4,8 @@ import android.text.TextUtils;
 
 import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
+import com.juggle.im.call.ICallSession;
+import com.juggle.im.call.model.CallMember;
 import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
@@ -252,6 +254,58 @@ class ModelFactory {
             }
         }
         map.put("itemList", itemList);
+        return map;
+    }
+
+    static Map<String, Object> callMemberToMap(CallMember callMember) {
+        Map<String, Object> map = new HashMap<>();
+        if (callMember.getUserInfo() != null) {
+            map.put("userInfo", userInfoToMap(callMember.getUserInfo()));
+        }
+        if (callMember.getCallStatus() != null) {
+            map.put("callStatus", callMember.getCallStatus().getStatus());
+        }
+        map.put("startTime", callMember.getStartTime());
+        map.put("connectTime", callMember.getConnectTime());
+        map.put("finishTime", callMember.getFinishTime());
+        if (callMember.getInviter() != null) {
+            map.put("inviter", userInfoToMap(callMember.getInviter()));
+        }
+        return map;
+    }
+
+    static Map<String, Object> callSessionToMap(ICallSession callSession) {
+        Map<String, Object> map = new HashMap<>();
+        if (!TextUtils.isEmpty(callSession.getCallId())) {
+            map.put("callId", callSession.getCallId());
+        }
+        map.put("isMultiCall", callSession.isMultiCall());
+        if (callSession.getMediaType() != null) {
+            map.put("mediaType", callSession.getMediaType().getValue());
+        }
+        if (callSession.getCallStatus() != null) {
+            map.put("callStatus", callSession.getCallStatus().getStatus());
+        }
+        map.put("startTime", callSession.getStartTime());
+        map.put("connectTime", callSession.getConnectTime());
+        map.put("finishTime", callSession.getFinishTime());
+        if (!TextUtils.isEmpty(callSession.getOwner())) {
+            map.put("owner", callSession.getOwner());
+        }
+        if (!TextUtils.isEmpty(callSession.getInviter())) {
+            map.put("inviterId", callSession.getInviter());
+        }
+        if (callSession.getFinishReason() != null) {
+            map.put("finishReason", callSession.getFinishReason().getValue());
+        }
+        List<Map<String, Object>> memberMapList = new ArrayList<>();
+        if (callSession.getMembers() != null) {
+            for (CallMember member : callSession.getMembers()) {
+                Map<String, Object> memberMap = callMemberToMap(member);
+                memberMapList.add(memberMap);
+            }
+            map.put("members", memberMapList);
+        }
         return map;
     }
 

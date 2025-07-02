@@ -3,6 +3,7 @@
 import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
 import 'package:juggle_im/juggle_const.dart';
+import 'package:juggle_im/model/call/call_finish_notify_message.dart';
 import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
@@ -699,6 +700,7 @@ class JuggleIm {
     registerMessageType(() => RecallInfoMessage());
     registerMessageType(() => VideoMessage());
     registerMessageType(() => VoiceMessage());
+    registerMessageType(() => CallFinishNotifyMessage());
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;
