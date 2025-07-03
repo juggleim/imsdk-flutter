@@ -22,6 +22,9 @@ public class JuggleImPlugin implements FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this);
     JuggleIMFlutterWrapper.getInstance().setChannel(channel);
     JuggleIMFlutterWrapper.getInstance().setContext(flutterPluginBinding.getApplicationContext());
+    VideoPlatformViewFactory factory = new VideoPlatformViewFactory(flutterPluginBinding.getBinaryMessenger());
+    JuggleIMFlutterWrapper.getInstance().setVideoPlatformViewFactory(factory);
+    flutterPluginBinding.getPlatformViewRegistry().registerViewFactory("videoview", factory);
   }
 
   @Override

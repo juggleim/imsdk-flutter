@@ -52,8 +52,13 @@ import io.flutter.plugin.common.MethodChannel;
         mContext = context;
     }
 
+    public void setVideoPlatformViewFactory(VideoPlatformViewFactory factory) {
+        mFactory = factory;
+    }
+
     private MethodChannel mChannel;
     private Context mContext;
+    private VideoPlatformViewFactory mFactory;
     private final Map<String, CallSessionListenerImpl> mCallSessionListenerMap = new HashMap<>();
 
     public void onMethodCall(@NonNull MethodCall call, @NonNull MethodChannel.Result result) {
@@ -218,13 +223,12 @@ import io.flutter.plugin.common.MethodChannel;
             case "callInviteUsers":
                 callInviteUsers(call.arguments, result);
                 break;
-                //todo
-//            case "callSetVideoView":
-//                callSetVideoView(call.arguments, result);
-//                break;
-//            case "callStartPreview":
-//                callStartPreview(call.arguments, result);
-//                break;
+            case "callSetVideoView":
+                callSetVideoView(call.arguments, result);
+                break;
+            case "callStartPreview":
+                callStartPreview(call.arguments, result);
+                break;
 
             default:
                 result.notImplemented();
@@ -1231,7 +1235,32 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
-    //todo callSetVideoView, callStartPreview
+    private void callSetVideoView(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            String userId = (String) map.get("userId");
+            String viewId = (String) map.get("viewId");
+            VideoPlatformView view = mFactory.getView(viewId);
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            if (callSession != null) {
+                callSession.setVideoView(userId, view.getView());
+            }
+        }
+    }
+
+    private void callStartPreview(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            String callId = (String) map.get("callId");
+            String viewId = (String) map.get("viewId");
+            VideoPlatformView view = mFactory.getView(viewId);
+            ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
+            if (callSession != null) {
+                callSession.startPreview(view.getView());
+            }
+        }
+    }
 
     @Override
     public void onStatusChange(JIMConst.ConnectionStatus connectionStatus, int code, String extra) {
