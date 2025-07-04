@@ -167,7 +167,7 @@ class _MyAppState extends State<MyApp> {
 
           var userIdList = ['YvoGswbXyqU'];
           var userId = 'YvoGswbXyqU';
-          CallSession? callSession = await _juggleImPlugin.startSingleCall(userId, 0);
+          CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
           _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
           _callSession?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());

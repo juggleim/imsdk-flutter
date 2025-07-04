@@ -9,7 +9,7 @@
 #import "JVideoPlatformView.h"
 
 @interface JVideoPlatformViewFactory ()
-@property (nonatomic, copy) NSMutableDictionary *viewDic;
+@property (nonatomic, copy) NSMapTable *viewDic;
 @end
 
 @implementation JVideoPlatformViewFactory {
@@ -44,9 +44,9 @@
     return [self.viewDic objectForKey:viewId];
 }
 
-- (NSMutableDictionary *)viewDic {
+- (NSMapTable *)viewDic {
     if (!_viewDic) {
-        _viewDic = [NSMutableDictionary dictionary];
+        _viewDic = [NSMapTable strongToWeakObjectsMapTable];
     }
     return _viewDic;
 }

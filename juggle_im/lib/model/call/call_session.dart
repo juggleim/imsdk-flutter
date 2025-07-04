@@ -145,7 +145,8 @@ class CallSession {
         Map map = call.arguments;
         String callId = map['callId'];
         if (callId == this.callId) {
-          List<String> userIdList = map['userIdList'];
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
           String inviterId = map['inviterId'];
           if (onUsersInvite != null) {
             onUsersInvite!(userIdList, inviterId);
@@ -156,7 +157,8 @@ class CallSession {
         Map map = call.arguments;
         String callId = map['callId'];
         if (callId == this.callId) {
-          List<String> userIdList = map['userIdList'];
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
           if (onUsersConnect != null) {
             onUsersConnect!(userIdList);
           }
@@ -166,7 +168,8 @@ class CallSession {
         Map map = call.arguments;
         String callId = map['callId'];
         if (callId == this.callId) {
-          List<String> userIdList = map['userIdList'];
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
           if (onUsersLeave != null) {
             onUsersLeave!(userIdList);
           }
