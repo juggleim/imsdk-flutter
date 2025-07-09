@@ -35,14 +35,14 @@ class _VideoViewState extends State<VideoView> {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'videoview',
-        creationParams: {viewId ?? ''},
+        creationParams: viewId ?? '',
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: _onPlatformViewCreated,
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: 'videoview',
-        creationParams: {viewId ?? ''},
+        creationParams: viewId ?? '',
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: _onPlatformViewCreated,
       );
