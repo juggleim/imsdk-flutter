@@ -692,6 +692,7 @@ class JuggleIm {
       case 'onCallReceive':
         Map map = call.arguments;
         CallSession callSession = CallSession.fromMap(map);
+        _callSessionMap[callSession.callId] = callSession;
         if (onCallReceive != null) {
           onCallReceive!(callSession);
         }
