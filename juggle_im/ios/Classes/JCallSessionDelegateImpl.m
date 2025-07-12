@@ -57,6 +57,10 @@
     [self.channel invokeMethod:@"onUserMicrophoneChange" arguments:dic];
 }
 
+- (void)soundLevelDidUpdate:(NSDictionary<NSString *,NSNumber *> *)soundLevels {
+    [self.channel invokeMethod:@"onSoundLevelUpdate" arguments:soundLevels];
+}
+
 - (void)errorDidOccur:(JCallErrorCode)errorCode {
     NSDictionary *dic = @{@"callId": self.callId, @"errorCode": @(errorCode)};
     [self.channel invokeMethod:@"onErrorOccur" arguments:dic];

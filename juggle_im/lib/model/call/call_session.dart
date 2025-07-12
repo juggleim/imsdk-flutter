@@ -207,6 +207,17 @@ class CallSession {
           }
         }
 
+      case 'onSoundLevelUpdate':
+        Map map = call.arguments;
+        Map<String, double> levelMap = {};
+        map.forEach((key, value) {
+          if (key is String && value is num) {
+            levelMap[key] = value.toDouble();
+          }
+        });
+        if (onSoundLevelUpdate != null) {
+          onSoundLevelUpdate!(levelMap);
+        }
     }
     return Future.value(null);
   }
@@ -219,4 +230,5 @@ class CallSession {
   Function(String userId, bool enable)? onUserCameraChange;
   Function(String userId, bool enable)? onUserMicrophoneChange;
   Function(int errorCode)? onErrorOccur;
+  Function(Map<String, double>)? onSoundLevelUpdate;
 }

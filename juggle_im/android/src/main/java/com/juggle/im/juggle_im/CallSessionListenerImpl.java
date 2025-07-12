@@ -80,6 +80,11 @@ public class CallSessionListenerImpl implements ICallSession.ICallSessionListene
         mChannel.invokeMethod("onUserMicrophoneChange", map);
     }
 
+    @Override
+    public void onSoundLevelUpdate(HashMap<String, Float> hashMap) {
+        mChannel.invokeMethod("onSoundLevelUpdate", hashMap);
+    }
+
     public void setDestruct(ICallSessionListenerDestruct destruct) {
         mDestruct = destruct;
     }

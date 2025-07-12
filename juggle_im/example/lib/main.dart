@@ -172,6 +172,9 @@ class _MyAppState extends State<MyApp> {
           _callSession?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());
           };
+          _callSession?.onSoundLevelUpdate = (map) {
+            print('onSoundLevelUpdate: $map');
+          };
 
 
           
