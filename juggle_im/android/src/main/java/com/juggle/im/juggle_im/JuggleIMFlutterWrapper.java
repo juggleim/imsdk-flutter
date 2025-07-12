@@ -1158,14 +1158,18 @@ import io.flutter.plugin.common.MethodChannel;
     private void callAccept(Object arg, MethodChannel.Result result) {
         String callId = (String) arg;
         ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-        callSession.accept();
+        if (callSession != null) {
+            callSession.accept();
+        }
         result.success(null);
     }
 
     private void callHangup(Object arg, MethodChannel.Result result) {
         String callId = (String) arg;
         ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-        callSession.hangup();
+        if (callSession != null) {
+            callSession.hangup();
+        }
         result.success(null);
     }
 
@@ -1175,7 +1179,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             boolean isEnable = (boolean) map.get("isEnable");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.enableCamera(isEnable);
+            if (callSession != null) {
+                callSession.enableCamera(isEnable);
+            }
             result.success(null);
         }
     }
@@ -1186,7 +1192,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             boolean isMute = (boolean) map.get("isMute");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.muteMicrophone(isMute);
+            if (callSession != null) {
+                callSession.muteMicrophone(isMute);
+            }
             result.success(null);
         }
     }
@@ -1197,7 +1205,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             boolean isMute = (boolean) map.get("isMute");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.muteSpeaker(isMute);
+            if (callSession != null) {
+                callSession.muteSpeaker(isMute);
+            }
             result.success(null);
         }
     }
@@ -1208,7 +1218,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             boolean isEnable = (boolean) map.get("isEnable");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.setSpeakerEnable(isEnable);
+            if (callSession != null) {
+                callSession.setSpeakerEnable(isEnable);
+            }
             result.success(null);
         }
     }
@@ -1219,7 +1231,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             boolean isEnable = (boolean) map.get("isEnable");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.useFrontCamera(isEnable);
+            if (callSession != null) {
+                callSession.useFrontCamera(isEnable);
+            }
             result.success(null);
         }
     }
@@ -1230,7 +1244,9 @@ import io.flutter.plugin.common.MethodChannel;
             String callId = (String) map.get("callId");
             List<String> userIdList = (List<String>) map.get("userIdList");
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            callSession.inviteUsers(userIdList);
+            if (callSession != null) {
+                callSession.inviteUsers(userIdList);
+            }
             result.success(null);
         }
     }
