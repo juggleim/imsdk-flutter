@@ -1243,7 +1243,7 @@ import io.flutter.plugin.common.MethodChannel;
             String viewId = (String) map.get("viewId");
             VideoPlatformView view = mFactory.getView(viewId);
             ICallSession callSession = JIM.getInstance().getCallManager().getCallSession(callId);
-            if (callSession != null) {
+            if (callSession != null && view != null) {
                 callSession.setVideoView(userId, view.getView());
             }
         }

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
 import 'package:juggle_im/model/call/call_session.dart';
+import 'package:juggle_im/model/call/video_view.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
@@ -169,6 +170,8 @@ class _MyAppState extends State<MyApp> {
           var userId = 'YvoGswbXyqU';
           CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
           _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
+          VideoView view = VideoView(viewId: 'viewId');
+          await _callSession?.setVideoView(userId, view);
           _callSession?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());
           };
