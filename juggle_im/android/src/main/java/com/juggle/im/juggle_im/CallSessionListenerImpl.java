@@ -24,7 +24,7 @@ public class CallSessionListenerImpl implements ICallSession.ICallSessionListene
     public void onCallFinish(CallConst.CallFinishReason callFinishReason) {
         Map<String, Object> map = new HashMap<>();
         map.put("callId", mCallId);
-        map.put("finishReason", callFinishReason.getValue());
+        map.put("finishReason", callFinishReason != null ? callFinishReason.getValue() : 0);
         mChannel.invokeMethod("onCallFinish", map);
         mDestruct.destructCallSessionListener(mCallId);
     }

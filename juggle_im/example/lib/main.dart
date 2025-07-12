@@ -48,7 +48,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   final _juggleImPlugin = JuggleIm.instance;
-  CallSession? _callSession;
+  CallSession? callSession2;
 
   @override
   void initState() {
@@ -166,17 +166,21 @@ class _MyAppState extends State<MyApp> {
           op.count = 20;
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
-          // var userIdList = ['YvoGswbXyqU'];
-          // var userId = 'YvoGswbXyqU';
-          // CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
-          // _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
-          // VideoView view = VideoView(viewId: 'viewId');
-          // await _callSession?.setVideoView(userId, view);
-          _callSession?.onCallFinish = (finishReason){
+          var userIdList = ['YvoGswbXyqU'];
+          var userId = 'YvoGswbXyqU';
+          CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
+          callSession2 = await _juggleImPlugin.getCallSession(callSession!.callId);
+          VideoView view = VideoView(viewId: 'viewId');
+          await callSession2?.setVideoView(userId, view);
+          callSession2?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());
           };
-          _callSession?.onSoundLevelUpdate = (map) {
+          callSession2?.onSoundLevelUpdate = (map) {
             print('onSoundLevelUpdate: $map');
+          };
+          callSession2?.onCallConnect = (){
+            print('onCallConnect');
+            callSession2?.hangup();
           };
 
 

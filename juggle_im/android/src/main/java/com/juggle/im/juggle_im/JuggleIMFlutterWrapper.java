@@ -1247,6 +1247,7 @@ import io.flutter.plugin.common.MethodChannel;
                 callSession.setVideoView(userId, view.getView());
             }
         }
+        result.success(null);
     }
 
     private void callStartPreview(Object arg, MethodChannel.Result result) {
@@ -1260,6 +1261,7 @@ import io.flutter.plugin.common.MethodChannel;
                 callSession.startPreview(view.getView());
             }
         }
+        result.success(null);
     }
 
     @Override
