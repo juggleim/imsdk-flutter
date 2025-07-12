@@ -36,6 +36,7 @@ class JuggleIm {
   final Map<int, DataCallback<Message>> _sendMessageCallbackMap = {};
   final Map<int, SendMessageProgressCallback> _sendMessageProgressCallbackMap = {};
   final Map<String, ConnectionListener> _connectionListenerMap = {};
+  final Map<String, CallSession> _callSessionMap = {};
 
   JuggleIm._internal() {
     _registerMessages();
@@ -474,6 +475,7 @@ class JuggleIm {
       return null;
     }
     CallSession callSession = CallSession.fromMap(resultMap);
+    _callSessionMap[callSession.callId] = callSession;
     return callSession;
   }
 
@@ -484,15 +486,20 @@ class JuggleIm {
       return null;
     }
     CallSession callSession = CallSession.fromMap(resultMap);
+    _callSessionMap[callSession.callId] = callSession;
     return callSession;
   }
 
   Future<CallSession?> getCallSession(String callId) async {
+    CallSession? callSession = _callSessionMap[callId];
+    if (callSession != null) {
+      return callSession;
+    }
     var resultMap = await _methodChannel.invokeMethod('getCallSession', callId);
     if (resultMap.isEmpty) {
       return null;
     }
-    CallSession callSession = CallSession.fromMap(resultMap);
+    callSession = CallSession.fromMap(resultMap);
     return callSession;
   }
 
@@ -689,6 +696,108 @@ class JuggleIm {
           onCallReceive!(callSession);
         }
 
+      case "onCallConnect":
+        String callId = call.arguments;
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onCallConnect != null) {
+          session.onCallConnect!();
+        }
+
+      case "onCallFinish":
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onCallFinish != null) {
+          int finishReason = map['finishReason'];
+          session.onCallFinish!(finishReason);
+        }
+        _callSessionMap.remove(callId);
+
+      case "onUsersInvite":
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onUsersInvite != null) {
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
+          String inviterId = map['inviterId'];
+          session.onUsersInvite!(userIdList, inviterId);
+        }
+
+      case "onUsersConnect":
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onUsersConnect != null) {
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
+          session.onUsersConnect!(userIdList);
+        }
+
+      case 'onUsersLeave':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onUsersLeave != null) {
+          List<Object?> sourceList = map['userIdList'];
+          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
+          session.onUsersLeave!(userIdList);
+        }
+
+      case 'onUserCameraChange':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onUserCameraChange != null) {
+          String userId = map['userId'];
+          bool enable = map['enable'];
+          session.onUserCameraChange!(userId, enable);
+        }
+
+      case 'onUserMicrophoneChange':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+         if (session != null && session.onUserMicrophoneChange != null) {
+          String userId = map['userId'];
+          bool enable = map['enable'];
+          session.onUserMicrophoneChange!(userId, enable);
+        }
+
+      case 'onErrorOccur':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onErrorOccur != null) {
+          int errorCode = map['errorCode'];
+          session.onErrorOccur!(errorCode);
+        }
+
+      case 'onSoundLevelUpdate':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onSoundLevelUpdate != null) {
+          Map soundLevels = map['soundLevels'];
+          Map<String, double> levelMap = {};
+          soundLevels.forEach((key, value) {
+            if (key is String && value is num) {
+              levelMap[key] = value.toDouble();
+            }
+          });
+
+          session.onSoundLevelUpdate!(levelMap);
+        }
+
     }
     return Future.value(null);
   }
@@ -701,6 +810,10 @@ class JuggleIm {
     registerMessageType(() => VideoMessage());
     registerMessageType(() => VoiceMessage());
     registerMessageType(() => CallFinishNotifyMessage());
+  }
+
+  CallSession? _getCallSession(String callId) {
+    return _callSessionMap[callId];
   }
 
   Function(int connectionStatus, int code, String extra)? onConnectionStatusChange;
@@ -723,7 +836,5 @@ class JuggleIm {
   Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
 
   Function(CallSession callSession)? onCallReceive;
-
-
 
 }

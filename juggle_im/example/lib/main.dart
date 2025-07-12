@@ -166,12 +166,12 @@ class _MyAppState extends State<MyApp> {
           op.count = 20;
           var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
-          var userIdList = ['YvoGswbXyqU'];
-          var userId = 'YvoGswbXyqU';
-          CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
-          _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
-          VideoView view = VideoView(viewId: 'viewId');
-          await _callSession?.setVideoView(userId, view);
+          // var userIdList = ['YvoGswbXyqU'];
+          // var userId = 'YvoGswbXyqU';
+          // CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
+          // _callSession = await _juggleImPlugin.getCallSession(callSession!.callId);
+          // VideoView view = VideoView(viewId: 'viewId');
+          // await _callSession?.setVideoView(userId, view);
           _callSession?.onCallFinish = (finishReason){
             print('onCallFinish ' + finishReason.toString());
           };
@@ -214,7 +214,7 @@ class _MyAppState extends State<MyApp> {
 
       _juggleImPlugin.onCallReceive = (callSession) {
         print('onCallReceive');
-        callSession.accept();
+        callSession.hangup();
       };
       
 

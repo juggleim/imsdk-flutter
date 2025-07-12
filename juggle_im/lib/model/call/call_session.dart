@@ -34,7 +34,6 @@ class CallSession {
 
   static CallSession fromMap(Map map) {
     var result = CallSession();
-    result._methodChannel.setMethodCallHandler(result._methodCallHandler);
     if (map.isEmpty) {
       return result;
     }
@@ -119,107 +118,6 @@ class CallSession {
   Future<void> inviteUsers(List<String> userIdList) async {
     Map map = {'callId': callId, 'userIdList': userIdList};
     await _methodChannel.invokeMethod('callInviteUsers', map);
-  }
-
-  Future<dynamic> _methodCallHandler(MethodCall call) {
-    switch (call.method) {
-      case "onCallConnect":
-        String callId = call.arguments;
-        if (callId == this.callId) {
-          if (onCallConnect != null) {
-            onCallConnect!();
-          }
-        }
-
-      case "onCallFinish":
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          int finishReason = map['finishReason'];
-          if (onCallFinish != null) {
-            onCallFinish!(finishReason);
-          }
-        }
-
-      case "onUsersInvite":
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          List<Object?> sourceList = map['userIdList'];
-          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
-          String inviterId = map['inviterId'];
-          if (onUsersInvite != null) {
-            onUsersInvite!(userIdList, inviterId);
-          }
-        }
-
-      case "onUsersConnect":
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          List<Object?> sourceList = map['userIdList'];
-          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
-          if (onUsersConnect != null) {
-            onUsersConnect!(userIdList);
-          }
-        }
-
-      case 'onUsersLeave':
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          List<Object?> sourceList = map['userIdList'];
-          List<String> userIdList = sourceList.map((item) => item.toString()).toList();
-          if (onUsersLeave != null) {
-            onUsersLeave!(userIdList);
-          }
-        }
-
-      case 'onUserCameraChange':
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          String userId = map['userId'];
-          bool enable = map['enable'];
-          if (onUserCameraChange != null) {
-            onUserCameraChange!(userId, enable);
-          }
-        }
-
-      case 'onUserMicrophoneChange':
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          String userId = map['userId'];
-          bool enable = map['enable'];
-          if (onUserMicrophoneChange != null) {
-            onUserMicrophoneChange!(userId, enable);
-          }
-        }
-
-      case 'onErrorOccur':
-        Map map = call.arguments;
-        String callId = map['callId'];
-        if (callId == this.callId) {
-          int errorCode = map['errorCode'];
-          if (onErrorOccur != null) {
-            onErrorOccur!(errorCode);
-          }
-        }
-
-      case 'onSoundLevelUpdate':
-        Map map = call.arguments;
-        Map<String, double> levelMap = {};
-        map.forEach((key, value) {
-          if (key is String && value is num) {
-            levelMap[key] = value.toDouble();
-          }
-        });
-        if (onSoundLevelUpdate != null) {
-          onSoundLevelUpdate!(levelMap);
-        }
-    }
-    return Future.value(null);
   }
 
   Function()? onCallConnect;

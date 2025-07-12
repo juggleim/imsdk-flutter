@@ -82,7 +82,10 @@ public class CallSessionListenerImpl implements ICallSession.ICallSessionListene
 
     @Override
     public void onSoundLevelUpdate(HashMap<String, Float> hashMap) {
-        mChannel.invokeMethod("onSoundLevelUpdate", hashMap);
+        Map<String, Object> map = new HashMap<>();
+        map.put("callId", mCallId);
+        map.put("soundLevels", hashMap);
+        mChannel.invokeMethod("onSoundLevelUpdate", map);
     }
 
     public void setDestruct(ICallSessionListenerDestruct destruct) {
