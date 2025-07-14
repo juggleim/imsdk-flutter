@@ -971,6 +971,7 @@
     JVideoPlatformView *view = (JVideoPlatformView *)[self.factory getViewById:viewId];
     id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
     [callSession setVideoView:view.view forUserId:userId];
+    result(nil);
 }
 
 - (void)callStartPreview:(id)arg
@@ -982,6 +983,7 @@
     JVideoPlatformView *view = (JVideoPlatformView *)[self.factory getViewById:viewId];
     id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
     [callSession startPreview:view.view];
+    result(nil);
 }
 
 #pragma mark - JConnectionDelegate
