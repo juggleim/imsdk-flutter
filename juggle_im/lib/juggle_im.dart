@@ -28,6 +28,7 @@ import 'package:juggle_im/model/message_content.dart';
 import 'package:juggle_im/model/message_reaction.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
+import 'package:juggle_im/model/top_message_result.dart';
 import 'package:juggle_im/model/user_info.dart';
 
 class JuggleIm {
@@ -433,6 +434,26 @@ class JuggleIm {
     await _methodChannel.invokeMethod('setMessageLocalAttribute', map);
   }
 
+  Future<int> setMessageTop(String messageId, Conversation conversation, bool isTop) async {
+    Map map = {'messageId': messageId, 'conversation': conversation.toMap(), 'isTop': isTop};
+    return await _methodChannel.invokeMethod('setMessageTop', map);
+  }
+
+  Future<Result<TopMessageResult>> getTopMessage(Conversation conversation) async {
+    Map map = conversation.toMap();
+    Map resultMap = await _methodChannel.invokeMethod('getTopMessage', map);
+    var result = Result<TopMessageResult>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      Message message = Message.fromMap(resultMap['message']);
+      UserInfo operator = UserInfo.fromMap(resultMap['userInfo']);
+      int timestamp = resultMap['timestamp'];
+      TopMessageResult r = TopMessageResult(message, operator, timestamp);
+      result.t = r;
+    }
+    return result;
+  }
+
   //userInfo
   Future<UserInfo?> getUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('getUserInfo', userId);
@@ -689,6 +710,15 @@ class JuggleIm {
           onGroupMessagesRead!(conversation, messages);
         }
 
+      case 'onMessageSetTop':
+        Map map = call.arguments;
+        Message message = Message.fromMap(map['message']);
+        UserInfo operator = UserInfo.fromMap(map['userInfo']);
+        bool isTop = map['isTop'];
+        if (onMessageSetTop != null) {
+          onMessageSetTop!(message, operator, isTop);
+        }
+
       case 'onCallReceive':
         Map map = call.arguments;
         CallSession callSession = CallSession.fromMap(map);
@@ -835,6 +865,7 @@ class JuggleIm {
   Function(Conversation conversation, MessageReaction reaction)? onMessageReactionRemove;
   Function(Conversation conversation, List<String> messageIdList)? onMessagesRead;
   Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
+  Function(Message message, UserInfo operator, bool isTop)? onMessageSetTop;
 
   Function(CallSession callSession)? onCallReceive;
 

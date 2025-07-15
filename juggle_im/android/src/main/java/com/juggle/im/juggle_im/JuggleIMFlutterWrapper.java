@@ -178,6 +178,12 @@ import io.flutter.plugin.common.MethodChannel;
             case "setMessageLocalAttribute":
                 setMessageLocalAttribute(call.arguments, result);
                 break;
+            case "setMessageTop":
+                setMessageTop(call.arguments, result);
+                break;
+            case "getTopMessage":
+                getTopMessage(call.arguments, result);
+                break;
             case "getUserInfo":
                 getUserInfo(call.arguments, result);
                 break;
@@ -1067,6 +1073,47 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+    private void setMessageTop(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String messageId = (String) map.get("messageId");
+        Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+        boolean isTop = (boolean) map.get("isTop");
+        JIM.getInstance().getMessageManager().setTop(messageId, conversation, isTop, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(0);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void getTopMessage(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        Conversation conversation = ModelFactory.conversationFromMap(map);
+        JIM.getInstance().getMessageManager().getTopMessage(conversation, new IMessageManager.IGetTopMessageCallback() {
+            @Override
+            public void onSuccess(Message message, UserInfo userInfo, long l) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("message", ModelFactory.messageToMap(message));
+                resultMap.put("userInfo", ModelFactory.userInfoToMap(userInfo));
+                resultMap.put("timestamp", l);
+                resultMap.put("errorCode", 0);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
     private void getUserInfo(Object arg, MethodChannel.Result result) {
         String userId = (String) arg;
         UserInfo userInfo = JIM.getInstance().getUserInfoManager().getUserInfo(userId);
@@ -1401,6 +1448,15 @@ import io.flutter.plugin.common.MethodChannel;
         map.put("reaction", reactionMap);
         map.put("conversation", conversationMap);
         mChannel.invokeMethod("onMessageReactionRemove", map);
+    }
+
+    @Override
+    public void onMessageSetTop(Message message, UserInfo userInfo, boolean b) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("message", ModelFactory.messageToMap(message));
+        map.put("userInfo", ModelFactory.userInfoToMap(userInfo));
+        map.put("isTop", b);
+        mChannel.invokeMethod("onMessageSetTop", map);
     }
 
     @Override

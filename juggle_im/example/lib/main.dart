@@ -87,7 +87,16 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoList, count is " + length.toString());
 
-          Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
+          Conversation cc = Conversation(1, 'YvoGswbXyqU');
+          // int r = await _juggleImPlugin.setMessageTop('n2bbjeh4k4qgzrn9', cc, false);
+          
+
+          Conversation ccc = Conversation(2, '22GkgKbSwJ6asdfasdf');
+          var rr = await _juggleImPlugin.getTopMessage(cc);
+          var rrr = await _juggleImPlugin.getTopMessage(ccc);
+          int iiii = 1;
+
+          // Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
           // Result<void>? r = await _juggleImPlugin.setMute(c1, true);
           // ConversationInfo? info1 = await _juggleImPlugin.getConversationInfo(c1);
 
@@ -95,24 +104,24 @@ class _MyAppState extends State<MyApp> {
           // info1 = await _juggleImPlugin.getConversationInfo(c1);
           
 
-          GetConversationInfoOption option = GetConversationInfoOption();
-          option.conversationTypes = [2];
-          option.count = 100;
-          option.timestamp = 0;
-          option.direction = 1;
-          l = await _juggleImPlugin.getConversationInfoListByOption(option);
-          length = 0;
-          if (l != null) {
-            length = l.length;
-          }
-          print("getConversationInfoListByOption, count is " + length.toString());
+          // GetConversationInfoOption option = GetConversationInfoOption();
+          // option.conversationTypes = [2];
+          // option.count = 100;
+          // option.timestamp = 0;
+          // option.direction = 1;
+          // l = await _juggleImPlugin.getConversationInfoListByOption(option);
+          // length = 0;
+          // if (l != null) {
+          //   length = l.length;
+          // }
+          // print("getConversationInfoListByOption, count is " + length.toString());
 
 
-          GetMessageOption getMessageOption = GetMessageOption();
-          getMessageOption.count = 5;
-          var messages = await _juggleImPlugin.getMessages(c1, 1, getMessageOption);
-          var cml = [6];
-          int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml, true);
+          // GetMessageOption getMessageOption = GetMessageOption();
+          // getMessageOption.count = 5;
+          // var messages = await _juggleImPlugin.getMessages(c1, 1, getMessageOption);
+          // var cml = [6];
+          // int? code = await _juggleImPlugin.deleteMessagesByClientMsgNoList(c1, cml, true);
 
 
           // // Result<Message>? rm = await _juggleImPlugin.recallMessage('nzcyxtgktxqjxmya');
@@ -131,40 +140,40 @@ class _MyAppState extends State<MyApp> {
 
 
 
-          Conversation c2 = Conversation(1, 'YvoGswbXyqU');
-          TextMessage textMessage = TextMessage.content('flutter text Android');
-          ImageMessage image = ImageMessage();
-          image.localPath = 'asdfadf';
-          image.thumbnailLocalPath = '23232';
-          GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
-          groupNotifyMessage.content = 'This is content';
-          groupNotifyMessage.aaa = 'This is aaa';
-          callback(message, errorCode) {
-              if (errorCode == 0) {
-                print("sendMessage success, messageId is " + message.messageId!);
-              } else {
-                print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
-              }
-          }
-          progressCallback(message, progress) {
+          // Conversation c2 = Conversation(1, 'YvoGswbXyqU');
+          // TextMessage textMessage = TextMessage.content('flutter text Android');
+          // ImageMessage image = ImageMessage();
+          // image.localPath = 'asdfadf';
+          // image.thumbnailLocalPath = '23232';
+          // GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
+          // groupNotifyMessage.content = 'This is content';
+          // groupNotifyMessage.aaa = 'This is aaa';
+          // callback(message, errorCode) {
+          //     if (errorCode == 0) {
+          //       print("sendMessage success, messageId is " + message.messageId!);
+          //     } else {
+          //       print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
+          //     }
+          // }
+          // progressCallback(message, progress) {
 
-          }
-          Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
-          Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
+          // }
+          // Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
+          // Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
 
-          Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
-          ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
+          // Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
+          // ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
 
-          await _juggleImPlugin.setMute(c2, true);
+          // await _juggleImPlugin.setMute(c2, true);
           
 
           // Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
           // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
           // await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
           // List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
-          GetMessageOption op = GetMessageOption();
-          op.count = 20;
-          var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
+          // GetMessageOption op = GetMessageOption();
+          // op.count = 20;
+          // var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
           // var userIdList = ['YvoGswbXyqU'];
           // var userId = 'YvoGswbXyqU';
@@ -227,6 +236,10 @@ class _MyAppState extends State<MyApp> {
           print('onCallConnect');
           callSession2?.hangup();
         };
+      };
+
+      _juggleImPlugin.onMessageSetTop = (message, userInfo, isTop) {
+        print('onMessageSetTop');
       };
       
 

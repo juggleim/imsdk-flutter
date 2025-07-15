@@ -152,6 +152,10 @@
         [self callSetVideoView:call.arguments result:result];
     } else if ([@"callStartPreview" isEqualToString:call.method]) {
         [self callStartPreview:call.arguments result:result];
+    } else if ([@"setMessageTop" isEqualToString:call.method]) {
+        [self setMessageTop:call.arguments result:result];
+    } else if ([@"getTopMessage" isEqualToString:call.method]) {
+        [self getTopMessage:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -805,6 +809,39 @@
     }
 }
 
+- (void)setMessageTop:(id)arg
+               result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        NSString *messageId = d[@"messageId"];
+        JConversation *conversation = [JModelFactory conversationFromDic:d[@"conversation"]];
+        BOOL isTop = [d[@"isTop"] boolValue];
+        [JIM.shared.messageManager setTop:isTop
+                                messageId:messageId
+                             conversation:conversation
+                                  success:^{
+            result(@(0));
+        } error:^(JErrorCode code) {
+            result(@(code));
+        }];
+    }
+}
+
+- (void)getTopMessage:(id)arg
+               result:(FlutterResult)result {
+    NSDictionary *d = (NSDictionary *)arg;
+    JConversation *conversation = [JModelFactory conversationFromDic:d];
+    [JIM.shared.messageManager getTopMessage:conversation
+                                     success:^(JMessage *message, JUserInfo *userInfo, long long timestamp) {
+        NSDictionary *messageDic = [JModelFactory messageToDic:message];
+        NSDictionary *userDic = [JModelFactory userInfoToDic:userInfo];
+        NSDictionary *resultDic = @{@"message": message, @"userInfo": userInfo, @"timestamp": @(timestamp), @"errorCode": @(0)};
+        result(resultDic);
+    } error:^(JErrorCode code) {
+        result(@{@"errorCode": @(code)});
+    }];
+}
+
 #pragma mark - user
 - (void)getUserInfo:(id)arg
              result:(FlutterResult)result {
@@ -1082,6 +1119,13 @@
     NSDictionary *conversationDic = [JModelFactory conversationToDic:conversation];
     NSDictionary *dic = @{@"reaction": reactionDic, @"conversation": conversationDic};
     [self.channel invokeMethod:@"onMessageReactionRemove" arguments:dic];
+}
+
+- (void)messageDidSetTop:(BOOL)isTop message:(JMessage *)message user:(JUserInfo *)userInfo {
+    NSDictionary *messageDic = [JModelFactory messageToDic:message];
+    NSDictionary *userDic = [JModelFactory userInfoToDic:userInfo];
+    NSDictionary *dic = @{@"message": messageDic, @"userInfo": userDic, @"isTop": @(isTop)};
+    [self.channel invokeMethod:@"onMessageSetTop" arguments:dic];
 }
 
 #pragma mark - JMessageReadReceiptDelegate

@@ -9,7 +9,7 @@ class SendMessageOption {
   Map toMap() {
     Map map = {};
     if (referredMessageId != null) {
-      map['referredMessageId'] = referredMessageId;
+      map['referredMsgId'] = referredMessageId;
     }
     if (mentionInfo != null) {
       map['mentionInfo'] = mentionInfo!.toMap();
