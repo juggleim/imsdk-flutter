@@ -89,7 +89,18 @@ class _MyAppState extends State<MyApp> {
 
           Conversation cc = Conversation(1, 'YvoGswbXyqU');
 
-          var session = await _juggleImPlugin.startSingleCall('YvoGswbXyqU', 0, 'flutter extra');
+          GetMessageOption o = GetMessageOption();
+          o.startTime = 0;
+          o.count = 20;
+          var messageListResult = await _juggleImPlugin.getMessages(cc, 1, o);
+
+          GetMessageOption o1 = GetMessageOption();
+          o1.startTime = messageListResult.timestamp;
+          o1.count = 20;
+          var messageListResult1 = await _juggleImPlugin.getMessages(cc, 1, o1);
+
+
+          // var session = await _juggleImPlugin.startSingleCall('YvoGswbXyqU', 0, 'flutter extra');
           // int r = await _juggleImPlugin.setMessageTop('n2bbjeh4k4qgzrn9', cc, false);
           
 

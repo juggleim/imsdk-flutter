@@ -385,8 +385,8 @@ class ModelFactory {
             return null;
         }
         GetMessageOptions option = new GetMessageOptions();
-        Integer startTimeObj = (Integer) map.get("startTime");
-        int startTime = startTimeObj != null ? startTimeObj : 0;
+        Number startTimeObj = (Number) map.get("startTime");
+        long startTime = startTimeObj != null ? startTimeObj.longValue() : 0;
         Integer countObj = (Integer) map.get("count");
         int count = countObj != null ? countObj : 0;
         option.setStartTime(startTime);
