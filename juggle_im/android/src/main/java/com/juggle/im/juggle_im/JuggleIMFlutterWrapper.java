@@ -1157,9 +1157,12 @@ import io.flutter.plugin.common.MethodChannel;
             String userId = (String) map.get("userId");
             CallConst.CallMediaType mediaType = CallConst.CallMediaType.VOICE;
             Number mediaTypeValue = (Number) map.get("mediaType");
-            String extra = (String) map.get("extra");
             if (mediaTypeValue != null) {
                 mediaType = CallConst.CallMediaType.setValue(mediaTypeValue.intValue());
+            }
+            String extra = (String) map.get("extra");
+            if (extra == null) {
+                extra = "";
             }
             ICallSession callSession = JIM.getInstance().getCallManager().startSingleCall(userId, mediaType, extra, null);
             if (callSession != null) {
@@ -1181,7 +1184,11 @@ import io.flutter.plugin.common.MethodChannel;
             if (mediaTypeValue != null) {
                 mediaType = CallConst.CallMediaType.setValue(mediaTypeValue.intValue());
             }
-            ICallSession callSession = JIM.getInstance().getCallManager().startMultiCall(userIdList, mediaType, null);
+            String extra = (String) map.get("extra");
+            if (extra == null) {
+                extra = "";
+            }
+            ICallSession callSession = JIM.getInstance().getCallManager().startMultiCall(userIdList, mediaType, extra, null);
             if (callSession != null) {
                 Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
                 addCallSessionListener(callSession);
