@@ -29,6 +29,8 @@ class CallSession {
   int finishReason = 0;
   /// 通话参与者（除当前用户外的其他参与者）
   List<CallMember> members = [];
+  /// 扩展字段
+  String extra = '';
 
   final _methodChannel = const MethodChannel('juggle_im');
 
@@ -47,6 +49,7 @@ class CallSession {
     result.owner = map['owner'] ?? '';
     result.inviterId = map['inviterId'] ?? '';
     result.finishReason = map['finishReason'] ?? 0;
+    result.extra = map['extra'] ?? '';
     List<CallMember> members = [];
     List callMemberList = map['members'];
     for (Map memberMap in callMemberList) {

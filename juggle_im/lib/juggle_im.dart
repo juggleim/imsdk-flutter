@@ -489,8 +489,8 @@ class JuggleIm {
     await _methodChannel.invokeMethod('initZegoEngine', map);
   }
 
-  Future<CallSession?> startSingleCall(String userId, int mediaType) async {
-    var map = {'userId': userId, 'mediaType': mediaType};
+  Future<CallSession?> startSingleCall(String userId, int mediaType, String extra) async {
+    var map = {'userId': userId, 'mediaType': mediaType, 'extra': extra};
     var resultMap = await _methodChannel.invokeMethod('startSingleCall', map);
     if (resultMap.isEmpty) {
       return null;
@@ -500,8 +500,8 @@ class JuggleIm {
     return callSession;
   }
 
-  Future<CallSession?> startMultiCall(List<String> userIdList, int mediaType) async {
-    var map = {'userIdList': userIdList, 'mediaType': mediaType};
+  Future<CallSession?> startMultiCall(List<String> userIdList, int mediaType, String extra) async {
+    var map = {'userIdList': userIdList, 'mediaType': mediaType, 'extra': extra};
     var resultMap = await _methodChannel.invokeMethod('startMultiCall', map);
     if (resultMap.isEmpty) {
       return null;

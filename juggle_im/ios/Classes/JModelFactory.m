@@ -239,6 +239,9 @@
     if (callSession.inviterId) {
         [dic setObject:callSession.inviterId forKey:@"inviterId"];
     }
+    if (callSession.extra) {
+        [dic setObject:callSession.extra forKey:@"extra"];
+    }
     [dic setObject:@(callSession.finishReason) forKey:@"finishReason"];
     NSMutableArray *memberDicArray = [NSMutableArray array];
     for (JCallMember *member in callSession.members) {

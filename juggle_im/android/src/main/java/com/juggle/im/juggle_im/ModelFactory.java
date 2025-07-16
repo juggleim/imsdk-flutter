@@ -295,6 +295,9 @@ class ModelFactory {
         if (!TextUtils.isEmpty(callSession.getInviter())) {
             map.put("inviterId", callSession.getInviter());
         }
+        if (!TextUtils.isEmpty(callSession.getExtra())) {
+            map.put("extra", callSession.getExtra());
+        }
         if (callSession.getFinishReason() != null) {
             map.put("finishReason", callSession.getFinishReason().getValue());
         }

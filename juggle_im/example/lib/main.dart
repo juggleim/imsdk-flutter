@@ -88,13 +88,15 @@ class _MyAppState extends State<MyApp> {
           print("getConversationInfoList, count is " + length.toString());
 
           Conversation cc = Conversation(1, 'YvoGswbXyqU');
+
+          var session = await _juggleImPlugin.startSingleCall('YvoGswbXyqU', 0, 'flutter extra');
           // int r = await _juggleImPlugin.setMessageTop('n2bbjeh4k4qgzrn9', cc, false);
           
 
           Conversation ccc = Conversation(2, '22GkgKbSwJ6asdfasdf');
-          var rr = await _juggleImPlugin.getTopMessage(cc);
-          var rrr = await _juggleImPlugin.getTopMessage(ccc);
-          int iiii = 1;
+          // var rr = await _juggleImPlugin.getTopMessage(cc);
+          // var rrr = await _juggleImPlugin.getTopMessage(ccc);
+          // int iiii = 1;
 
           // Conversation c1 = Conversation(2, '7FRQ9M8eCnv');
           // Result<void>? r = await _juggleImPlugin.setMute(c1, true);
@@ -227,19 +229,23 @@ class _MyAppState extends State<MyApp> {
 
       _juggleImPlugin.onCallReceive = (callSession) {
         print('onCallReceive');
-        callSession2 = callSession;
-        callSession.accept();
-        callSession2?.onCallFinish = (finishReason){
-          print('onCallFinish ' + finishReason.toString());
-        };
-        callSession2?.onCallConnect = (){
-          print('onCallConnect');
-          callSession2?.hangup();
-        };
+        // callSession2 = callSession;
+        // callSession.accept();
+        // callSession2?.onCallFinish = (finishReason){
+        //   print('onCallFinish ' + finishReason.toString());
+        // };
+        // callSession2?.onCallConnect = (){
+        //   print('onCallConnect');
+        //   callSession2?.hangup();
+        // };
       };
 
       _juggleImPlugin.onMessageSetTop = (message, userInfo, isTop) {
         print('onMessageSetTop');
+      };
+
+      _juggleImPlugin.onMessageUpdate = (message) {
+        print('onMessageUpdate');
       };
       
 

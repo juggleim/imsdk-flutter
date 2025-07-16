@@ -884,7 +884,8 @@
     NSDictionary *dic = arg;
     NSString *userId = dic[@"userId"];
     JCallMediaType mediaType = [dic[@"mediaType"] intValue];
-    id<JCallSession> callSession = [JIM.shared.callManager startSingleCall:userId mediaType:mediaType delegate:nil];
+    NSString *extra = dic[@"extra"];
+    id<JCallSession> callSession = [JIM.shared.callManager startSingleCall:userId mediaType:mediaType extra:extra delegate:nil];
     if (callSession) {
         NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
         [self addCallSessionDelegate:callSession];
