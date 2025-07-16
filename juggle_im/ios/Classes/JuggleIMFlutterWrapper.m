@@ -835,7 +835,7 @@
                                      success:^(JMessage *message, JUserInfo *userInfo, long long timestamp) {
         NSDictionary *messageDic = [JModelFactory messageToDic:message];
         NSDictionary *userDic = [JModelFactory userInfoToDic:userInfo];
-        NSDictionary *resultDic = @{@"message": message, @"userInfo": userInfo, @"timestamp": @(timestamp), @"errorCode": @(0)};
+        NSDictionary *resultDic = @{@"message": messageDic, @"userInfo": userDic, @"timestamp": @(timestamp), @"errorCode": @(0)};
         result(resultDic);
     } error:^(JErrorCode code) {
         result(@{@"errorCode": @(code)});
