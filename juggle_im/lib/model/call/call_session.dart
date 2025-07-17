@@ -132,4 +132,5 @@ class CallSession {
   Function(String userId, bool enable)? onUserMicrophoneChange;
   Function(int errorCode)? onErrorOccur;
   Function(Map<String, double>)? onSoundLevelUpdate;
+  Function(String userId)? onVideoFirstFrameRender;
 }

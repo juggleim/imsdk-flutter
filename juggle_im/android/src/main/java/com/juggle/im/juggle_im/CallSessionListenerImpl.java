@@ -88,6 +88,14 @@ public class CallSessionListenerImpl implements ICallSession.ICallSessionListene
         mChannel.invokeMethod("onSoundLevelUpdate", map);
     }
 
+    @Override
+    public void onVideoFirstFrameRender(String userId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("callId", mCallId);
+        map.put("userId", userId);
+        mChannel.invokeMethod("onVideoFirstFrameRender", map);
+    }
+
     public void setDestruct(ICallSessionListenerDestruct destruct) {
         mDestruct = destruct;
     }

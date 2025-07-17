@@ -62,6 +62,11 @@
     [self.channel invokeMethod:@"onSoundLevelUpdate" arguments:dic];
 }
 
+- (void)videoFirstFrameDidRender:(NSString *)userId {
+    NSDictionary *dic = @{@"callId": self.callId, @"userId": userId};
+    [self.channel invokeMethod:@"onVideoFirstFrameRender" arguments:dic];
+}
+
 - (void)errorDidOccur:(JCallErrorCode)errorCode {
     NSDictionary *dic = @{@"callId": self.callId, @"errorCode": @(errorCode)};
     [self.channel invokeMethod:@"onErrorOccur" arguments:dic];

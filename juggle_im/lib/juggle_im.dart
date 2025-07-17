@@ -835,6 +835,16 @@ class JuggleIm {
           session.onSoundLevelUpdate!(levelMap);
         }
 
+      case 'onVideoFirstFrameRender':
+        Map map = call.arguments;
+        String callId = map['callId'];
+
+        CallSession? session = _getCallSession(callId);
+        if (session != null && session.onVideoFirstFrameRender != null) {
+          String userId = map['userId'];
+          session.onVideoFirstFrameRender!(userId);
+        }
+
     }
     return Future.value(null);
   }
