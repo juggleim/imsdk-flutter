@@ -20,6 +20,7 @@ import 'package:juggle_im/model/media_message_content.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
+import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/recall_info_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/message/video_message.dart';
@@ -857,6 +858,7 @@ class JuggleIm {
     registerMessageType(() => VideoMessage());
     registerMessageType(() => VoiceMessage());
     registerMessageType(() => CallFinishNotifyMessage());
+    registerMessageType(() => MergeMessage());
   }
 
   CallSession? _getCallSession(String callId) {

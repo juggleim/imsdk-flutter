@@ -14,7 +14,9 @@ import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
+import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/user_info.dart';
 import 'package:juggle_im_example/group_notify_message.dart';
 
 void main() {
@@ -88,8 +90,35 @@ class _MyAppState extends State<MyApp> {
           print("getConversationInfoList, count is " + length.toString());
 
           Conversation cc = Conversation(1, 'YvoGswbXyqU');
+          GetMessageOption o = GetMessageOption();
+          o.count = 10;
 
-          var rrr = await _juggleImPlugin.getTopMessage(cc);
+          UserInfo userInfo1 = UserInfo();
+          userInfo1.userId = "3mnHbCeigLw";
+          userInfo1.userName = "1183";
+          userInfo1.portrait = "https://jugglechat-file.oss-cn-beijing.aliyuncs.com/images%2F3AVdzfrakSkauWEbWGUN7u.jpg";
+          MergeMessagePreviewUnit u1 = MergeMessagePreviewUnit('u1Preview', userInfo1);
+          MergeMessagePreviewUnit u2 = MergeMessagePreviewUnit('u2Preview', userInfo1);
+          MergeMessage mm = MergeMessage.create('merge title', cc, ['n2hqrar7jaygzrn9', "n2hqrth2ja6gzrn9"], [u1, u2]);
+
+          // TextMessage ttt = TextMessage.content('flutter text');
+
+
+          DataCallback<Message> callback = (mmmm, errorCode) {
+            if (errorCode == 0) {
+              print("sendMessage success, messageId is " + mmmm.messageId!);
+            } else {
+              print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
+            }
+          };
+
+          Message? m1 = await _juggleImPlugin.sendMessage(mm, cc, callback);
+
+          // var v = await _juggleImPlugin.getMergedMessageList('n2hsmcpfjbcgzrn9');
+          
+
+
+          // var messages = await _juggleImPlugin.getMessages(cc, 1, o);
 
           // GetMessageOption o = GetMessageOption();
           // o.startTime = 0;
@@ -107,6 +136,7 @@ class _MyAppState extends State<MyApp> {
           
 
           Conversation ccc = Conversation(2, '22GkgKbSwJ6asdfasdf');
+
           // var rr = await _juggleImPlugin.getTopMessage(cc);
           // var rrr = await _juggleImPlugin.getTopMessage(ccc);
           // int iiii = 1;

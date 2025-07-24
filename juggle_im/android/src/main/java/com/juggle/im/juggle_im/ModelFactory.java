@@ -25,6 +25,7 @@ import com.juggle.im.model.PushData;
 import com.juggle.im.model.UserInfo;
 import com.juggle.im.model.messages.FileMessage;
 import com.juggle.im.model.messages.ImageMessage;
+import com.juggle.im.model.messages.MergeMessage;
 import com.juggle.im.model.messages.RecallInfoMessage;
 import com.juggle.im.model.messages.TextMessage;
 import com.juggle.im.model.messages.UnknownMessage;
@@ -477,6 +478,11 @@ class ModelFactory {
                 VoiceMessage voiceMessage = new VoiceMessage();
                 voiceMessage.decode(data);
                 content = voiceMessage;
+                break;
+            case "jg:merge":
+                MergeMessage mergeMessage = new MergeMessage();
+                mergeMessage.decode(data);
+                content = mergeMessage;
                 break;
             default:
                 UnknownMessage unknownMessage = new UnknownMessage();

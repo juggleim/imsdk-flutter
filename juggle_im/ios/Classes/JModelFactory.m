@@ -364,6 +364,8 @@
        content = [self videoMessageFromData:data];
     } else if ([contentType isEqualToString:@"jg:voice"]) {
        content = [self voiceMessageFromData:data];
+    } else if ([contentType isEqualToString:@"jg:merge"]) {
+        content = [self mergeMessageFromData:data];
     } else {
        content = [self unknownMessageFromString:string type:contentType];
     }
@@ -420,6 +422,12 @@
     JVoiceMessage *voice = [JVoiceMessage new];
     [voice decode:data];
     return voice;
+}
+
++ (JMergeMessage *)mergeMessageFromData:(NSData *)data {
+    JMergeMessage *merge = [JMergeMessage new];
+    [merge decode:data];
+    return merge;
 }
 
 + (JUnknownMessage *)unknownMessageFromString:(NSString *)string
