@@ -64,7 +64,49 @@
 }
 
 + (NSString *)messageContentToString:(JMessageContent *)content {
-    NSData *data = [content encode];
+    NSData *data;
+    if ([content isKindOfClass:[JImageMessage class]]) {
+        JImageMessage *image = (JImageMessage *)content;
+        NSDictionary * dic = @{@"url":image.url?:@"",
+                               @"thumbnail":image.thumbnailUrl?:@"",
+                               @"local":image.localPath?:@"",
+                               @"width":@(image.width),
+                               @"height":@(image.height),
+                               @"size":@(image.size),
+                               @"extra":image.extra?:@"",
+                               @"thumbnailLocalPath":image.thumbnailLocalPath?:@""};
+        data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+    } else if ([content isKindOfClass:[JVoiceMessage class]]) {
+        JVoiceMessage *voice = (JVoiceMessage *)content;
+        NSDictionary * dic = @{@"url":voice.url?:@"",
+                               @"local":voice.localPath?:@"",
+                               @"duration":@(voice.duration),
+                               @"extra":voice.extra?:@""};
+        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+    } else if ([content isKindOfClass:[JVideoMessage class]]) {
+        JVideoMessage *video = (JVideoMessage *)content;
+        NSDictionary * dic = @{@"url":video.url?:@"",
+                               @"local":video.localPath?:@"",
+                               @"poster":video.snapshotUrl?:@"",
+                               @"height":@(video.height),
+                               @"width":@(video.width),
+                               @"size":@(video.size),
+                               @"duration":@(video.duration),
+                               @"extra":video.extra?:@"",
+                               @"snapshotLocalPath":video.snapshotLocalPath?:@""};
+        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+    } else if ([content isKindOfClass:[JFileMessage class]]) {
+        JFileMessage *file = (JFileMessage *)content;
+        NSDictionary * dic = @{@"url":file.url?:@"",
+                               @"local":file.localPath?:@"",
+                               @"name":file.name?:@"",
+                               @"size":@(file.size),
+                               @"type":file.type?:@"",
+                               @"extra":file.extra?:@""};
+        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+    } else {
+        data = [content encode];
+    }
     if (!data) {
         return nil;
     }
