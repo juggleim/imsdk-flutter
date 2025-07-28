@@ -172,6 +172,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "getMessagesReaction":
                 getMessagesReaction(call.arguments, result);
                 break;
+            case "getCachedMessagesReaction":
+                getCachedMessagesReaction(call.arguments, result);
+                break;
             case "updateMessage":
                 updateMessage(call.arguments, result);
                 break;
@@ -1031,6 +1034,22 @@ import io.flutter.plugin.common.MethodChannel;
                      result.success(resultMap);
                  }
              });
+         }
+     }
+
+     private void getCachedMessagesReaction(Object arg, MethodChannel.Result result) {
+         if (arg instanceof Map<?, ?>) {
+             Map<?, ?> map = (Map<?, ?>) arg;
+             List<String> messageIdList = (List<String>) map.get("messageIdList");
+             List<MessageReaction> reactionList = JIM.getInstance().getMessageManager().getCachedMessagesReaction(messageIdList);
+             Map<String, Object> resultMap = new HashMap<>();
+             List<Map<String, Object>> reactionMapList = new ArrayList<>();
+             for (MessageReaction reaction : reactionList) {
+                 Map<String, Object> reactionMap = ModelFactory.messageReactionToMap(reaction);
+                 reactionMapList.add(reactionMap);
+             }
+             resultMap.put("reactionList", reactionMapList);
+             result.success(resultMap);
          }
      }
 

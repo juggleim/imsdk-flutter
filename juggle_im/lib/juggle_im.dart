@@ -418,6 +418,23 @@ class JuggleIm {
     return result;
   }
 
+  Future<Result<List<MessageReaction>>> getCachedMessagesReaction(List<String> messageIdList) async {
+    Map map = {'messageIdList': messageIdList};
+    Map resultMap = await _methodChannel.invokeMethod('getCachedMessagesReaction', map);
+    var result = Result<List<MessageReaction>>();
+    result.errorCode = 0;
+    if (result.errorCode == 0) {
+      List mapList = resultMap['reactionList'];
+      List<MessageReaction> reactionList = [];
+      for (Map reactionMap in mapList) {
+        MessageReaction reaction = MessageReaction.fromMap(reactionMap);
+        reactionList.add(reaction);
+      }
+      result.t = reactionList;
+    }
+    return result;
+  }
+
   Future<Result<Message>> updateMessage(String messageId, MessageContent content, Conversation conversation) async {
     Map map = {'contentType': content.getContentType(), 'messageId': messageId, "content": content.encode(), "conversation": conversation.toMap()};
     Map resultMap = await _methodChannel.invokeMethod('updateMessage', map);

@@ -114,6 +114,8 @@
         [self removeMessageReaction:call.arguments result:result];
     } else if ([@"getMessagesReaction" isEqualToString:call.method]) {
         [self getMessagesReaction:call.arguments result:result];
+    } else if ([@"getCachedMessagesReaction" isEqualToString:call.method]) {
+        [self getCachedMessagesReaction:call.arguments result:result];
     } else if ([@"updateMessage" isEqualToString:call.method]) {
         [self updateMessage:call.arguments result:result];
     } else if ([@"setMessageLocalAttribute" isEqualToString:call.method]) {
@@ -772,6 +774,22 @@
         } error:^(JErrorCode code) {
             result(@{@"errorCode": @(code)});
         }];
+    }
+}
+
+- (void)getCachedMessagesReaction:(id)arg result:(FlutterResult)result {
+    if ([arg isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *d = (NSDictionary *)arg;
+        NSArray<NSString *> *messageIdList = d[@"messageIdList"];
+        NSArray<JMessageReaction *> *reactionList = [JIM.shared.messageManager getCachedMessagesReaction:messageIdList];
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        NSMutableArray *reactionDicArr = [NSMutableArray array];
+        for (JMessageReaction *reaction in reactionList) {
+            NSDictionary *reactionDic = [JModelFactory messageReactionToDic:reaction];
+            [reactionDicArr addObject:reactionDic];
+        }
+        [resultDic setObject:reactionDicArr forKey:@"reactionList"];
+        result(resultDic);
     }
 }
 
