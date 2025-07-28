@@ -423,15 +423,13 @@ class JuggleIm {
     Map resultMap = await _methodChannel.invokeMethod('getCachedMessagesReaction', map);
     var result = Result<List<MessageReaction>>();
     result.errorCode = 0;
-    if (result.errorCode == 0) {
-      List mapList = resultMap['reactionList'];
-      List<MessageReaction> reactionList = [];
-      for (Map reactionMap in mapList) {
-        MessageReaction reaction = MessageReaction.fromMap(reactionMap);
-        reactionList.add(reaction);
-      }
-      result.t = reactionList;
+    List mapList = resultMap['reactionList'];
+    List<MessageReaction> reactionList = [];
+    for (Map reactionMap in mapList) {
+      MessageReaction reaction = MessageReaction.fromMap(reactionMap);
+      reactionList.add(reaction);
     }
+    result.t = reactionList;
     return result;
   }
 
