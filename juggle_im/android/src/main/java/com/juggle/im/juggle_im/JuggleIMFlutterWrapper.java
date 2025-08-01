@@ -29,6 +29,7 @@ import com.juggle.im.model.MessageContent;
 import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageReaction;
 import com.juggle.im.model.UserInfo;
+import com.juggle.im.push.PushConfig;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -252,13 +253,47 @@ import io.flutter.plugin.common.MethodChannel;
             Map<?, ?> config = (Map<?, ?>) map.get("config");
             JIM.InitConfig initConfig = null;
             if (config != null) {
-                Map<?, ?> logConfig = (Map<?, ?>) config.get("logConfig");
-                if (logConfig != null) {
-                    Integer consoleLevel = (Integer) logConfig.get("consoleLevel");
+                JIM.InitConfig.Builder initConfigBuilder = new JIM.InitConfig.Builder();
+                Map<?, ?> logConfigMap = (Map<?, ?>) config.get("logConfig");
+                if (logConfigMap != null) {
+                    Integer consoleLevel = (Integer) logConfigMap.get("consoleLevel");
                     if (consoleLevel != null) {
-                        initConfig = new JIM.InitConfig.Builder().setJLogConfig(new JLogConfig.Builder(mContext).setLogConsoleLevel(JLogLevel.setValue(consoleLevel)).build()).build();
+                        JLogConfig logConfig = new JLogConfig.Builder(mContext).setLogConsoleLevel(JLogLevel.setValue(consoleLevel)).build();
+                        initConfigBuilder.setJLogConfig(logConfig);
                     }
                 }
+                Map<?, ?> pushConfigMap = (Map<?, ?>) config.get("pushConfig");
+                if (pushConfigMap != null) {
+                    PushConfig.Builder pushConfigBuilder = new PushConfig.Builder();
+                    Map<?, ?> xmConfigMap = (Map<?, ?>) pushConfigMap.get("xmConfig");
+                    if (xmConfigMap != null) {
+                        String appId = (String) xmConfigMap.get("appId");
+                        String appKey = (String) xmConfigMap.get("appKey");
+                        pushConfigBuilder.setXmConfig(appId, appKey);
+                    }
+                    Map<?, ?> hwConfigMap = (Map<?, ?>) pushConfigMap.get("hwConfig");
+                    if (hwConfigMap != null) {
+                        String appId = (String) hwConfigMap.get("appId");
+                        pushConfigBuilder.setHwConfig(appId);
+                    }
+                    String vivoConfigString = (String) pushConfigMap.get("vivoConfig");
+                    if (vivoConfigString != null) {
+                        pushConfigBuilder.setVivoConfig();
+                    }
+                    Map<?, ?> oppoConfigMap = (Map<?, ?>) pushConfigMap.get("oppoConfig");
+                    if (oppoConfigMap != null) {
+                        String appKey = (String) oppoConfigMap.get("appKey");
+                        String appSecret = (String) oppoConfigMap.get("appSecret");
+                        pushConfigBuilder.setOppoConfig(appKey, appSecret);
+                    }
+                    String jgConfigString = (String) pushConfigMap.get("jgConfig");
+                    if (jgConfigString != null) {
+                        pushConfigBuilder.setJgConfig();
+                    }
+                    PushConfig pushConfig = pushConfigBuilder.build();
+                    initConfigBuilder.setPushConfig(pushConfig);
+                }
+                initConfig = initConfigBuilder.build();
             }
             if (initConfig != null) {
                 JIM.getInstance().init(mContext, key, initConfig);

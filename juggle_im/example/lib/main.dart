@@ -68,14 +68,21 @@ class _MyAppState extends State<MyApp> {
           await _juggleImPlugin.getPlatformVersion() ?? 'Unknown platform version';
       
       await _juggleImPlugin.setServers(["wss://ws.juggleim.com"]);
+      // await _juggleImPlugin.setServers(["wss://im.secretchat.im"]);
       InitConfig config = InitConfig();
       LogConfig logConfig = LogConfig();
+      PushConfig pushConfig = PushConfig();
+      pushConfig.hwConfig = HWConfig();
+      pushConfig.jgConfig = JGConfig();
       logConfig.consoleLevel = 6;
       config.logConfig = logConfig;
+      config.pushConfig = pushConfig;
       await _juggleImPlugin.init('nsw3sue72begyv7y', config);
+      // await _juggleImPlugin.init('nwm6fxqt2aeebhb7', config);
       await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
       await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
+      // await _juggleImPlugin.connect('ChBud202ZnhxdDJhZWViaGI3GiAAUR0yD9XzkXUx6XlF7IXkjoFQy7tYYsPhyZnktWV36A==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
@@ -89,30 +96,32 @@ class _MyAppState extends State<MyApp> {
           }
           print("getConversationInfoList, count is " + length.toString());
 
-          Conversation cc = Conversation(1, 'YvoGswbXyqU');
+          Conversation cc = Conversation(2, 'YvoGswbXyqU');
           GetMessageOption o = GetMessageOption();
-          o.count = 10;
-
-          UserInfo userInfo1 = UserInfo();
-          userInfo1.userId = "3mnHbCeigLw";
-          userInfo1.userName = "1183";
-          userInfo1.portrait = "https://jugglechat-file.oss-cn-beijing.aliyuncs.com/images%2F3AVdzfrakSkauWEbWGUN7u.jpg";
-          MergeMessagePreviewUnit u1 = MergeMessagePreviewUnit('u1Preview', userInfo1);
-          MergeMessagePreviewUnit u2 = MergeMessagePreviewUnit('u2Preview', userInfo1);
-          MergeMessage mm = MergeMessage.create('merge title', cc, ['n2hqrar7jaygzrn9', "n2hqrth2ja6gzrn9"], [u1, u2]);
-
-          // TextMessage ttt = TextMessage.content('flutter text');
+          o.count = 50;
 
 
-          DataCallback<Message> callback = (mmmm, errorCode) {
-            if (errorCode == 0) {
-              print("sendMessage success, messageId is " + mmmm.messageId!);
-            } else {
-              print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
-            }
-          };
 
-          Message? m1 = await _juggleImPlugin.sendMessage(mm, cc, callback);
+          // UserInfo userInfo1 = UserInfo();
+          // userInfo1.userId = "3mnHbCeigLw";
+          // userInfo1.userName = "1183";
+          // userInfo1.portrait = "https://jugglechat-file.oss-cn-beijing.aliyuncs.com/images%2F3AVdzfrakSkauWEbWGUN7u.jpg";
+          // MergeMessagePreviewUnit u1 = MergeMessagePreviewUnit('u1Preview', userInfo1);
+          // MergeMessagePreviewUnit u2 = MergeMessagePreviewUnit('u2Preview', userInfo1);
+          // MergeMessage mm = MergeMessage.create('merge title', cc, ['n2hqrar7jaygzrn9', "n2hqrth2ja6gzrn9"], [u1, u2]);
+
+          // // TextMessage ttt = TextMessage.content('flutter text');
+
+
+          // DataCallback<Message> callback = (mmmm, errorCode) {
+          //   if (errorCode == 0) {
+          //     print("sendMessage success, messageId is " + mmmm.messageId!);
+          //   } else {
+          //     print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
+          //   }
+          // };
+
+          // Message? m1 = await _juggleImPlugin.sendMessage(mm, cc, callback);
 
           // var v = await _juggleImPlugin.getMergedMessageList('n2hsmcpfjbcgzrn9');
           
