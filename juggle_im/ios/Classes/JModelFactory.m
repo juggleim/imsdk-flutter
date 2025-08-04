@@ -82,7 +82,7 @@
                                @"local":voice.localPath?:@"",
                                @"duration":@(voice.duration),
                                @"extra":voice.extra?:@""};
-        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+        data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
     } else if ([content isKindOfClass:[JVideoMessage class]]) {
         JVideoMessage *video = (JVideoMessage *)content;
         NSDictionary * dic = @{@"url":video.url?:@"",
@@ -94,7 +94,7 @@
                                @"duration":@(video.duration),
                                @"extra":video.extra?:@"",
                                @"snapshotLocalPath":video.snapshotLocalPath?:@""};
-        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+        data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
     } else if ([content isKindOfClass:[JFileMessage class]]) {
         JFileMessage *file = (JFileMessage *)content;
         NSDictionary * dic = @{@"url":file.url?:@"",
@@ -103,7 +103,7 @@
                                @"size":@(file.size),
                                @"type":file.type?:@"",
                                @"extra":file.extra?:@""};
-        NSData *data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
+        data = [NSJSONSerialization dataWithJSONObject:dic options:kNilOptions error:nil];
     } else {
         data = [content encode];
     }

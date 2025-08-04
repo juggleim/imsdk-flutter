@@ -269,9 +269,9 @@ class _MyAppState extends State<MyApp> {
       _juggleImPlugin.onTotalUnreadMessageCountUpdate = (count) {
         print('onTotalUnreadMessageCountUpdate, count is ' + count.toString());
       };
-      // _juggleImPlugin.onMessageReceive = (message) {
-      //   print('onMessageReceive');
-      // };
+      _juggleImPlugin.onMessageReceive = (message) {
+        print('onMessageReceive');
+      };
       _juggleImPlugin.onMessagesRead = (conversation, list) {
         print('onMessagesRead, count is ' + list.length.toString());
       };
