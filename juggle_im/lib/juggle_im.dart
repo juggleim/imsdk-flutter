@@ -81,6 +81,10 @@ class JuggleIm {
     return status;
   }
 
+  Future<int> getTimeDifference() async {
+    return await _methodChannel.invokeMethod('getTimeDifference');
+  }
+
   //conversation
   Future<List<ConversationInfo>> getConversationInfoList() async {
     List list = await _methodChannel.invokeMethod("getConversationInfoList");
@@ -741,6 +745,15 @@ class JuggleIm {
           onMessageSetTop!(message, operator, isTop);
         }
 
+      case 'onMessageDestroyTimeUpdate':
+        Map map = call.arguments;
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        String messageId = map['messageId'];
+        int destroyTime = map['destroyTime'];
+        if (onMessageDestroyTimeUpdate != null) {
+          onMessageDestroyTimeUpdate!(messageId, conversation, destroyTime);
+        }
+
       case 'onCallReceive':
         Map map = call.arguments;
         CallSession callSession = CallSession.fromMap(map);
@@ -899,6 +912,7 @@ class JuggleIm {
   Function(Conversation conversation, List<String> messageIdList)? onMessagesRead;
   Function(Conversation conversation, Map<String, GroupMessageReadInfo> messages)? onGroupMessagesRead;
   Function(Message message, UserInfo operator, bool isTop)? onMessageSetTop;
+  Function(String messageId, Conversation conversation, int destroyTime)? onMessageDestroyTimeUpdate;
 
   Function(CallSession callSession)? onCallReceive;
 

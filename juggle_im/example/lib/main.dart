@@ -16,6 +16,7 @@ import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/user_info.dart';
 import 'package:juggle_im_example/group_notify_message.dart';
 
@@ -89,16 +90,34 @@ class _MyAppState extends State<MyApp> {
         int? s = await _juggleImPlugin.getConnectionStatus();
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
-          List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
-          int length = 0;
-          if (l != null) {
-            length = l.length;
-          }
-          print("getConversationInfoList, count is " + length.toString());
 
-          Conversation cc = Conversation(2, 'YvoGswbXyqU');
-          GetMessageOption o = GetMessageOption();
-          o.count = 50;
+          Conversation conversation = Conversation(1, '2FEkrEblS_2');
+          TextMessage textMessage = TextMessage.content('Flutter Android');
+
+          DataCallback<Message> callback = (mmmm, errorCode) {
+            if (errorCode == 0) {
+              print("sendMessage success, messageId is " + mmmm.messageId!);
+            } else {
+              print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
+            }
+          };
+
+          SendMessageOption o = SendMessageOption();
+          o.lifeTime = 1000000;
+          o.lifeTimeAfterRead = 500000;
+          Message m = await _juggleImPlugin.sendMessage(textMessage, conversation, callback, o);
+
+          // List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
+          // int length = 0;
+          // if (l != null) {
+          //   length = l.length;
+          // }
+          // print("getConversationInfoList, count is " + length.toString());
+          int difference = await _juggleImPlugin.getTimeDifference();
+
+          // Conversation cc = Conversation(2, 'YvoGswbXyqU');
+          // GetMessageOption o = GetMessageOption();
+          // o.count = 50;
 
 
 
@@ -277,6 +296,10 @@ class _MyAppState extends State<MyApp> {
       };
       _juggleImPlugin.onMessageDelete = (conversation, list) {
         print('onMessageDelete, count is ' + list.length.toString());
+      };
+
+      _juggleImPlugin.onMessageDestroyTimeUpdate = (messageId, conversation, destroyTime) {
+        print('onMessageDestroyTimeUpdate, messageId is ' + messageId + ', destroyTime is ' + destroyTime.toString());
       };
 
       _juggleImPlugin.onCallReceive = (callSession) {

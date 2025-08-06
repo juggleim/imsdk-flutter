@@ -12,7 +12,7 @@
 #import "JCallSessionDelegateImpl.h"
 #import "JVideoPlatformView.h"
 
-@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct>
+@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JMessageDestroyDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, copy) NSMutableDictionary <NSString *, JCallSessionDelegateImpl *> *callSessionDelegateDic;
 @property (nonatomic, strong) JVideoPlatformViewFactory *factory;
@@ -158,6 +158,8 @@
         [self setMessageTop:call.arguments result:result];
     } else if ([@"getTopMessage" isEqualToString:call.method]) {
         [self getTopMessage:call.arguments result:result];
+    } else if ([@"getTimeDifference" isEqualToString:call.method]) {
+        [self getTimeDifference:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -191,6 +193,7 @@
         [JIM.shared.conversationManager addDelegate:self];
         [JIM.shared.messageManager addDelegate:self];
         [JIM.shared.messageManager addReadReceiptDelegate:self];
+        [JIM.shared.messageManager addDestroyDelegate:self];
         [JIM.shared.callManager addReceiveDelegate:self];
     }
 }
@@ -216,6 +219,11 @@
     return (int)[JIM.shared.connectionManager getConnectionStatus];
 }
 
+- (void)getTimeDifference:(id)arg
+                   result:(FlutterResult)result {
+    long long diff = [JIM.shared getTimeDifference];
+    result(@(diff));
+}
 
 #pragma mark - conversation
 - (NSArray *)getConversationInfoList {
@@ -1166,6 +1174,12 @@
     [self.channel invokeMethod:@"onGroupMessagesRead" arguments:dic];
 }
 
+#pragma mark - JMessageDestroyDelegate
+- (void)messageDestroyTimeDidUpdate:(NSString *)messageId inConversation:(JConversation *)conversation destroyTime:(long long)destroyTime {
+    NSDictionary *dic = @{@"messageId": messageId, @"destroyTime": @(destroyTime), @"conversation": [JModelFactory conversationToDic:conversation]};
+    [self.channel invokeMethod:@"onMessageDestroyTimeUpdate" arguments:dic];
+}
+
 #pragma mark - JCallReceiveDelegate
 - (void)callDidReceive:(id<JCallSession>)callSession {
     NSDictionary *callSessionDic = [JModelFactory callSessionToDic:callSession];
@@ -1193,6 +1207,5 @@
     }
     return _callSessionDelegateDic;
 }
-
 
 @end

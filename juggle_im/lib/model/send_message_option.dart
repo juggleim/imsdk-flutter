@@ -5,9 +5,11 @@ class SendMessageOption {
   String? referredMessageId;
   MessageMentionInfo? mentionInfo;
   PushData? pushData;
+  int lifeTime = 0;
+  int lifeTimeAfterRead = 0;
 
   Map toMap() {
-    Map map = {};
+    Map map = {'lifeTime': lifeTime, 'lifeTimeAfterRead': lifeTimeAfterRead};
     if (referredMessageId != null) {
       map['referredMsgId'] = referredMessageId;
     }

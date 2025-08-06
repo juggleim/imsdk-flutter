@@ -35,6 +35,8 @@ class Message {
   String localAttribute = '';
   bool isEdit = false;
   UserInfo? sender;
+  int destroyTime = 0;
+  int lifeTimeAfterRead = 0;
 
   Message(this.conversation);
 
@@ -70,6 +72,8 @@ class Message {
     if (map['sender'] != null) {
       m.sender = UserInfo.fromMap(map['sender']);
     }
+    m.destroyTime = map['destroyTime'] ?? 0;
+    m.lifeTimeAfterRead = map['lifeTimeAfterRead'] ?? 0;
 
     return m;
   }
@@ -84,7 +88,9 @@ class Message {
       'timestamp': timestamp,
       'senderUserId': senderUserId,
       'localAttribute': localAttribute,
-      'isEdit': isEdit
+      'isEdit': isEdit,
+      'destroyTime': destroyTime,
+      'lifeTimeAfterRead': lifeTimeAfterRead
       };
     map['conversation'] = conversation.toMap();
     if (content != null) {

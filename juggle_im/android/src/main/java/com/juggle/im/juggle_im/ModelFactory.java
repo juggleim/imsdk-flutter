@@ -223,6 +223,8 @@ class ModelFactory {
         }
 
         map.put("isEdit", message.isEdit());
+        map.put("destroyTime", message.getDestroyTime());
+        map.put("lifeTimeAfterRead", message.getLifeTimeAfterRead());
         return map;
     }
 
@@ -362,6 +364,14 @@ class ModelFactory {
         }
         message.setLocalAttribute((String) map.get("localAttribute"));
         message.setEdit((boolean) map.get("isEdit"));
+        Number destroyTime = (Number) map.get("destroyTime");
+        if (destroyTime != null) {
+            message.setDestroyTime(destroyTime.longValue());
+        }
+        Number lifeTimeAfterRead = (Number) map.get("lifeTimeAfterRead");
+        if (lifeTimeAfterRead != null) {
+            message.setLifeTimeAfterRead(lifeTimeAfterRead.longValue());
+        }
         return message;
     }
 
@@ -377,6 +387,14 @@ class ModelFactory {
         option.setReferredMessageId((String) map.get("referredMsgId"));
         if (map.containsKey("pushData")) {
             option.setPushData(pushDataFromMap((Map<?, ?>) map.get("pushData")));
+        }
+        Number lifeTime = (Number) map.get("lifeTime");
+        if (lifeTime != null) {
+            option.setLifeTime(lifeTime.longValue());
+        }
+        Number lifeTimeAfterRead = (Number) map.get("lifeTimeAfterRead");
+        if (lifeTimeAfterRead != null) {
+            option.setLifeTimeAfterRead(lifeTimeAfterRead.longValue());
         }
         return option;
     }

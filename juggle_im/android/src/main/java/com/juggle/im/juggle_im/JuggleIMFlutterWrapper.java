@@ -40,7 +40,7 @@ import java.util.Objects;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
- class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener, ICallManager.ICallReceiveListener, CallSessionListenerImpl.ICallSessionListenerDestruct {
+ class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener, IMessageManager.IMessageDestroyListener, ICallManager.ICallReceiveListener, CallSessionListenerImpl.ICallSessionListenerDestruct {
     public static JuggleIMFlutterWrapper getInstance() {
         return SingletonHolder.sInstance;
     }
@@ -188,6 +188,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "getTopMessage":
                 getTopMessage(call.arguments, result);
                 break;
+            case "getTimeDifference":
+                getTimeDifference(call.arguments, result);
+                break;
             case "getUserInfo":
                 getUserInfo(call.arguments, result);
                 break;
@@ -305,6 +308,7 @@ import io.flutter.plugin.common.MethodChannel;
         JIM.getInstance().getConversationManager().addListener("Flutter", this);
         JIM.getInstance().getMessageManager().addListener("Flutter", this);
         JIM.getInstance().getMessageManager().addReadReceiptListener("Flutter", this);
+        JIM.getInstance().getMessageManager().addDestroyListener("Flutter", this);
         JIM.getInstance().getCallManager().addReceiveListener("Flutter", this);
         result.success(null);
     }
@@ -339,6 +343,11 @@ import io.flutter.plugin.common.MethodChannel;
     private void getConnectionStatus(MethodChannel.Result result) {
         int status = JIM.getInstance().getConnectionManager().getConnectionStatus().getStatus();
         result.success(status);
+    }
+
+    private void getTimeDifference(Object arg, MethodChannel.Result result) {
+        long diff = JIM.getInstance().getTimeDifference();
+        result.success(diff);
     }
 
     private void getConversationInfoList(MethodChannel.Result result) {
@@ -1567,6 +1576,15 @@ import io.flutter.plugin.common.MethodChannel;
          callSession.addListener("Flutter", impl);
          impl.setDestruct(this);
          mCallSessionListenerMap.put(callSession.getCallId(), impl);
+     }
+
+     @Override
+     public void onMessageDestroyTimeUpdate(String messageId, Conversation conversation, long destroyTime) {
+         Map<String, Object> map = new HashMap<>();
+         map.put("messageId", messageId);
+         map.put("conversation", ModelFactory.conversationToMap(conversation));
+         map.put("destroyTime", destroyTime);
+         mChannel.invokeMethod("onMessageDestroyTimeUpdate", map);
      }
 
      private static class SingletonHolder {

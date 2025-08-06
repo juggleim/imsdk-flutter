@@ -221,6 +221,8 @@
         [dic setObject:message.localAttribute forKey:@"localAttribute"];
     }
     [dic setObject:@(message.isEdit) forKey:@"isEdit"];
+    [dic setObject:@(message.destroyTime) forKey:@"destroyTime"];
+    [dic setObject:@(message.lifeTimeAfterRead) forKey:@"lifeTimeAfterRead"];
     return [dic copy];
 }
 
@@ -323,6 +325,8 @@
     }
     message.localAttribute = dic[@"localAttribute"];
     message.isEdit = [dic[@"isEdit"] boolValue];
+    message.destroyTime = [dic[@"destroyTime"] longLongValue];
+    message.lifeTimeAfterRead = [dic[@"lifeTimeAfterRead"] longLongValue];
     return message;
 }
 
@@ -338,6 +342,8 @@
     if (dic[@"pushData"]) {
         option.pushData = [self pushDataFromDic:dic[@"pushData"]];
     }
+    option.lifeTime = [dic[@"lifeTime"] longLongValue];
+    option.lifeTimeAfterRead = [dic[@"lifeTimeAfterRead"] longLongValue];
     return option;
 }
 
