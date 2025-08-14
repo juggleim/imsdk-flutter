@@ -160,6 +160,12 @@
         [self getTopMessage:call.arguments result:result];
     } else if ([@"getTimeDifference" isEqualToString:call.method]) {
         [self getTimeDifference:call.arguments result:result];
+    } else if ([@"addFavoriteMessages" isEqualToString:call.method]) {
+        [self addFavoriteMessages:call.arguments result:result];
+    } else if ([@"removeFavoriteMessages" isEqualToString:call.method]) {
+        [self removeFavoriteMessages:call.arguments result:result];
+    } else if ([@"getFavoriteMessages" isEqualToString:call.method]) {
+        [self getFavoriteMessages:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -862,6 +868,50 @@
         NSDictionary *messageDic = [JModelFactory messageToDic:message];
         NSDictionary *userDic = [JModelFactory userInfoToDic:userInfo];
         NSDictionary *resultDic = @{@"message": messageDic, @"userInfo": userDic, @"timestamp": @(timestamp), @"errorCode": @(0)};
+        result(resultDic);
+    } error:^(JErrorCode code) {
+        result(@{@"errorCode": @(code)});
+    }];
+}
+
+- (void)addFavoriteMessages:(id)arg
+                     result:(FlutterResult)result {
+    NSArray <NSString *> *messageIdList = (NSArray <NSString *> *)arg;
+    [JIM.shared.messageManager addFavorite:messageIdList
+                                   success:^{
+        result(@(0));
+    } error:^(JErrorCode code) {
+        result(@(code));
+    }];
+}
+
+- (void)removeFavoriteMessages:(id)arg
+                        result:(FlutterResult)result {
+   NSArray <NSString *> *messageIdList = (NSArray <NSString *> *)arg;
+   [JIM.shared.messageManager removeFavorite:messageIdList
+                                     success:^{
+       result(@(0));
+   } error:^(JErrorCode code) {
+       result(@(code));
+   }];
+}
+
+- (void)getFavoriteMessages:(id)arg
+                     result:(FlutterResult)result {
+    NSDictionary *d = (NSDictionary *)arg;
+    NSString *offset = d[@"offset"];
+    int count = [d[@"count"] intValue];
+    JGetFavoriteMessageOption *option = [JGetFavoriteMessageOption new];
+    option.count = count;
+    option.offset = offset;
+    [JIM.shared.messageManager getFavorite:option
+                                   success:^(NSArray<JFavoriteMessage *> *messageList, NSString *offset) {
+        NSMutableArray *messageDicArray = [NSMutableArray array];
+        for (JFavoriteMessage *favMessage in messageList) {
+            NSDictionary *messageDic = [JModelFactory favoriteMessageToDic:favMessage];
+            [messageDicArray addObject:messageDic];
+        }
+        NSDictionary *resultDic = @{@"messageList": messageDicArray, @"offset": offset, @"errorCode": @(0)};
         result(resultDic);
     } error:^(JErrorCode code) {
         result(@{@"errorCode": @(code)});

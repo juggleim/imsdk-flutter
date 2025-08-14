@@ -9,13 +9,16 @@ import 'package:juggle_im/model/call/video_view.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
+import 'package:juggle_im/model/favorite_message_result.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/user_info.dart';
 import 'package:juggle_im_example/group_notify_message.dart';
@@ -91,21 +94,35 @@ class _MyAppState extends State<MyApp> {
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
 
-          Conversation conversation = Conversation(1, '2FEkrEblS_2');
-          TextMessage textMessage = TextMessage.content('Flutter Android');
+          List<String> messageIdList = ['n2wmlrafjaehvacu'];
 
-          DataCallback<Message> callback = (mmmm, errorCode) {
-            if (errorCode == 0) {
-              print("sendMessage success, messageId is " + mmmm.messageId!);
-            } else {
-              print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
-            }
-          };
+          int r1 = await _juggleImPlugin.removeFavoriteMessages(messageIdList);
 
-          SendMessageOption o = SendMessageOption();
-          o.lifeTime = 1000000;
-          o.lifeTimeAfterRead = 500000;
-          Message m = await _juggleImPlugin.sendMessage(textMessage, conversation, callback, o);
+
+          GetFavoriteMessageOption option = GetFavoriteMessageOption();
+          option.count = 10;
+          // option.offset = "fGaw7BqtY";
+          Result<FavoriteMessageResult> r = await _juggleImPlugin.getFavoriteMessages(option);
+
+          int i = 1;
+
+          
+
+          // Conversation conversation = Conversation(1, '2FEkrEblS_2');
+          // TextMessage textMessage = TextMessage.content('Flutter Android');
+
+          // DataCallback<Message> callback = (mmmm, errorCode) {
+          //   if (errorCode == 0) {
+          //     print("sendMessage success, messageId is " + mmmm.messageId!);
+          //   } else {
+          //     print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
+          //   }
+          // };
+
+          // SendMessageOption o = SendMessageOption();
+          // o.lifeTime = 1000000;
+          // o.lifeTimeAfterRead = 500000;
+          // Message m = await _juggleImPlugin.sendMessage(textMessage, conversation, callback, o);
 
           // List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
           // int length = 0;
@@ -113,7 +130,7 @@ class _MyAppState extends State<MyApp> {
           //   length = l.length;
           // }
           // print("getConversationInfoList, count is " + length.toString());
-          int difference = await _juggleImPlugin.getTimeDifference();
+          // int difference = await _juggleImPlugin.getTimeDifference();
 
           // Conversation cc = Conversation(2, 'YvoGswbXyqU');
           // GetMessageOption o = GetMessageOption();
@@ -163,7 +180,7 @@ class _MyAppState extends State<MyApp> {
           // int r = await _juggleImPlugin.setMessageTop('n2bbjeh4k4qgzrn9', cc, false);
           
 
-          Conversation ccc = Conversation(2, '22GkgKbSwJ6asdfasdf');
+          // Conversation ccc = Conversation(2, '22GkgKbSwJ6asdfasdf');
 
           // var rr = await _juggleImPlugin.getTopMessage(cc);
           // var rrr = await _juggleImPlugin.getTopMessage(ccc);

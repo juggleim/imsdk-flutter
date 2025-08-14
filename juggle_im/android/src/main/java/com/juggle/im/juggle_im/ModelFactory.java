@@ -6,13 +6,14 @@ import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
 import com.juggle.im.call.ICallSession;
 import com.juggle.im.call.model.CallMember;
-import com.juggle.im.interfaces.GroupMember;
 import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.ConversationMentionInfo;
+import com.juggle.im.model.FavoriteMessage;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupInfo;
+import com.juggle.im.model.GroupMember;
 import com.juggle.im.model.GroupMessageReadInfo;
 import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
@@ -225,6 +226,13 @@ class ModelFactory {
         map.put("isEdit", message.isEdit());
         map.put("destroyTime", message.getDestroyTime());
         map.put("lifeTimeAfterRead", message.getLifeTimeAfterRead());
+        return map;
+    }
+
+    static Map<String, Object> favoriteMessageToMap(FavoriteMessage favoriteMessage) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("createdTime", favoriteMessage.getCreatedTime());
+        map.put("message", messageToMap(favoriteMessage.getMessage()));
         return map;
     }
 

@@ -226,6 +226,13 @@
     return [dic copy];
 }
 
++ (NSDictionary *)favoriteMessageToDic:(JFavoriteMessage *)message {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    [dic setObject:@(message.createdTime) forKey:@"createdTime"];
+    [dic setObject:[self messageToDic:message.message] forKey:@"message"];
+    return [dic copy];
+}
+
 + (NSDictionary *)messageReactionItemToDic:(JMessageReactionItem *)item {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     [dic setObject:item.reactionId forKey:@"reactionId"];

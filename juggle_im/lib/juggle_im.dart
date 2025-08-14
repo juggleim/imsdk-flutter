@@ -8,7 +8,10 @@ import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
+import 'package:juggle_im/model/favorite_message.dart';
+import 'package:juggle_im/model/favorite_message_result.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
+import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/get_message_result.dart';
 import 'package:juggle_im/model/group_info.dart';
@@ -469,6 +472,33 @@ class JuggleIm {
       UserInfo operator = UserInfo.fromMap(resultMap['userInfo']);
       int timestamp = resultMap['timestamp'];
       TopMessageResult r = TopMessageResult(message, operator, timestamp);
+      result.t = r;
+    }
+    return result;
+  }
+
+  Future<int> addFavoriteMessages(List<String> messageIdList) async {
+    return await _methodChannel.invokeMethod('addFavoriteMessages', messageIdList);
+  }
+
+  Future<int> removeFavoriteMessages(List<String> messageIdList) async {
+    return await _methodChannel.invokeMethod('removeFavoriteMessages', messageIdList);
+  }
+
+  Future<Result<FavoriteMessageResult>> getFavoriteMessages(GetFavoriteMessageOption option) async {
+    Map map = option.toMap();
+    Map resultMap = await _methodChannel.invokeMethod('getFavoriteMessages', map);
+    var result = Result<FavoriteMessageResult>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      String offset = resultMap['offset'];
+      List messageMapList = resultMap['messageList'];
+      List<FavoriteMessage> messageList = [];
+      for (Map messageMap in messageMapList) {
+        FavoriteMessage favoriteMessage = FavoriteMessage.fromMap(messageMap);
+        messageList.add(favoriteMessage);
+      }
+      FavoriteMessageResult r = FavoriteMessageResult(messageList, offset);
       result.t = r;
     }
     return result;

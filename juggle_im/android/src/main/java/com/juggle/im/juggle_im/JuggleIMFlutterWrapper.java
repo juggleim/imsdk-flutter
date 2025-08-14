@@ -11,7 +11,9 @@ import com.juggle.im.JIMConst;
 import com.juggle.im.call.CallConst;
 import com.juggle.im.call.ICallManager;
 import com.juggle.im.call.ICallSession;
-import com.juggle.im.interfaces.GroupMember;
+import com.juggle.im.model.FavoriteMessage;
+import com.juggle.im.model.GetFavoriteMessageOption;
+import com.juggle.im.model.GroupMember;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
 import com.juggle.im.interfaces.IMessageManager;
@@ -187,6 +189,15 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "getTopMessage":
                 getTopMessage(call.arguments, result);
+                break;
+            case "addFavoriteMessages":
+                addFavoriteMessages(call.arguments, result);
+                break;
+            case "removeFavoriteMessages":
+                removeFavoriteMessages(call.arguments, result);
+                break;
+            case "getFavoriteMessages":
+                getFavoriteMessages(call.arguments, result);
                 break;
             case "getTimeDifference":
                 getTimeDifference(call.arguments, result);
@@ -1164,6 +1175,67 @@ import io.flutter.plugin.common.MethodChannel;
                 resultMap.put("message", ModelFactory.messageToMap(message));
                 resultMap.put("userInfo", ModelFactory.userInfoToMap(userInfo));
                 resultMap.put("timestamp", l);
+                resultMap.put("errorCode", 0);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void addFavoriteMessages(Object arg, MethodChannel.Result result) {
+        List<String> messageIdList = (List<String>) arg;
+        JIM.getInstance().getMessageManager().addFavorite(messageIdList, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(0);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void removeFavoriteMessages(Object arg, MethodChannel.Result result) {
+        List<String> messageIdList = (List<String>) arg;
+        JIM.getInstance().getMessageManager().removeFavorite(messageIdList, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(0);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void getFavoriteMessages(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String offset = (String) map.get("offset");
+        int count = (int) map.get("count");
+        GetFavoriteMessageOption option = new GetFavoriteMessageOption();
+        option.setOffset(offset);
+        option.setCount(count);
+        JIM.getInstance().getMessageManager().getFavorite(option, new IMessageManager.IGetFavoriteMessageCallback() {
+            @Override
+            public void onSuccess(List<FavoriteMessage> list, String offset) {
+                List<Map<String, Object>> messageMapList = new ArrayList<>();
+                for (FavoriteMessage favoriteMessage : list) {
+                    Map<String, Object> messageMap = ModelFactory.favoriteMessageToMap(favoriteMessage);
+                    messageMapList.add(messageMap);
+                }
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("messageList", messageMapList);
+                resultMap.put("offset", offset);
                 resultMap.put("errorCode", 0);
                 result.success(resultMap);
             }
