@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'juggle_im'
-  s.version          = '0.0.52'
+  s.version          = '0.0.53'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC
 A new Flutter plugin project.
