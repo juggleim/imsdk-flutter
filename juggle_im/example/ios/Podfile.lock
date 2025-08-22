@@ -2,7 +2,7 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - juggle_im (0.0.53):
+  - juggle_im (0.0.54):
     - Flutter
     - JuggleIM (= 1.8.17)
     - JZegoCall (= 1.8.15.6)

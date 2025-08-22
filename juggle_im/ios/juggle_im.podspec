@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'juggle_im'
-  s.version          = '0.0.53'
+  s.version          = '0.0.54'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC
 A new Flutter plugin project.
@@ -19,8 +19,9 @@ A new Flutter plugin project.
   s.platform = :ios, '12.0'
   s.static_framework = false
 
-  s.dependency 'JuggleIM', '1.8.17'
+  s.dependency 'JuggleIM', '1.8.19'
   s.dependency 'JZegoCall', '1.8.15.6'
+  s.dependency 'JuggleUlt', '1.8.19.3'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
