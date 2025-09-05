@@ -11,6 +11,7 @@ import com.juggle.im.JIMConst;
 import com.juggle.im.call.CallConst;
 import com.juggle.im.call.ICallManager;
 import com.juggle.im.call.ICallSession;
+import com.juggle.im.call.model.CallInfo;
 import com.juggle.im.model.FavoriteMessage;
 import com.juggle.im.model.GetFavoriteMessageOption;
 import com.juggle.im.model.GroupMember;
@@ -42,7 +43,7 @@ import java.util.Objects;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
- class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener, IMessageManager.IMessageDestroyListener, ICallManager.ICallReceiveListener, CallSessionListenerImpl.ICallSessionListenerDestruct {
+ class JuggleIMFlutterWrapper implements IConnectionManager.IConnectionStatusListener, IConversationManager.IConversationListener, IMessageManager.IMessageListener, IMessageManager.IMessageReadReceiptListener, IMessageManager.IMessageDestroyListener, ICallManager.ICallReceiveListener, CallSessionListenerImpl.ICallSessionListenerDestruct, ICallManager.IConversationCallListener {
     public static JuggleIMFlutterWrapper getInstance() {
         return SingletonHolder.sInstance;
     }
@@ -220,6 +221,12 @@ import io.flutter.plugin.common.MethodChannel;
             case "startMultiCall":
                 startMultiCall(call.arguments, result);
                 break;
+            case "joinCall":
+                joinCall(call.arguments, result);
+                break;
+            case "getConversationCallInfo":
+                getConversationCallInfo(call.arguments, result);
+                break;
             case "getCallSession":
                 getCallSession(call.arguments, result);
                 break;
@@ -321,6 +328,7 @@ import io.flutter.plugin.common.MethodChannel;
         JIM.getInstance().getMessageManager().addReadReceiptListener("Flutter", this);
         JIM.getInstance().getMessageManager().addDestroyListener("Flutter", this);
         JIM.getInstance().getCallManager().addReceiveListener("Flutter", this);
+        JIM.getInstance().getCallManager().addConversationCallListener("Flutter", this);
         result.success(null);
     }
 
@@ -1323,7 +1331,12 @@ import io.flutter.plugin.common.MethodChannel;
             if (extra == null) {
                 extra = "";
             }
-            ICallSession callSession = JIM.getInstance().getCallManager().startMultiCall(userIdList, mediaType, extra, null);
+            Map<?, ?> conversationMap = (Map<?, ?>) map.get("conversation");
+            Conversation conversation = null;
+            if (conversationMap != null) {
+                conversation = ModelFactory.conversationFromMap(conversationMap);
+            }
+            ICallSession callSession = JIM.getInstance().getCallManager().startMultiCall(userIdList, mediaType, conversation, extra, null);
             if (callSession != null) {
                 Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
                 addCallSessionListener(callSession);
@@ -1331,6 +1344,41 @@ import io.flutter.plugin.common.MethodChannel;
             } else {
                 result.success(new HashMap<>());
             }
+        }
+    }
+
+    private void joinCall(Object arg, MethodChannel.Result result) {
+        String callId = (String) arg;
+        ICallSession callSession = JIM.getInstance().getCallManager().joinCall(callId, null);
+        if (callSession != null) {
+            Map<String, Object> resultMap = ModelFactory.callSessionToMap(callSession);
+            addCallSessionListener(callSession);
+            result.success(resultMap);
+        } else {
+            result.success(new HashMap<>());
+        }
+    }
+
+    private void getConversationCallInfo(Object arg, MethodChannel.Result result) {
+        if (arg instanceof Map<?, ?>) {
+            Map<?, ?> map = (Map<?, ?>) arg;
+            Conversation conversation = ModelFactory.conversationFromMap(map);
+            JIM.getInstance().getCallManager().getConversationCallInfo(conversation, new JIMConst.IResultCallback<CallInfo>() {
+                @Override
+                public void onSuccess(CallInfo callInfo) {
+                    if (callInfo == null) {
+                        result.success(new HashMap<>());
+                        return;
+                    }
+                    Map<String ,Object> resultMap = ModelFactory.callInfoToMap(callInfo);
+                    result.success(resultMap);
+                }
+
+                @Override
+                public void onError(int i) {
+                    result.success(new HashMap<>());
+                }
+            });
         }
     }
 
@@ -1657,6 +1705,15 @@ import io.flutter.plugin.common.MethodChannel;
          map.put("conversation", ModelFactory.conversationToMap(conversation));
          map.put("destroyTime", destroyTime);
          mChannel.invokeMethod("onMessageDestroyTimeUpdate", map);
+     }
+
+     @Override
+     public void onCallInfoUpdate(CallInfo callInfo, Conversation conversation, boolean isFinished) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("callInfo", ModelFactory.callInfoToMap(callInfo));
+        map.put("conversation", ModelFactory.conversationToMap(conversation));
+        map.put("isFinished", isFinished);
+        mChannel.invokeMethod("onCallInfoUpdate", map);
      }
 
      private static class SingletonHolder {

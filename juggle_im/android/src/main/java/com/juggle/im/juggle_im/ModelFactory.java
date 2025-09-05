@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.juggle.im.JIM;
 import com.juggle.im.JIMConst;
 import com.juggle.im.call.ICallSession;
+import com.juggle.im.call.model.CallInfo;
 import com.juggle.im.call.model.CallMember;
 import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
@@ -315,6 +316,32 @@ class ModelFactory {
         List<Map<String, Object>> memberMapList = new ArrayList<>();
         if (callSession.getMembers() != null) {
             for (CallMember member : callSession.getMembers()) {
+                Map<String, Object> memberMap = callMemberToMap(member);
+                memberMapList.add(memberMap);
+            }
+            map.put("members", memberMapList);
+        }
+        return map;
+    }
+
+    static Map<String, Object> callInfoToMap(CallInfo callInfo) {
+        Map<String, Object> map = new HashMap<>();
+        if (!TextUtils.isEmpty(callInfo.getCallId())) {
+            map.put("callId", callInfo.getCallId());
+        }
+        map.put("isMultiCall", callInfo.isMultiCall());
+        if (callInfo.getMediaType() != null) {
+            map.put("mediaType", callInfo.getMediaType().getValue());
+        }
+        if (callInfo.getOwner() != null) {
+            map.put("owner", userInfoToMap(callInfo.getOwner()));
+        }
+        if (!TextUtils.isEmpty(callInfo.getExtra())) {
+            map.put("extra", callInfo.getExtra());
+        }
+        List<Map<String, Object>> memberMapList = new ArrayList<>();
+        if (callInfo.getMembers() != null) {
+            for (CallMember member : callInfo.getMembers()) {
                 Map<String, Object> memberMap = callMemberToMap(member);
                 memberMapList.add(memberMap);
             }

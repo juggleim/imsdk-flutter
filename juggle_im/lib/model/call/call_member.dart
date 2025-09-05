@@ -6,14 +6,17 @@ class CallMember {
   int startTime = 0;
   int connectTime = 0;
   int finishTime = 0;
-  UserInfo inviter;
+  UserInfo? inviter;
 
-  CallMember(this.userInfo, this.inviter);
+  CallMember(this.userInfo);
 
   static CallMember fromMap(Map map) {
     UserInfo userInfo = UserInfo.fromMap(map['userInfo']);
-    UserInfo inviter = UserInfo.fromMap(map['inviter']);
-    var result = CallMember(userInfo, inviter);
+    var result = CallMember(userInfo);
+    Map? inviterMap = map['inviter'];
+    if (inviterMap != null) {
+      result.inviter = UserInfo.fromMap(inviterMap);
+    }
     result.callStatus = map['callStatus'] ?? 0;
     result.startTime = map['startTime'] ?? 0;
     result.connectTime = map['connectTime'] ?? 0;

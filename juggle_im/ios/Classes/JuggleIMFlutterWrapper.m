@@ -12,7 +12,7 @@
 #import "JCallSessionDelegateImpl.h"
 #import "JVideoPlatformView.h"
 
-@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JMessageDestroyDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct>
+@interface JuggleIMFlutterWrapper () <JConnectionDelegate, JConversationDelegate, JMessageDelegate, JMessageReadReceiptDelegate, JMessageDestroyDelegate, JCallReceiveDelegate, JCallSessionDelegateDestruct, JConversationCallDelegate>
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 @property (nonatomic, copy) NSMutableDictionary <NSString *, JCallSessionDelegateImpl *> *callSessionDelegateDic;
 @property (nonatomic, strong) JVideoPlatformViewFactory *factory;
@@ -132,6 +132,10 @@
         [self startSingleCall:call.arguments result:result];
     } else if ([@"startMultiCall" isEqualToString:call.method]) {
         [self startMultiCall:call.arguments result:result];
+    } else if ([@"joinCall" isEqualToString:call.method]) {
+        [self joinCall:call.arguments result:result];
+    } else if ([@"getConversationCallInfo" isEqualToString:call.method]) {
+        [self getConversationCallInfo:call.arguments result:result];
     } else if ([@"getCallSession" isEqualToString:call.method]) {
         [self getCallSession:call.arguments result:result];
     } else if ([@"callAccept" isEqualToString:call.method]) {
@@ -201,6 +205,7 @@
         [JIM.shared.messageManager addReadReceiptDelegate:self];
         [JIM.shared.messageManager addDestroyDelegate:self];
         [JIM.shared.callManager addReceiveDelegate:self];
+        [JIM.shared.callManager addConversationCallDelegate:self];
     }
 }
 
@@ -977,8 +982,13 @@
     NSArray<NSString *> *userIdList = dic[@"userIdList"];
     JCallMediaType mediaType = [dic[@"mediaType"] intValue];
     NSString *extra = dic[@"extra"];
+    JConversation *conversation = nil;
+    NSDictionary *conversationDic = dic[@"conversation"];
+    if (conversationDic) {
+        conversation = [JModelFactory conversationFromDic:conversationDic];
+    }
     id<JCallSession> callSession = nil;
-    callSession = [JIM.shared.callManager startMultiCall:userIdList mediaType:mediaType extra:extra delegate:nil];
+    callSession = [JIM.shared.callManager startMultiCall:userIdList mediaType:mediaType conversation:conversation extra:extra delegate:nil];
     if (callSession) {
         NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
         [self addCallSessionDelegate:callSession];
@@ -986,6 +996,36 @@
     } else {
         result([NSDictionary dictionary]);
     }
+}
+
+- (void)joinCall:(id)arg
+          result:(FlutterResult)result {
+    NSString *callId = arg;
+    id<JCallSession> callSession = [JIM.shared.callManager joinCall:callId delegate:nil];
+    if (callSession) {
+        NSDictionary *resultDic = [JModelFactory callSessionToDic:callSession];
+        [self addCallSessionDelegate:callSession];
+        result(resultDic);
+    } else {
+        result([NSDictionary dictionary]);
+    }
+}
+
+- (void)getConversationCallInfo:(id)arg
+                         result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    JConversation *conversation = [JModelFactory conversationFromDic:dic];
+    [JIM.shared.callManager getConversationCallInfo:conversation
+                                            success:^(JCallInfo *callInfo) {
+        if (callInfo) {
+            NSDictionary *resultDic = [JModelFactory callInfoToDic:callInfo];
+            result(resultDic);
+        } else {
+            result([NSDictionary dictionary]);
+        }
+    } error:^(JErrorCode errorCode) {
+        result([NSDictionary dictionary]);
+    }];
 }
 
 - (void)getCallSession:(id)arg
@@ -1240,6 +1280,15 @@
 #pragma mark - JCallSessionDelegateDestruct
 - (void)destructCallSessionDelegate:(NSString *)callId {
     [self.callSessionDelegateDic removeObjectForKey:callId];
+}
+
+#pragma mark - JConversationCallDelegate
+- (void)callInfoDidUpdate:(JCallInfo *)callInfo inConversation:(JConversation *)conversation isFinished:(BOOL)isFinished {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    [dic setObject:[JModelFactory callInfoToDic:callInfo] forKey:@"callInfo"];
+    [dic setObject:[JModelFactory conversationToDic:conversation] forKey:@"conversation"];
+    [dic setObject:@(isFinished) forKey:@"isFinished"];
+    [self.channel invokeMethod:@"onCallInfoUpdate" arguments:dic];
 }
 
 #pragma mark - private

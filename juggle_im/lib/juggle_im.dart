@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:juggle_im/internal/content_type_center.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/model/call/call_finish_notify_message.dart';
+import 'package:juggle_im/model/call/call_info.dart';
 import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/connection_listener.dart';
 import 'package:juggle_im/model/conversation.dart';
@@ -553,10 +554,13 @@ class JuggleIm {
     return callSession;
   }
 
-  Future<CallSession?> startMultiCall(List<String> userIdList, int mediaType, [String? extra]) async {
+  Future<CallSession?> startMultiCall(List<String> userIdList, int mediaType, [String? extra, Conversation? conversation]) async {
     var map = {'userIdList': userIdList, 'mediaType': mediaType};
     if (extra != null) {
       map['extra'] = extra;
+    }
+    if (conversation != null) {
+      map['conversation'] = conversation.toMap();
     }
     var resultMap = await _methodChannel.invokeMethod('startMultiCall', map);
     if (resultMap.isEmpty) {
@@ -565,6 +569,26 @@ class JuggleIm {
     CallSession callSession = CallSession.fromMap(resultMap);
     _callSessionMap[callSession.callId] = callSession;
     return callSession;
+  }
+
+  Future<CallSession?> joinCall(String callId) async {
+    var resultMap = await _methodChannel.invokeMethod('joinCall', callId);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    CallSession callSession = CallSession.fromMap(resultMap);
+    _callSessionMap[callSession.callId] = callSession;
+    return callSession;
+  }
+
+  Future<CallInfo?> getConversationCallInfo(Conversation conversation) async {
+    var map = conversation.toMap();
+    var resultMap = await _methodChannel.invokeMethod('getConversationCallInfo', map);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    CallInfo callInfo = CallInfo.fromMap(resultMap);
+    return callInfo;
   }
 
   Future<CallSession?> getCallSession(String callId) async {
@@ -811,6 +835,15 @@ class JuggleIm {
         }
         _callSessionMap.remove(callId);
 
+      case "onCallInfoUpdate":
+        Map map = call.arguments;
+        CallInfo callInfo = CallInfo.fromMap(map['callInfo']);
+        Conversation conversation = Conversation.fromMap(map['conversation']);
+        bool isFinished = map['isFinished'];
+        if (onCallInfoUpdate != null) {
+            onCallInfoUpdate!(callInfo, conversation, isFinished);
+        }
+
       case "onUsersInvite":
         Map map = call.arguments;
         String callId = map['callId'];
@@ -945,5 +978,6 @@ class JuggleIm {
   Function(String messageId, Conversation conversation, int destroyTime)? onMessageDestroyTimeUpdate;
 
   Function(CallSession callSession)? onCallReceive;
+  Function(CallInfo callInfo, Conversation conversation, bool isFinished)? onCallInfoUpdate;
 
 }

@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/juggle_im.dart';
+import 'package:juggle_im/model/call/call_info.dart';
 import 'package:juggle_im/model/call/call_session.dart';
 import 'package:juggle_im/model/call/video_view.dart';
 import 'package:juggle_im/model/connection_listener.dart';
@@ -94,17 +95,25 @@ class _MyAppState extends State<MyApp> {
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
 
-          List<String> messageIdList = ['n2wmlrafjaehvacu'];
+          Conversation conversation = Conversation(2, 'C6FAlpbQEbC');
 
-          int r1 = await _juggleImPlugin.removeFavoriteMessages(messageIdList);
+          CallInfo? callInfo = await _juggleImPlugin.getConversationCallInfo(conversation);
+          if (callInfo != null) {
+            CallSession? callSession = await _juggleImPlugin.joinCall(callInfo.callId);
+          }
 
 
-          GetFavoriteMessageOption option = GetFavoriteMessageOption();
-          option.count = 10;
-          // option.offset = "fGaw7BqtY";
-          Result<FavoriteMessageResult> r = await _juggleImPlugin.getFavoriteMessages(option);
+          // List<String> messageIdList = ['n2wmlrafjaehvacu'];
 
-          int i = 1;
+          // int r1 = await _juggleImPlugin.removeFavoriteMessages(messageIdList);
+
+
+          // GetFavoriteMessageOption option = GetFavoriteMessageOption();
+          // option.count = 10;
+          // // option.offset = "fGaw7BqtY";
+          // Result<FavoriteMessageResult> r = await _juggleImPlugin.getFavoriteMessages(option);
+
+          // int i = 1;
 
           
 
@@ -331,6 +340,10 @@ class _MyAppState extends State<MyApp> {
         //   callSession2?.hangup();
         // };
       };
+
+      _juggleImPlugin.onCallInfoUpdate = (callInfo, conversation, isFinished) {
+          print('onCallInfoUpdate');
+        };
 
       _juggleImPlugin.onMessageSetTop = (message, userInfo, isTop) {
         print('onMessageSetTop');

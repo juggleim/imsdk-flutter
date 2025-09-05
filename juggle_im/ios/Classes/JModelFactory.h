@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)messageReactionToDic:(JMessageReaction *)reaction;
 + (NSDictionary *)callMemberToDic:(JCallMember *)callMember;
 + (NSDictionary *)callSessionToDic:(id<JCallSession>)callSession;
++ (NSDictionary *)callInfoToDic:(JCallInfo *)callInfo;
 
 + (JConversation *)conversationFromDic:(NSDictionary *)dic;
 + (JMessage *)messageFromDic:(NSDictionary *)dic;

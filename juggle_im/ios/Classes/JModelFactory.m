@@ -304,6 +304,29 @@
     return [dic copy];
 }
 
++ (NSDictionary *)callInfoToDic:(JCallInfo *)callInfo {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (callInfo.callId) {
+        [dic setObject:callInfo.callId forKey:@"callId"];
+    }
+    [dic setObject:@(callInfo.isMultiCall) forKey:@"isMultiCall"];
+    [dic setObject:@(callInfo.mediaType) forKey:@"mediaType"];
+    if (callInfo.owner) {
+        [dic setObject:[self userInfoToDic:callInfo.owner] forKey:@"owner"];
+    }
+    if (callInfo.extra) {
+        [dic setObject:callInfo.extra forKey:@"extra"];
+    }
+    NSMutableArray *memberDicArray = [NSMutableArray array];
+    for (JCallMember *member in callInfo.members) {
+        NSDictionary *memberDic = [self callMemberToDic:member];
+        [memberDicArray addObject:memberDic];
+    }
+    [dic setObject:memberDicArray forKey:@"members"];
+    
+    return [dic copy];
+}
+
 #pragma mark - dic2Model
 + (JConversation *)conversationFromDic:(NSDictionary *)dic {
     JConversation *c = [JConversation new];
