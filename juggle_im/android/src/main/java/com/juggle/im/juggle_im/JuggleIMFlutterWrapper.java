@@ -30,7 +30,9 @@ import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
 import com.juggle.im.model.MessageContent;
 import com.juggle.im.model.MessageOptions;
+import com.juggle.im.model.MessageQueryOptions;
 import com.juggle.im.model.MessageReaction;
+import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
 import com.juggle.im.push.PushConfig;
 
@@ -136,6 +138,9 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "getMessages":
                 getMessages(call.arguments, result);
+                break;
+            case "searchMessagesInConversation":
+                searchMessagesInConversation(call.arguments, result);
                 break;
             case "deleteMessagesByClientMsgNoList":
                 deleteMessagesByClientMsgNoList(call.arguments, result);
@@ -259,6 +264,9 @@ import io.flutter.plugin.common.MethodChannel;
                 break;
             case "callStartPreview":
                 callStartPreview(call.arguments, result);
+                break;
+            case "searchConversationsWithMessageContent":
+                searchConversationsWithMessageContent(call.arguments, result);
                 break;
 
             default:
@@ -767,6 +775,31 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+    private void searchMessagesInConversation(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String searchContent = (String) map.get("searchContent");
+        Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
+        int directionValue = (int) map.get("direction");
+        JIMConst.PullDirection direction = JIMConst.PullDirection.OLDER;
+        if (directionValue == 0) {
+            direction = JIMConst.PullDirection.NEWER;
+        }
+        GetMessageOptions option = ModelFactory.getMessageOptionFromMap((Map<?, ?>) map.get("option"));
+        if (option == null) {
+            result.success(new ArrayList<>());
+            return;
+        }
+        List<Message> messages = JIM.getInstance().getMessageManager().searchMessageInConversation(conversation, searchContent, option.getCount(), option.getStartTime(), direction, option.getContentTypes());
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        if (messages != null && !messages.isEmpty()) {
+            for (Message m : messages) {
+                Map<String, Object> messageMap = ModelFactory.messageToMap(m);
+                mapList.add(messageMap);
+            }
+        }
+        result.success(mapList);
+    }
+
     private void deleteMessagesByClientMsgNoList(Object arg, MethodChannel.Result result) {
         if (arg instanceof Map<?, ?>) {
             Map<?, ?> map = (Map<?, ?>) arg;
@@ -1253,6 +1286,64 @@ import io.flutter.plugin.common.MethodChannel;
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("errorCode", i);
                 result.success(resultMap);
+            }
+        });
+    }
+
+    private void searchConversationsWithMessageContent(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        MessageQueryOptions.Builder builder = new MessageQueryOptions.Builder();
+        String searchContent = (String) map.get("searchContent");
+        if (!TextUtils.isEmpty(searchContent)) {
+            builder.setSearchContent(searchContent);
+        }
+        List<String> senderUserIds = (List<String>) map.get("senderUserIds");
+        if (senderUserIds != null) {
+            builder.setSenderUserIds(senderUserIds);
+        }
+        List<String> contentTypes = (List<String>) map.get("contentTypes");
+        if (contentTypes != null) {
+            builder.setContentTypes(contentTypes);
+        }
+        List<Map<?,?>> conversationMapList = (List<Map<?,?>>) map.get("conversations");
+        if (conversationMapList != null) {
+            List<Conversation> conversationList = new ArrayList<>();
+            for (Map<?,?> conversationMap : conversationMapList) {
+                Conversation conversation = ModelFactory.conversationFromMap(conversationMap);
+                conversationList.add(conversation);
+            }
+            builder.setConversations(conversationList);
+        }
+        List<Number> stateNumberList = (List<Number>) map.get("messageStates");
+        if (stateNumberList != null) {
+            List<Message.MessageState> states = new ArrayList<>();
+            for (Number stateNumber : stateNumberList) {
+                Message.MessageState state = Message.MessageState.setValue(stateNumber.intValue());
+                states.add(state);
+            }
+            builder.setStates(states);
+        }
+        List<Number> conversationTypeNumberList = (List<Number>) map.get("conversationTypes");
+        if (conversationTypeNumberList != null) {
+            List<Conversation.ConversationType> conversationTypeList = new ArrayList<>();
+            for (Number conversationTypeNumber : conversationTypeNumberList) {
+                Conversation.ConversationType conversationType = Conversation.ConversationType.setValue(conversationTypeNumber.intValue());
+                conversationTypeList.add(conversationType);
+            }
+            builder.setConversationTypes(conversationTypeList);
+        }
+        MessageQueryOptions o = builder.build();
+        JIM.getInstance().getMessageManager().searchConversationsWithMessageContent(o, new IMessageManager.ISearchConversationWithMessageContentCallback() {
+            @Override
+            public void onComplete(List<SearchConversationsResult> searchConversationsResults) {
+                List<Map<String, Object>> resultList = new ArrayList<>();
+                if (searchConversationsResults != null) {
+                    for (SearchConversationsResult searchConversationsResult : searchConversationsResults) {
+                        Map<String, Object> resultMap = ModelFactory.searchConversationResultToMap(searchConversationsResult);
+                        resultList.add(resultMap);
+                    }
+                }
+                result.success(resultList);
             }
         });
     }

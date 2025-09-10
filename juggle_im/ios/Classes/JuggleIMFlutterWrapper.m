@@ -88,6 +88,8 @@
         [self resendMediaMessage:call.arguments result:result];
     } else if ([@"getMessages" isEqualToString:call.method]) {
         [self getMessages:call.arguments result:result];
+    } else if ([@"searchMessagesInConversation" isEqualToString:call.method]) {
+        [self searchMessagesInConversation:call.arguments result:result];
     } else if ([@"deleteMessagesByClientMsgNoList" isEqualToString:call.method]) {
         [self deleteMessagesByClientMsgNoList:call.arguments result:result];
     } else if ([@"deleteMessagesByMessageIdList" isEqualToString:call.method]) {
@@ -170,6 +172,8 @@
         [self removeFavoriteMessages:call.arguments result:result];
     } else if ([@"getFavoriteMessages" isEqualToString:call.method]) {
         [self getFavoriteMessages:call.arguments result:result];
+    } else if ([@"searchConversationsWithMessageContent" isEqualToString:call.method]) {
+        [self searchConversationsWithMessageContent:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -549,6 +553,28 @@
     }
 }
 
+- (void)searchMessagesInConversation:(id)arg result:(FlutterResult)result {
+    NSDictionary *d = (NSDictionary *)arg;
+    NSString *searchContent = d[@"searchContent"];
+    NSDictionary *conversationDic = d[@"conversation"];
+    JConversation *conversation = [JModelFactory conversationFromDic:conversationDic];
+    JPullDirection direction = [d[@"direction"] intValue];
+    NSDictionary *optionDic = d[@"option"];
+    JGetMessageOptions *option = [JModelFactory getMessageOptionFromDic:optionDic];
+    NSArray *messages = [JIM.shared.messageManager searchMessagesWithContent:searchContent
+                                                              inConversation:conversation
+                                                                       count:option.count
+                                                                        time:option.startTime
+                                                                   direction:direction
+                                                                contentTypes:option.contentTypes];
+    NSMutableArray *arr = [NSMutableArray array];
+    for (JMessage *m in messages) {
+        NSDictionary *messageDic = [JModelFactory messageToDic:m];
+        [arr addObject:messageDic];
+    }
+    result(arr);
+}
+
 - (void)deleteMessagesByClientMsgNoList:(id)arg result:(FlutterResult)result {
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
@@ -920,6 +946,38 @@
         result(resultDic);
     } error:^(JErrorCode code) {
         result(@{@"errorCode": @(code)});
+    }];
+}
+
+- (void)searchConversationsWithMessageContent:(id)arg
+                                       result:(FlutterResult)result {
+    NSDictionary *d = (NSDictionary *)arg;
+    JQueryMessageOptions *o = [JQueryMessageOptions new];
+    o.searchContent = d[@"searchContent"];
+    o.senderUserIds = d[@"senderUserIds"];
+    o.contentTypes = d[@"contentTypes"];
+    NSArray <NSDictionary *> *conversationDicArray = d[@"conversations"];
+    if (conversationDicArray) {
+        NSMutableArray *conversationArray = [NSMutableArray array];
+        for (NSDictionary *conversationDic in conversationDicArray) {
+            JConversation *conversation = [JModelFactory conversationFromDic:conversationDic];
+            [conversationArray addObject:conversation];
+        }
+        o.conversations = conversationArray;
+    }
+    o.states = d[@"messageStates"];
+    o.conversationTypes = d[@"conversationTypes"];
+    
+    [JIM.shared.messageManager searchConversationsWithMessageContent:o
+                                                            complete:^(NSArray<JSearchConversationsResult *> *searchConversationsResultArray) {
+        NSMutableArray *resultArray = [NSMutableArray array];
+        if (searchConversationsResultArray) {
+            for (JSearchConversationsResult *searchConversationsResult in searchConversationsResultArray) {
+                NSDictionary *dic = [JModelFactory searchConversationResultToDic:searchConversationsResult];
+                [resultArray addObject:dic];
+            }
+        }
+        result(resultArray);
     }];
 }
 

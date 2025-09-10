@@ -30,8 +30,10 @@ import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/message/video_message.dart';
 import 'package:juggle_im/model/message/voice_message.dart';
 import 'package:juggle_im/model/message_content.dart';
+import 'package:juggle_im/model/message_query_option.dart';
 import 'package:juggle_im/model/message_reaction.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/search_conversation_result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/top_message_result.dart';
 import 'package:juggle_im/model/user_info.dart';
@@ -268,6 +270,49 @@ class JuggleIm {
     }
     result.t = list;
 
+    return result;
+  }
+
+  Future<List<SearchConversationResult>> searchConversationsWithMessageContent(MessageQueryOption option) async {
+    Map map = {'searchContent': option.searchContent};
+    if (option.senderUserIds.isNotEmpty) {
+      map['senderUserIds'] = option.senderUserIds;
+    }
+    if (option.contentTypes.isNotEmpty) {
+      map['contentTypes'] = option.contentTypes;
+    }
+    if (option.conversations.isNotEmpty) {
+      List<Map> conversationList = [];
+      for (Conversation conversation in option.conversations) {
+        Map conversationMap = conversation.toMap();
+        conversationList.add(conversationMap);
+      }
+      map['conversations'] = conversationList;
+    }
+    if (option.messageStates.isNotEmpty) {
+      map['messageStates'] = option.messageStates;
+    }
+    if (option.conversationTypes.isNotEmpty) {
+      map['conversationTypes'] = option.conversationTypes;
+    }
+    List resultList = await _methodChannel.invokeMethod('searchConversationsWithMessageContent', map);
+    List<SearchConversationResult> result = [];
+    for (Map resultMap in resultList) {
+      ConversationInfo? conversationInfo = ConversationInfo.fromMap(resultMap['conversationInfo']);
+      var searchConversationResult = SearchConversationResult(conversationInfo!, resultMap['matchedCount']);
+      result.add(searchConversationResult);
+    }
+    return result;
+  }
+
+  Future<List<Message>> searchMessagesInConversation(String searchContent, Conversation conversation, int direction, GetMessageOption option) async {
+    Map map = {'searchContent': searchContent, 'conversation': conversation.toMap(),  'direction': direction, 'option': option.toMap()};
+    List resultList = await _methodChannel.invokeMethod('searchMessagesInConversation', map);
+    List<Message> result = [];
+    for (Map messageMap in resultList) {
+      Message message = Message.fromMap(messageMap);
+      result.add(message);
+    }
     return result;
   }
 

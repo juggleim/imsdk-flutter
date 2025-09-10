@@ -24,6 +24,7 @@ import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageReaction;
 import com.juggle.im.model.MessageReactionItem;
 import com.juggle.im.model.PushData;
+import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
 import com.juggle.im.model.messages.FileMessage;
 import com.juggle.im.model.messages.ImageMessage;
@@ -347,6 +348,13 @@ class ModelFactory {
             }
             map.put("members", memberMapList);
         }
+        return map;
+    }
+
+    static Map<String, Object> searchConversationResultToMap(SearchConversationsResult result) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("conversationInfo", conversationInfoToMap(result.getConversationInfo()));
+        map.put("matchedCount", result.getMatchedCount());
         return map;
     }
 

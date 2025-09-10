@@ -327,6 +327,14 @@
     return [dic copy];
 }
 
++ (NSDictionary *)searchConversationResultToDic:(JSearchConversationsResult *)result {
+    NSMutableDictionary *d = [NSMutableDictionary dictionary];
+    [d setObject:[self conversationInfoToDic:result.conversationInfo] forKey:@"conversationInfo"];
+    [d setObject:@(result.matchedCount) forKey:@"matchedCount"];
+    
+    return [d copy];
+}
+
 #pragma mark - dic2Model
 + (JConversation *)conversationFromDic:(NSDictionary *)dic {
     JConversation *c = [JConversation new];

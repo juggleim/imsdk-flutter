@@ -19,7 +19,9 @@ import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/message_query_option.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/search_conversation_result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/user_info.dart';
 import 'package:juggle_im_example/group_notify_message.dart';
@@ -95,12 +97,24 @@ class _MyAppState extends State<MyApp> {
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
 
-          Conversation conversation = Conversation(2, 'C6FAlpbQEbC');
+          MessageQueryOption o = MessageQueryOption();
+          String searchContent = '1';
+          o.searchContent = searchContent;
+          List<SearchConversationResult> searchConversationResult = await _juggleImPlugin.searchConversationsWithMessageContent(o);
 
-          CallInfo? callInfo = await _juggleImPlugin.getConversationCallInfo(conversation);
-          if (callInfo != null) {
-            CallSession? callSession = await _juggleImPlugin.joinCall(callInfo.callId);
-          }
+          Conversation conversation = Conversation(2, 'VyTADh8bcte');
+
+          GetMessageOption option = GetMessageOption();
+          option.count = 10;
+          option.startTime = 0;
+
+          List<Message> messages = await _juggleImPlugin.searchMessagesInConversation(searchContent, conversation, 1, option);
+          int i = 1;
+
+          // CallInfo? callInfo = await _juggleImPlugin.getConversationCallInfo(conversation);
+          // if (callInfo != null) {
+          //   CallSession? callSession = await _juggleImPlugin.joinCall(callInfo.callId);
+          // }
 
 
           // List<String> messageIdList = ['n2wmlrafjaehvacu'];
