@@ -19,9 +19,10 @@ A new Flutter plugin project.
   s.platform = :ios, '12.0'
   s.static_framework = false
 
-  s.dependency 'JuggleIM', '1.8.21'
+  s.dependency 'JuggleIM', '1.8.22'
   s.dependency 'JZegoCall', '1.8.21'
   s.dependency 'JuggleUlt', '1.8.19.3'
+  s.dependency 'JAgoraCall', '1.8.22.1'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

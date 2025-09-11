@@ -130,6 +130,8 @@
         [self getGroupMember:call.arguments result:result];
     } else if ([@"initZegoEngine" isEqualToString:call.method]) {
         [self initZegoEngine:call.arguments result:result];
+    } else if ([@"initAgoraEngine" isEqualToString:call.method]) {
+        [self initAgoraEngine:call.arguments result:result];
     } else if ([@"startSingleCall" isEqualToString:call.method]) {
         [self startSingleCall:call.arguments result:result];
     } else if ([@"startMultiCall" isEqualToString:call.method]) {
@@ -1015,6 +1017,13 @@
     int appId = [dic[@"appId"] intValue];
     NSString *appSign = dic[@"appSign"];
     [JIM.shared.callManager initZegoEngineWith:appId appSign:appSign];
+    result(nil);
+}
+
+- (void)initAgoraEngine:(id)arg
+                 result:(FlutterResult)result {
+    NSString *appId = arg;
+    [JIM.shared.callManager initAgoraEngineWith:appId];
     result(nil);
 }
 

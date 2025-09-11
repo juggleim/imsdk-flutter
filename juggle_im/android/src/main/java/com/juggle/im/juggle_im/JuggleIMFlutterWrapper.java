@@ -220,6 +220,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "initZegoEngine":
                 initZegoEngine(call.arguments, result);
                 break;
+            case "initAgoraEngine":
+                initAgoraEngine(call.arguments, result);
+                break;
             case "startSingleCall":
                 startSingleCall(call.arguments, result);
                 break;
@@ -1383,6 +1386,12 @@ import io.flutter.plugin.common.MethodChannel;
             }
             result.success(null);
         }
+    }
+
+    private void initAgoraEngine(Object arg, MethodChannel.Result result) {
+        String appId = (String) arg;
+        JIM.getInstance().getCallManager().initAgoraEngine(appId, mContext);
+        result.success(null);
     }
 
     private void startSingleCall(Object arg, MethodChannel.Result result) {

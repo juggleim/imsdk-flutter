@@ -587,6 +587,10 @@ class JuggleIm {
     await _methodChannel.invokeMethod('initZegoEngine', map);
   }
 
+  Future<void> initAgoraEngine(String appId) async {
+    await _methodChannel.invokeMethod('initAgoraEngine', appId);
+  }
+
   Future<CallSession?> startSingleCall(String userId, int mediaType, [String? extra]) async {
     var map = {'userId': userId, 'mediaType': mediaType};
     if (extra != null) {
