@@ -299,8 +299,10 @@ class JuggleIm {
     List<SearchConversationResult> result = [];
     for (Map resultMap in resultList) {
       ConversationInfo? conversationInfo = ConversationInfo.fromMap(resultMap['conversationInfo']);
-      var searchConversationResult = SearchConversationResult(conversationInfo!, resultMap['matchedCount']);
-      result.add(searchConversationResult);
+      if (conversationInfo != null) {
+        var searchConversationResult = SearchConversationResult(conversationInfo, resultMap['matchedCount']);
+        result.add(searchConversationResult);
+      }
     }
     return result;
   }
