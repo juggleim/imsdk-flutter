@@ -385,6 +385,17 @@ class JuggleIm {
     return await _methodChannel.invokeMethod('sendReadReceipt', map);
   }
 
+  Future<Result<Message>> downloadMediaMessage(String messageId) async {
+    Map resultMap = await _methodChannel.invokeMethod('downloadMediaMessage', messageId);
+    var result = Result<Message>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      Message message = Message.fromMap(resultMap['message']);
+      result.t = message;
+    }
+    return result;
+  }
+
   Future<Result<GroupMessageReadDetail>> getGroupMessageReadDetail(String messageId, Conversation conversation) async {
     Map map = {'conversation': conversation.toMap(), 'messageId': messageId};
     Map resultMap = await _methodChannel.invokeMethod('getGroupMessageReadDetail', map);

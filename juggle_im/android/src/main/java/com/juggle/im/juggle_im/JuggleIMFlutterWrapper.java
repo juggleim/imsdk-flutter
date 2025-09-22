@@ -187,6 +187,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "updateMessage":
                 updateMessage(call.arguments, result);
                 break;
+            case "downloadMediaMessage":
+                downloadMediaMessage(call.arguments, result);
+                break;
             case "setMessageLocalAttribute":
                 setMessageLocalAttribute(call.arguments, result);
                 break;
@@ -1178,6 +1181,36 @@ import io.flutter.plugin.common.MethodChannel;
                 }
             });
         }
+    }
+
+    private void downloadMediaMessage(Object arg, MethodChannel.Result result) {
+        String messageId = (String) arg;
+        JIM.getInstance().getMessageManager().downloadMediaMessage(messageId, new IMessageManager.IDownloadMediaMessageCallback() {
+            @Override
+            public void onProgress(int i, Message message) {
+
+            }
+
+            @Override
+            public void onSuccess(Message message) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                resultMap.put("message", ModelFactory.messageToMap(message));
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onCancel(Message message) {
+
+            }
+        });
     }
 
     private void setMessageLocalAttribute(Object arg, MethodChannel.Result result) {

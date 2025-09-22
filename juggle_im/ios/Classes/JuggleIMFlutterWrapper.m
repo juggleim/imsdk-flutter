@@ -120,6 +120,8 @@
         [self getCachedMessagesReaction:call.arguments result:result];
     } else if ([@"updateMessage" isEqualToString:call.method]) {
         [self updateMessage:call.arguments result:result];
+    } else if ([@"downloadMediaMessage" isEqualToString:call.method]) {
+        [self downloadMediaMessage:call.arguments result:result];
     } else if ([@"setMessageLocalAttribute" isEqualToString:call.method]) {
         [self setMessageLocalAttribute:call.arguments result:result];
     } else if ([@"getUserInfo" isEqualToString:call.method]) {
@@ -861,6 +863,20 @@
             result(@{@"errorCode": @(code)});
         }];
     }
+}
+
+- (void)downloadMediaMessage:(id)arg
+                      result:(FlutterResult)result {
+    NSString *messageId = arg;
+    [JIM.shared.messageManager downloadMediaMessage:messageId
+                                           progress:^(JMessage *message, int progress) {
+        
+    } success:^(JMessage *message) {
+        NSDictionary *dic = @{@"errorCode": @(JErrorCodeNone), @"message": [JModelFactory messageToDic:message]};
+        result(dic);
+    } error:^(JErrorCode errorCode) {
+        result(@{@"errorCode": @(errorCode)});
+    }];
 }
 
 - (void)setMessageLocalAttribute:(id)arg
