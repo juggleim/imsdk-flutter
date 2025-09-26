@@ -215,7 +215,7 @@ class JuggleIm {
   }
 
   Future<Message> sendMessage(MessageContent content, Conversation conversation, DataCallback<Message> callback, [SendMessageOption? option]) async {
-    Map map = {'contentType': content.getContentType(), "content": content.encode(), "conversation": conversation.toMap()};
+    Map map = {'contentType': content.getContentType(), "content": content.encode(), "flag": content.getFlags(), "conversation": conversation.toMap()};
     if (option != null) {
       map['option'] = option.toMap();
     }

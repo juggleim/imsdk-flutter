@@ -34,6 +34,7 @@ import com.juggle.im.model.MessageQueryOptions;
 import com.juggle.im.model.MessageReaction;
 import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
+import com.juggle.im.model.messages.UnknownMessage;
 import com.juggle.im.push.PushConfig;
 
 import java.util.ArrayList;
@@ -592,7 +593,13 @@ import io.flutter.plugin.common.MethodChannel;
             Map<?, ?> map = (Map<?, ?>) arg;
             String contentString = (String) map.get("content");
             String contentType = (String) map.get("contentType");
+            int flags = (int) map.get("flag");
             MessageContent content = ModelFactory.messageContentFromString(contentString, contentType);
+            if (content instanceof UnknownMessage) {
+                UnknownMessage unknownMessage = (UnknownMessage) content;
+                unknownMessage.setFlags(flags);
+            }
+
             Conversation conversation = ModelFactory.conversationFromMap((Map<?,?>) Objects.requireNonNull(map.get("conversation")));
             MessageOptions options = null;
             Map<?, ?> optionsMap = (Map<?, ?>) map.get("option");

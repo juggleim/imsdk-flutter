@@ -14,4 +14,8 @@ abstract class MessageContent {
   String getSearchContent() {
     return '';
   }
+
+  int getFlags() {
+    return 10;
+  }
 }

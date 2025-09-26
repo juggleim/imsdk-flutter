@@ -431,7 +431,12 @@
         NSDictionary *d = (NSDictionary *)arg;
         NSString *contentString = d[@"content"];
         NSString *contentType = d[@"contentType"];
+        JMessageFlag flag = [d[@"flag"] intValue];
         JMessageContent *content = [JModelFactory messageContentFromString:contentString type:contentType];
+        if ([content isKindOfClass:[JUnknownMessage class]]) {
+            JUnknownMessage *unknown = (JUnknownMessage *)content;
+            unknown.flags = flag;
+        }
         if (content) {
             JMessage *message = [JIM.shared.messageManager sendMessage:content
                                                         messageOption:[JModelFactory sendMessageOptionFromDic:d[@"option"]]
