@@ -42,7 +42,7 @@ android {
     dependencies {
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.mockito:mockito-core:5.0.0")
-        implementation 'com.juggle.im:juggle:1.8.24'
+        implementation 'com.juggle.im:juggle:1.8.24.1'
         implementation 'com.juggle.call.zego:juggle:1.8.21'
         implementation 'com.juggle.ultimate:juggle:1.8.19.1'
         implementation 'com.juggle.call.agora:juggle:1.8.22'
