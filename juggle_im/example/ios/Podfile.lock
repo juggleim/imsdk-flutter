@@ -5,7 +5,7 @@ PODS:
   - JAgoraCall (1.8.22.1):
     - JuggleIM
     - ShengwangRtcEngine_iOS (= 4.6.0)
-  - juggle_im (0.0.61):
+  - juggle_im (0.0.62):
     - Flutter
     - JAgoraCall (= 1.8.22.1)
     - JuggleIM (= 1.8.24)
