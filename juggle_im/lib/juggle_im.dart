@@ -758,8 +758,10 @@ class JuggleIm {
         Map map = call.arguments;
         Message message = Message.fromMap(map['message']);
         int clientMsgNo = message.clientMsgNo;
-        _sendMessageCallbackMap[clientMsgNo]!(message, 0);
-        _sendMessageCallbackMap.remove(clientMsgNo);
+        if (_sendMessageCallbackMap[clientMsgNo] != null) {
+          _sendMessageCallbackMap[clientMsgNo]!(message, 0);
+          _sendMessageCallbackMap.remove(clientMsgNo);
+        }
         _sendMessageProgressCallbackMap.remove(clientMsgNo);
 
       case 'onMessageSendError':
@@ -767,8 +769,10 @@ class JuggleIm {
         int errorCode = map['errorCode'];
         Message message = Message.fromMap(map['message']);
         int clientMsgNo = message.clientMsgNo;
-        _sendMessageCallbackMap[clientMsgNo]!(message, errorCode);
-        _sendMessageCallbackMap.remove(clientMsgNo);
+        if (_sendMessageCallbackMap[clientMsgNo] != null) {
+          _sendMessageCallbackMap[clientMsgNo]!(message, errorCode);
+          _sendMessageCallbackMap.remove(clientMsgNo);
+        }
         _sendMessageProgressCallbackMap.remove(clientMsgNo);
 
       case 'onMessageProgress':
@@ -776,7 +780,9 @@ class JuggleIm {
         int progress = map['progress'];
         Message message = Message.fromMap(map['message']);
         int clientMsgNo = message.clientMsgNo;
-        _sendMessageProgressCallbackMap[clientMsgNo]!(message, progress);
+        if (_sendMessageProgressCallbackMap[clientMsgNo] != null) {
+          _sendMessageProgressCallbackMap[clientMsgNo]!(message, progress);
+        }
 
       case 'onMessageReceive':
         Map map = call.arguments;
