@@ -17,6 +17,7 @@ import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/get_message_result.dart';
 import 'package:juggle_im/model/group_info.dart';
 import 'package:juggle_im/model/group_member.dart';
+import 'package:juggle_im/model/group_message_member_read_detail.dart';
 import 'package:juggle_im/model/group_message_read_detail.dart';
 import 'package:juggle_im/model/group_message_read_info.dart';
 import 'package:juggle_im/model/init_config.dart';
@@ -403,17 +404,19 @@ class JuggleIm {
     result.errorCode = resultMap['errorCode'];
     if (result.errorCode == 0) {
       GroupMessageReadDetail detail = GroupMessageReadDetail();
+      detail.readCount = resultMap['readCount'];
+      detail.memberCount = resultMap['memberCount'];
+      List<GroupMessageMemberReadDetail> readMembers = [];
+      List<GroupMessageMemberReadDetail> unreadMembers = [];
       List readMembersMapList = resultMap['readMembers'];
       List unreadMembersMapList = resultMap['unreadMembers'];
-      List<UserInfo> readMembers = [];
-      List<UserInfo> unreadMembers = [];
       for (Map readMemberMap in readMembersMapList) {
-        UserInfo userInfo = UserInfo.fromMap(readMemberMap);
-        readMembers.add(userInfo);
+        GroupMessageMemberReadDetail detail = GroupMessageMemberReadDetail.fromMap(readMemberMap);
+        readMembersMapList.add(detail);
       }
       for (Map unreadMemberMap in unreadMembersMapList) {
-        UserInfo userInfo = UserInfo.fromMap(unreadMemberMap);
-        unreadMembers.add(userInfo);
+        GroupMessageMemberReadDetail detail = GroupMessageMemberReadDetail.fromMap(unreadMemberMap);
+        unreadMembers.add(detail);
       }
       detail.readMembers = readMembers;
       detail.unreadMembers = unreadMembers;

@@ -1,6 +1,8 @@
-import 'package:juggle_im/model/user_info.dart';
+import 'package:juggle_im/model/group_message_member_read_detail.dart';
 
 class GroupMessageReadDetail {
-  List<UserInfo> readMembers = [];
-  List<UserInfo> unreadMembers = [];
+  int readCount = 0;
+  int memberCount = 0;
+  List<GroupMessageMemberReadDetail> readMembers = [];
+  List<GroupMessageMemberReadDetail> unreadMembers = [];
 }

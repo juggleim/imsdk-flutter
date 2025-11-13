@@ -16,9 +16,12 @@ import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
+import 'package:juggle_im/model/message/file_message.dart';
 import 'package:juggle_im/model/message/image_message.dart';
 import 'package:juggle_im/model/message/merge_message.dart';
 import 'package:juggle_im/model/message/text_message.dart';
+import 'package:juggle_im/model/message/video_message.dart';
+import 'package:juggle_im/model/message/voice_message.dart';
 import 'package:juggle_im/model/message_query_option.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/search_conversation_result.dart';
@@ -97,19 +100,16 @@ class _MyAppState extends State<MyApp> {
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
 
-          MessageQueryOption o = MessageQueryOption();
-          String searchContent = '1';
-          o.searchContent = searchContent;
-          List<SearchConversationResult> searchConversationResult = await _juggleImPlugin.searchConversationsWithMessageContent(o);
 
-          Conversation conversation = Conversation(2, 'VyTADh8bcte');
 
-          GetMessageOption option = GetMessageOption();
-          option.count = 10;
-          option.startTime = 0;
 
-          List<Message> messages = await _juggleImPlugin.searchMessagesInConversation(searchContent, conversation, 1, option);
-          int i = 1;
+
+          // GetMessageOption option = GetMessageOption();
+          // option.count = 10;
+          // option.startTime = 0;
+
+          // List<Message> messages = await _juggleImPlugin.searchMessagesInConversation(searchContent, conversation, 1, option);
+          // int i = 1;
 
           // CallInfo? callInfo = await _juggleImPlugin.getConversationCallInfo(conversation);
           // if (callInfo != null) {
@@ -130,22 +130,7 @@ class _MyAppState extends State<MyApp> {
           // int i = 1;
 
           
-
-          // Conversation conversation = Conversation(1, '2FEkrEblS_2');
-          // TextMessage textMessage = TextMessage.content('Flutter Android');
-
-          // DataCallback<Message> callback = (mmmm, errorCode) {
-          //   if (errorCode == 0) {
-          //     print("sendMessage success, messageId is " + mmmm.messageId!);
-          //   } else {
-          //     print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
-          //   }
-          // };
-
-          // SendMessageOption o = SendMessageOption();
-          // o.lifeTime = 1000000;
-          // o.lifeTimeAfterRead = 500000;
-          // Message m = await _juggleImPlugin.sendMessage(textMessage, conversation, callback, o);
+          
 
           // List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
           // int length = 0;
@@ -160,14 +145,6 @@ class _MyAppState extends State<MyApp> {
           // o.count = 50;
 
 
-
-          // UserInfo userInfo1 = UserInfo();
-          // userInfo1.userId = "3mnHbCeigLw";
-          // userInfo1.userName = "1183";
-          // userInfo1.portrait = "https://jugglechat-file.oss-cn-beijing.aliyuncs.com/images%2F3AVdzfrakSkauWEbWGUN7u.jpg";
-          // MergeMessagePreviewUnit u1 = MergeMessagePreviewUnit('u1Preview', userInfo1);
-          // MergeMessagePreviewUnit u2 = MergeMessagePreviewUnit('u2Preview', userInfo1);
-          // MergeMessage mm = MergeMessage.create('merge title', cc, ['n2hqrar7jaygzrn9', "n2hqrth2ja6gzrn9"], [u1, u2]);
 
           // // TextMessage ttt = TextMessage.content('flutter text');
 
@@ -188,10 +165,6 @@ class _MyAppState extends State<MyApp> {
 
           // var messages = await _juggleImPlugin.getMessages(cc, 1, o);
 
-          // GetMessageOption o = GetMessageOption();
-          // o.startTime = 0;
-          // o.count = 20;
-          // var messageListResult = await _juggleImPlugin.getMessages(cc, 1, o);
 
           // GetMessageOption o1 = GetMessageOption();
           // o1.startTime = messageListResult.timestamp;
@@ -217,11 +190,6 @@ class _MyAppState extends State<MyApp> {
           // info1 = await _juggleImPlugin.getConversationInfo(c1);
           
 
-          // GetConversationInfoOption option = GetConversationInfoOption();
-          // option.conversationTypes = [2];
-          // option.count = 100;
-          // option.timestamp = 0;
-          // option.direction = 1;
           // l = await _juggleImPlugin.getConversationInfoListByOption(option);
           // length = 0;
           // if (l != null) {

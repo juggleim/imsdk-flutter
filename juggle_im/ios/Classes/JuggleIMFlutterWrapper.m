@@ -701,23 +701,25 @@
     if ([arg isKindOfClass:[NSDictionary class]]) {
         NSDictionary *d = (NSDictionary *)arg;
         JConversation *conversation = [JModelFactory conversationFromDic:d[@"conversation"]];
-        [JIM.shared.messageManager getGroupMessageReadDetail:d[@"messageId"]
-                                              inConversation:conversation
-                                                     success:^(NSArray<JUserInfo *> *readMembers, NSArray<JUserInfo *> *unreadMembers) {
+        [JIM.shared.messageManager getGroupMessageReadInfoDetail:d[@"messageId"]
+                                                  inConversation:conversation
+                                                         success:^(JGroupMessageReadInfoDetail *detail) {
             NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
             NSMutableArray *readMemberDicArray = [NSMutableArray array];
             NSMutableArray *unreadMemberDicArray = [NSMutableArray array];
-            for (JUserInfo *userInfo in readMembers) {
-                NSDictionary *readMemberDic = [JModelFactory userInfoToDic:userInfo];
+            for (JGroupMessageMemberReadDetail *memberDetail in detail.readMembers) {
+                NSDictionary *readMemberDic = [JModelFactory groupMessageMemberReadDetailToDic:memberDetail];
                 [readMemberDicArray addObject:readMemberDic];
             }
-            for (JUserInfo *userInfo in unreadMembers) {
-                NSDictionary *unreadMemberDic = [JModelFactory userInfoToDic:userInfo];
+            for (JGroupMessageMemberReadDetail *memberDetail in detail.unreadMembers) {
+                NSDictionary *unreadMemberDic = [JModelFactory groupMessageMemberReadDetailToDic:memberDetail];
                 [unreadMemberDicArray addObject:unreadMemberDic];
             }
             [resultDic setObject:@(JErrorCodeNone) forKey:@"errorCode"];
             [resultDic setObject:readMemberDicArray forKey:@"readMembers"];
             [resultDic setObject:unreadMemberDicArray forKey:@"unreadMembers"];
+            [resultDic setObject:@(detail.readCount) forKey:@"readCount"];
+            [resultDic setObject:@(detail.memberCount) forKey:@"memberCount"];
             result(resultDic);
         } error:^(JErrorCode code) {
             result(@{@"errorCode": @(code)});

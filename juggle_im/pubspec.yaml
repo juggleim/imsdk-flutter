@@ -1,6 +1,6 @@
 name: juggle_im
 description: "Juggle IM SDK"
-version: 0.0.63
+version: 0.0.64
 homepage: https://www.juggle.im/
 repository: https://github.com/juggleim/im-flutter-sdk
 

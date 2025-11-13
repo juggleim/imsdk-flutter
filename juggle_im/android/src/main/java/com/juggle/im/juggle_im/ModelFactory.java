@@ -15,6 +15,7 @@ import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupInfo;
 import com.juggle.im.model.GroupMember;
+import com.juggle.im.model.GroupMessageMemberReadDetail;
 import com.juggle.im.model.GroupMessageReadInfo;
 import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
@@ -106,6 +107,16 @@ class ModelFactory {
         Map<String, Object> map = new HashMap<>();
         map.put("readCount", info.getReadCount());
         map.put("memberCount", info.getMemberCount());
+        return map;
+    }
+
+    static Map<String, Object> groupMessageMemberReadDetailToMap(GroupMessageMemberReadDetail detail) {
+        Map<String, Object> map = new HashMap<>();
+        if (detail == null) {
+            return map;
+        }
+        map.put("userInfo", userInfoToMap(detail.getUserInfo()));
+        map.put("readTime", detail.getReadTime());
         return map;
     }
 

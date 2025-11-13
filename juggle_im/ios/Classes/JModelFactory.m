@@ -120,6 +120,16 @@
     return [dic copy];
 }
 
++ (NSDictionary *)groupMessageMemberReadDetailToDic:(JGroupMessageMemberReadDetail *)detail {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!detail) {
+        return [dic copy];
+    }
+    [dic setObject:[self userInfoToDic:detail.userInfo] forKey:@"userInfo"];
+    [dic setObject:@(detail.readTime) forKey:@"readTime"];
+    return [dic copy];
+}
+
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     if (info.userId) {

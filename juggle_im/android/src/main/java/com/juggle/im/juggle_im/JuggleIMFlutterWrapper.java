@@ -25,7 +25,9 @@ import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GroupInfo;
+import com.juggle.im.model.GroupMessageMemberReadDetail;
 import com.juggle.im.model.GroupMessageReadInfo;
+import com.juggle.im.model.GroupMessageReadInfoDetail;
 import com.juggle.im.model.MediaMessageContent;
 import com.juggle.im.model.Message;
 import com.juggle.im.model.MessageContent;
@@ -979,23 +981,25 @@ import io.flutter.plugin.common.MethodChannel;
              Map<?, ?> map = (Map<?, ?>) arg;
              Conversation conversation = ModelFactory.conversationFromMap((Map<?, ?>) Objects.requireNonNull(map.get("conversation")));
              String messageId = (String) map.get("messageId");
-             JIM.getInstance().getMessageManager().getGroupMessageReadDetail(conversation, messageId, new IMessageManager.IGetGroupMessageReadDetailCallback() {
+             JIM.getInstance().getMessageManager().getGroupMessageReadInfoDetail(conversation, messageId, new JIMConst.IResultCallback<GroupMessageReadInfoDetail>() {
                  @Override
-                 public void onSuccess(List<UserInfo> readMembers, List<UserInfo> unreadMembers) {
+                 public void onSuccess(GroupMessageReadInfoDetail groupMessageReadInfoDetail) {
                      Map<String, Object> resultMap = new HashMap<>();
                      List<Map<String, Object>> readMemberMapList = new ArrayList<>();
                      List<Map<String, Object>> unreadMemberMapList = new ArrayList<>();
-                     for (UserInfo userInfo : readMembers) {
-                         Map<String, Object> readMemberMap = ModelFactory.userInfoToMap(userInfo);
+                     for (GroupMessageMemberReadDetail detail : groupMessageReadInfoDetail.getReadMembers()) {
+                         Map<String, Object> readMemberMap = ModelFactory.groupMessageMemberReadDetailToMap(detail);
                          readMemberMapList.add(readMemberMap);
                      }
-                     for (UserInfo userInfo : unreadMembers) {
-                         Map<String, Object> unreadMemberMap = ModelFactory.userInfoToMap(userInfo);
+                     for (GroupMessageMemberReadDetail detail : groupMessageReadInfoDetail.getUnreadMembers()) {
+                         Map<String, Object> unreadMemberMap = ModelFactory.groupMessageMemberReadDetailToMap(detail);
                          unreadMemberMapList.add(unreadMemberMap);
                      }
-                     resultMap.put("errorCode", JErrorCode.NONE);
+                     resultMap.put("readCount", groupMessageReadInfoDetail.getReadCount());
+                     resultMap.put("memberCount", groupMessageReadInfoDetail.getMemberCount());
                      resultMap.put("readMembers", readMemberMapList);
                      resultMap.put("unreadMembers", unreadMemberMapList);
+                     resultMap.put("errorCode", JErrorCode.NONE);
                      result.success(resultMap);
                  }
 
@@ -1003,7 +1007,7 @@ import io.flutter.plugin.common.MethodChannel;
                  public void onError(int i) {
                      Map<String, Object> resultMap = new HashMap<>();
                      resultMap.put("errorCode", i);
-                    result.success(resultMap);
+                     result.success(resultMap);
                  }
              });
          }
