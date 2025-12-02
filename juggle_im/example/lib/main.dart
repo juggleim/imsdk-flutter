@@ -14,6 +14,8 @@ import 'package:juggle_im/model/favorite_message_result.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
 import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
+import 'package:juggle_im/model/get_moment_comment_option.dart';
+import 'package:juggle_im/model/get_moment_option.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
@@ -23,7 +25,11 @@ import 'package:juggle_im/model/message/text_message.dart';
 import 'package:juggle_im/model/message/video_message.dart';
 import 'package:juggle_im/model/message/voice_message.dart';
 import 'package:juggle_im/model/message_query_option.dart';
+import 'package:juggle_im/model/moment.dart';
+import 'package:juggle_im/model/moment_comment.dart';
+import 'package:juggle_im/model/moment_media.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/result_has_more.dart';
 import 'package:juggle_im/model/search_conversation_result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/user_info.dart';
@@ -99,6 +105,34 @@ class _MyAppState extends State<MyApp> {
         int? s = await _juggleImPlugin.getConnectionStatus();
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
+          // String content = 'flutter moment';
+          // MomentMedia m1 = MomentMedia();
+          // m1.url = 'www.baidu.com';
+          // m1.type = 0;
+          // m1.duration = 111;
+          // m1.height = 300;
+          // m1.width = 600;
+          // MomentMedia m2 = MomentMedia();
+          // m2.url = 'www.google.com';
+          // m2.type = 1;
+          // m2.duration = 222;
+          // m2.height = 1080;
+          // m2.width = 2000;
+          // m2.snapshotUrl = 'snapshot.com';
+          // List<MomentMedia> l = [m1, m2];
+          // Result<Moment> result = await _juggleImPlugin.addMoment(content, l);
+          // int removeResult = await _juggleImPlugin.removeMoment('n453266x2b6yhvgy');
+          // Result<MomentComment> comment = await _juggleImPlugin.addComment('n454cxxeaccyhvgy', 'flutter comment has parent', 'n454fu62jce4hvgy');
+          // int removeCommentResult = await _juggleImPlugin.removeMomentComment('n454cxxeaccyhvgy', 'n454g4uejcg4hvgy');
+          int addReactionResult = await _juggleImPlugin.addMomentReaction('n454cxxeaccyhvgy', 'shit');
+          GetMomentOption o = GetMomentOption();
+          List<Moment> cachedMomentList = await _juggleImPlugin.getCachedMomentList(o);
+          ResultHasMore<List<Moment>> momentList = await _juggleImPlugin.getMomentList(o);
+          Result<Moment> moment = await _juggleImPlugin.getMoment('n45334nrjcayhvgy');
+          GetMomentCommentOption commentOption = GetMomentCommentOption();
+          commentOption.momentId = 'n454cxxeaccyhvgy';
+          ResultHasMore<List<MomentComment>> commentList = await _juggleImPlugin.getMomentCommentList(commentOption);
+          int i = 1;
 
 
 

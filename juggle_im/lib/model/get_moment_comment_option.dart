@@ -2,7 +2,7 @@ class GetMomentCommentOption {
   String momentId = '';
   int startTime = 0;
   int count = 10;
-  int direction = 0;
+  int direction = 1;
 
   Map toMap() {
     return {

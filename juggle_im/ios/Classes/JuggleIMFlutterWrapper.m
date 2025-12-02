@@ -1267,7 +1267,166 @@
     [JIM.shared.momentManager addMoment:content
                               mediaList:mediaArray
                                complete:^(JErrorCode errorCode, JMoment * _Nullable moment) {
-        NSDictionary *momentDic = nil;
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        if (moment) {
+            NSDictionary *momentDic = [JModelFactory momentToDic:moment];
+            [resultDic setObject:momentDic forKey:@"moment"];
+        }
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        result(resultDic);
+    }];
+}
+
+- (void)removeMoment:(id)arg
+              result:(FlutterResult)result {
+    NSString *momentId = arg;
+    [JIM.shared.momentManager removeMoment:momentId
+                                  complete:^(JErrorCode errorCode) {
+        result(@(errorCode));
+    }];
+}
+
+- (void)getCachedMomentList:(id)arg
+                     result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    JGetMomentOption *o = [JModelFactory getMomentOptionFromDic:dic];
+    NSArray *momentList = [JIM.shared.momentManager getCachedMomentList:o];
+    NSMutableArray *dicArray = [NSMutableArray array];
+    for (JMoment *moment in momentList) {
+        NSDictionary *dic = [JModelFactory momentToDic:moment];
+        [dicArray addObject:dic];
+    }
+    result(dicArray);
+}
+
+- (void)getMomentList:(id)arg
+               result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    JGetMomentOption *o = [JModelFactory getMomentOptionFromDic:dic];
+    [JIM.shared.momentManager getMomentList:o
+                                   complete:^(JErrorCode errorCode, NSArray<JMoment *> * _Nullable momentList, BOOL isFinish) {
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        if (errorCode == JErrorCodeNone) {
+            NSMutableArray *momentDicArray = [NSMutableArray array];
+            for (JMoment *moment in momentList) {
+                NSDictionary *dic = [JModelFactory momentToDic:moment];
+                [momentDicArray addObject:dic];
+            }
+            [resultDic setObject:momentDicArray forKey:@"momentList"];
+        }
+        [resultDic setObject:@(isFinish) forKey:@"isFinish"];
+        result(resultDic);
+    }];
+}
+
+- (void)getMoment:(id)arg
+           result:(FlutterResult)result {
+    NSString *momentId = arg;
+    [JIM.shared.momentManager getMoment:momentId complete:^(JErrorCode errorCode, JMoment * _Nullable moment) {
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        if (errorCode == JErrorCodeNone) {
+            NSDictionary *dic = [JModelFactory momentToDic:moment];
+            [resultDic setObject:dic forKey:@"moment"];
+        }
+        result(resultDic);
+    }];
+}
+
+- (void)addComment:(id)arg
+            result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *momentId = dic[@"momentId"];
+    NSString *content = dic[@"content"];
+    NSString *parentCommentId = dic[@"parentCommentId"];
+    [JIM.shared.momentManager addComment:momentId
+                         parentCommentId:parentCommentId
+                                 content:content
+                                complete:^(JErrorCode errorCode, JMomentComment * _Nullable comment) {
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        if (errorCode == JErrorCodeNone) {
+            NSDictionary *commentDic = [JModelFactory momentCommentToDic:comment];
+            [resultDic setObject:commentDic forKey:@"comment"];
+        }
+        result(resultDic);
+    }];
+}
+
+- (void)removeComment:(id)arg
+               result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *momentId = dic[@"momentId"];
+    NSString *commentId = dic[@"commentId"];
+    [JIM.shared.momentManager removeComment:commentId
+                                   momentId:momentId
+                                   complete:^(JErrorCode errorCode) {
+        result(@(errorCode));
+    }];
+}
+
+- (void)getCommentList:(id)arg
+                result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    JGetMomentCommentOption *o = [JModelFactory getMomentCommentOptionFromDic:dic];
+    [JIM.shared.momentManager getCommentList:o
+                                    complete:^(JErrorCode errorCode, NSArray<JMomentComment *> * _Nullable commentList, BOOL isFinish) {
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        if (errorCode == JErrorCodeNone) {
+            NSMutableArray *commentDicArray = [NSMutableArray array];
+            for (JMomentComment *comment in commentList) {
+                NSDictionary *dic = [JModelFactory momentCommentToDic:comment];
+                [commentDicArray addObject:dic];
+            }
+            [resultDic setObject:commentDicArray forKey:@"commentList"];
+        }
+        [resultDic setObject:@(isFinish) forKey:@"isFinish"];
+        result(resultDic);
+    }];
+}
+
+- (void)addMomentReaction:(id)arg
+                   result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *momentId = dic[@"momentId"];
+    NSString *key = dic[@"key"];
+    [JIM.shared.momentManager addReaction:momentId
+                                      key:key
+                                 complete:^(JErrorCode errorCode) {
+        result(@(errorCode));
+    }];
+}
+
+- (void)removeMomentReaction:(id)arg
+                      result:(FlutterResult)result {
+   NSDictionary *dic = arg;
+   NSString *momentId = dic[@"momentId"];
+   NSString *key = dic[@"key"];
+   [JIM.shared.momentManager removeReaction:momentId
+                                        key:key
+                                   complete:^(JErrorCode errorCode) {
+       result(@(errorCode));
+   }];
+}
+
+- (void)getReactionList:(id)arg
+                 result:(FlutterResult)result {
+    NSString *momentId = arg;
+    [JIM.shared.momentManager getReactionList:momentId
+                                     complete:^(JErrorCode errorCode, NSArray<JMomentReaction *> * _Nullable reactionList) {
+        NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+        [resultDic setObject:@(errorCode) forKey:@"errorCode"];
+        if (errorCode == JErrorCodeNone) {
+            NSMutableArray *reactionDicArray = [NSMutableArray array];
+            for (JMomentReaction *reaction in reactionList) {
+                NSDictionary *dic = [JModelFactory momentReactionToDic:reaction];
+                [reactionDicArray addObject:dic];
+            }
+            [resultDic setObject:reactionDicArray forKey:@"reactionList"];
+        }
+        result(resultDic);
     }];
 }
 

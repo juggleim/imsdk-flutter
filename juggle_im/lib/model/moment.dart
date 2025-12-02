@@ -14,30 +14,31 @@ class Moment {
 
   static Moment fromMap(Map map) {
     Moment moment = Moment();
-    moment.momentId = map['momentId'] ?? '';
-    moment.content = map['content'] ?? '';
-    moment.createTime = map['createTime'] ?? 0;
+    moment.momentId = map['moment_id'] ?? '';
+    Map contentMap = map['content'];
+    moment.content = contentMap['text'] ?? '';
+    moment.createTime = map['moment_time'] ?? 0;
 
-    Map? userInfoMap = map['userInfo'];
+    Map? userInfoMap = map['user_info'];
     if (userInfoMap != null) {
       moment.userInfo = UserInfo.fromMap(userInfoMap);
     }
 
-    List<dynamic>? mediaListMap = map['mediaList'];
+    List<dynamic>? mediaListMap = map['medias'];
     if (mediaListMap != null) {
       moment.mediaList = mediaListMap.map((item) {
         return item is Map ? MomentMedia.fromMap(item) : MomentMedia();
       }).toList();
     }
 
-    List<dynamic>? reactionListMap = map['reactionList'];
+    List<dynamic>? reactionListMap = map['reactions'];
     if (reactionListMap != null) {
       moment.reactionList = reactionListMap.map((item) {
         return item is Map ? MomentReaction.fromMap(item) : MomentReaction();
       }).toList();
     }
 
-    List<dynamic>? commentListMap = map['commentList'];
+    List<dynamic>? commentListMap = map['top_comments'];
     if (commentListMap != null) {
       moment.commentList = commentListMap.map((item) {
         return item is Map ? MomentComment.fromMap(item) : MomentComment();

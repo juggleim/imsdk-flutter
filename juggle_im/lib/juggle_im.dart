@@ -40,6 +40,7 @@ import 'package:juggle_im/model/moment_comment.dart';
 import 'package:juggle_im/model/moment_media.dart';
 import 'package:juggle_im/model/moment_reaction.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/result_has_more.dart';
 import 'package:juggle_im/model/search_conversation_result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/top_message_result.dart';
@@ -602,11 +603,13 @@ class JuggleIm {
   }
 
   //moment
-  Future<Result<Moment>> addMoment(String content, List<MomentMedia> mediaList) async {
+  Future<Result<Moment>> addMoment(String content, List<MomentMedia>? mediaList) async {
     List<Map> mediaMapList = [];
-    for (MomentMedia media in mediaList) {
-      Map mediaMap = media.toMap();
-      mediaMapList.add(mediaMap);
+    if (mediaList != null) {
+      for (MomentMedia media in mediaList) {
+        Map mediaMap = media.toMap();
+        mediaMapList.add(mediaMap);
+      }
     }
     var map = {'content': content, 'mediaList': mediaMapList};
     var resultMap = await _methodChannel.invokeMethod('addMoment', map);
@@ -635,16 +638,17 @@ class JuggleIm {
     return momentList;
   }
 
-  Future<Result<List<Moment>>> getMomentList(GetMomentOption o) async {
+  Future<ResultHasMore<List<Moment>>> getMomentList(GetMomentOption o) async {
     Map map = o.toMap();
     var resultMap = await _methodChannel.invokeMethod('getMomentList', map);
-    var result = Result<List<Moment>>();
+    var result = ResultHasMore<List<Moment>>();
     result.errorCode = resultMap['errorCode'];
     if (result.errorCode == 0) {
-      List<Moment> momentList = resultMap['momentList'].map((item) {
+      List<Moment> momentList = resultMap['momentList'].map<Moment>((item) {
         return item is Map ? Moment.fromMap(item) : Moment();
       }).toList();
       result.t = momentList;
+      result.hasMore = !resultMap['isFinish'];
     }
     return result;
   }
@@ -659,7 +663,7 @@ class JuggleIm {
     return result;
   }
 
-  Future<Result<MomentComment>> addComment(String momentId, String content, [String? parentCommentId]) async {
+  Future<Result<MomentComment>> addMomentComment(String momentId, String content, [String? parentCommentId]) async {
     Map map = {'momentId': momentId, 'content': content};
     if (parentCommentId != null) {
       map['parentCommentId'] = parentCommentId;
@@ -673,20 +677,21 @@ class JuggleIm {
     return result;
   }
 
-  Future<int> removeComment(String momentId, String commentId) async {
+  Future<int> removeMomentComment(String momentId, String commentId) async {
     Map map = {'momentId': momentId, 'commentId': commentId};
     return await _methodChannel.invokeMethod('removeComment', map);
   }
 
-  Future<Result<List<MomentComment>>> getCommentList(GetMomentCommentOption o) async {
+  Future<ResultHasMore<List<MomentComment>>> getMomentCommentList(GetMomentCommentOption o) async {
     Map map = o.toMap();
     var resultMap = await _methodChannel.invokeMethod('getCommentList', map);
-    var result = Result<List<MomentComment>>();
+    var result = ResultHasMore<List<MomentComment>>();
     result.errorCode = resultMap['errorCode'];
     if (result.errorCode == 0) {
-      result.t = resultMap['commentList'].map((item) {
+      result.t = resultMap['commentList'].map<MomentComment>((item) {
         return item is Map ? MomentComment.fromMap(item) : MomentComment();
       }).toList();
+      result.hasMore = !resultMap['isFinish'];
     }
     return result;
   }
@@ -701,12 +706,12 @@ class JuggleIm {
     return await _methodChannel.invokeMethod('removeMomentReaction', map);
   }
 
-  Future<Result<List<MomentReaction>>> getReactionList(String momentId) async {
+  Future<Result<List<MomentReaction>>> getMomentReactionList(String momentId) async {
     var resultMap = await _methodChannel.invokeMethod('getReactionList', momentId);
     var result = Result<List<MomentReaction>>();
     result.errorCode = resultMap['errorCode'];
     if (result.errorCode == 0) {
-      result.t = resultMap['reactionList'].map((item) {
+      result.t = resultMap['reactionList'].map<MomentReaction>((item) {
         return item is Map ? MomentReaction.fromMap(item) : MomentReaction();
       }).toList();
     }
