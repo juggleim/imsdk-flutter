@@ -2,12 +2,8 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - JAgoraCall (1.8.23):
-    - JuggleIM
-    - ShengwangRtcEngine_iOS (= 4.6.0)
-  - juggle_im (0.0.64):
+  - juggle_im (0.0.65):
     - Flutter
-    - JAgoraCall (= 1.8.23)
     - JuggleIM (= 1.8.27.1)
     - JuggleUlt (= 1.8.19.3)
     - JZegoCall (= 1.8.25)
@@ -17,47 +13,6 @@ PODS:
   - JZegoCall (1.8.25):
     - JuggleIM
     - ZegoExpressEngine
-  - ShengwangInfra_iOS (1.3.0)
-  - ShengwangRtcEngine_iOS (4.6.0):
-    - ShengwangRtcEngine_iOS/AIAEC (= 4.6.0)
-    - ShengwangRtcEngine_iOS/AIAECLL (= 4.6.0)
-    - ShengwangRtcEngine_iOS/AINS (= 4.6.0)
-    - ShengwangRtcEngine_iOS/AINSLL (= 4.6.0)
-    - ShengwangRtcEngine_iOS/AudioBeauty (= 4.6.0)
-    - ShengwangRtcEngine_iOS/ClearVision (= 4.6.0)
-    - ShengwangRtcEngine_iOS/ContentInspect (= 4.6.0)
-    - ShengwangRtcEngine_iOS/FaceCapture (= 4.6.0)
-    - ShengwangRtcEngine_iOS/FaceDetection (= 4.6.0)
-    - ShengwangRtcEngine_iOS/LipSync (= 4.6.0)
-    - ShengwangRtcEngine_iOS/ReplayKit (= 4.6.0)
-    - ShengwangRtcEngine_iOS/RtcBasic (= 4.6.0)
-    - ShengwangRtcEngine_iOS/SpatialAudio (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VideoAv1CodecDec (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VideoAv1CodecEnc (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VideoCodecDec (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VideoCodecEnc (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VirtualBackground (= 4.6.0)
-    - ShengwangRtcEngine_iOS/VQA (= 4.6.0)
-  - ShengwangRtcEngine_iOS/AIAEC (4.6.0)
-  - ShengwangRtcEngine_iOS/AIAECLL (4.6.0)
-  - ShengwangRtcEngine_iOS/AINS (4.6.0)
-  - ShengwangRtcEngine_iOS/AINSLL (4.6.0)
-  - ShengwangRtcEngine_iOS/AudioBeauty (4.6.0)
-  - ShengwangRtcEngine_iOS/ClearVision (4.6.0)
-  - ShengwangRtcEngine_iOS/ContentInspect (4.6.0)
-  - ShengwangRtcEngine_iOS/FaceCapture (4.6.0)
-  - ShengwangRtcEngine_iOS/FaceDetection (4.6.0)
-  - ShengwangRtcEngine_iOS/LipSync (4.6.0)
-  - ShengwangRtcEngine_iOS/ReplayKit (4.6.0)
-  - ShengwangRtcEngine_iOS/RtcBasic (4.6.0):
-    - ShengwangInfra_iOS (= 1.3.0)
-  - ShengwangRtcEngine_iOS/SpatialAudio (4.6.0)
-  - ShengwangRtcEngine_iOS/VideoAv1CodecDec (4.6.0)
-  - ShengwangRtcEngine_iOS/VideoAv1CodecEnc (4.6.0)
-  - ShengwangRtcEngine_iOS/VideoCodecDec (4.6.0)
-  - ShengwangRtcEngine_iOS/VideoCodecEnc (4.6.0)
-  - ShengwangRtcEngine_iOS/VirtualBackground (4.6.0)
-  - ShengwangRtcEngine_iOS/VQA (4.6.0)
   - ZegoExpressEngine (3.22.0)
 
 DEPENDENCIES:
@@ -67,12 +22,9 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - JAgoraCall
     - JuggleIM
     - JuggleUlt
     - JZegoCall
-    - ShengwangInfra_iOS
-    - ShengwangRtcEngine_iOS
     - ZegoExpressEngine
 
 EXTERNAL SOURCES:
@@ -86,13 +38,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  JAgoraCall: b56e0d34b2171330cf495631d9d342764b409626
-  juggle_im: e18fd10241eaf7c52185eefc6857a093c670bc03
+  juggle_im: d6174441c4b245e6c936b74a36e79c71828fe801
   JuggleIM: 4d0a1fe86e134afef3d7ac406954b839df370105
   JuggleUlt: 0a90059e9407ca68240439f16a5c0064c3cb5d92
   JZegoCall: 2764397dcaea833788cbb7be4d8613ed3de765ad
-  ShengwangInfra_iOS: 333575b726750d4d8777c85b956ed8b6289adeae
-  ShengwangRtcEngine_iOS: 42cc1ede96ee30a237aa59b5fc2fa0b4ea56194c
   ZegoExpressEngine: c1b01551fc817e6fd32b3a877a9d15de6d93f68e
 
 PODFILE CHECKSUM: 6e700dec67e6deac9b1c69bb14c49a2217a12d15
