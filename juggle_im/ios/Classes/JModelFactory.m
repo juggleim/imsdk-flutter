@@ -345,6 +345,11 @@
     return [d copy];
 }
 
++ (NSDictionary *)momentToDic:(JMoment *)moment {
+    NSMutableDictionary *d = [NSMutableDictionary dictionary];
+    d[]
+}
+
 #pragma mark - dic2Model
 + (JConversation *)conversationFromDic:(NSDictionary *)dic {
     JConversation *c = [JConversation new];
@@ -410,6 +415,22 @@
         option.contentTypes = types;
     }
     return option;
+}
+
++ (JMomentMedia *)momentMediaFromDic:(NSDictionary *)dictionary {
+    if (!dictionary) {
+        return nil;
+    }
+    JMomentMedia *media = [[JMomentMedia alloc] init];
+    
+    media.url = dictionary[@"url"];
+    media.snapshotUrl = dictionary[@"snapshot_url"];
+    media.type = [dictionary[@"type"] intValue];
+    media.height = [dictionary[@"height"] intValue];
+    media.width = [dictionary[@"width"] intValue];
+    media.duration = [dictionary[@"duration"] intValue];
+    
+    return media;
 }
 
 + (JMessageMentionInfo *)messageMentionInfoFromDic:(NSDictionary *)dic {

@@ -30,11 +30,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)callSessionToDic:(id<JCallSession>)callSession;
 + (NSDictionary *)callInfoToDic:(JCallInfo *)callInfo;
 + (NSDictionary *)searchConversationResultToDic:(JSearchConversationsResult *)result;
++ (NSDictionary *)momentToDic:(JMoment *)moment;
 
 + (JConversation *)conversationFromDic:(NSDictionary *)dic;
 + (JMessage *)messageFromDic:(NSDictionary *)dic;
 + (JMessageOptions *)sendMessageOptionFromDic:(NSDictionary *)dic;
 + (JGetMessageOptions *)getMessageOptionFromDic:(NSDictionary *)dic;
++ (JMomentMedia *)momentMediaFromDic:(NSDictionary *)dic;
 
 + (JMessageContent *)messageContentFromString:(NSString *)string
                                          type:(nonnull NSString *)contentType;

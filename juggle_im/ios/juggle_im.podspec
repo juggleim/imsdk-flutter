@@ -19,7 +19,7 @@ A new Flutter plugin project.
   s.platform = :ios, '12.0'
   s.static_framework = false
 
-  s.dependency 'JuggleIM', '1.8.27.1'
+  s.dependency 'JuggleIM', '1.8.29'
   s.dependency 'JZegoCall', '1.8.25'
   s.dependency 'JuggleUlt', '1.8.19.3'
   s.dependency 'JAgoraCall', '1.8.23'

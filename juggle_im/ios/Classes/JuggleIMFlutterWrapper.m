@@ -178,6 +178,28 @@
         [self getFavoriteMessages:call.arguments result:result];
     } else if ([@"searchConversationsWithMessageContent" isEqualToString:call.method]) {
         [self searchConversationsWithMessageContent:call.arguments result:result];
+    } else if ([@"addMoment" isEqualToString:call.method]) {
+        [self addMoment:call.arguments result:result];
+    } else if ([@"removeMoment" isEqualToString:call.method]) {
+        [self removeMoment:call.arguments result:result];
+    } else if ([@"getCachedMomentList" isEqualToString:call.method]) {
+        [self getCachedMomentList:call.arguments result:result];
+    } else if ([@"getMomentList" isEqualToString:call.method]) {
+        [self getMomentList:call.arguments result:result];
+    } else if ([@"getMoment" isEqualToString:call.method]) {
+        [self getMoment:call.arguments result:result];
+    } else if ([@"addComment" isEqualToString:call.method]) {
+        [self addComment:call.arguments result:result];
+    } else if ([@"removeComment" isEqualToString:call.method]) {
+        [self removeComment:call.arguments result:result];
+    } else if ([@"getCommentList" isEqualToString:call.method]) {
+        [self getCommentList:call.arguments result:result];
+    } else if ([@"addMomentReaction" isEqualToString:call.method]) {
+        [self addMomentReaction:call.arguments result:result];
+    } else if ([@"removeMomentReaction" isEqualToString:call.method]) {
+        [self removeMomentReaction:call.arguments result:result];
+    } else if ([@"getReactionList" isEqualToString:call.method]) {
+        [self getReactionList:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -1229,6 +1251,24 @@
     id<JCallSession> callSession = [JIM.shared.callManager getCallSession:callId];
     [callSession startPreview:view.view];
     result(nil);
+}
+
+#pragma mark - moment
+- (void)addMoment:(id)arg
+           result:(FlutterResult)result {
+    NSDictionary *dic = arg;
+    NSString *content = dic[@"content"];
+    NSArray <NSDictionary *> *mediaDicArray = dic[@"mediaList"];
+    NSMutableArray <JMomentMedia *> *mediaArray = [NSMutableArray array];
+    for (NSDictionary *mediaDic in mediaDicArray) {
+        JMomentMedia *media = [JModelFactory momentMediaFromDic:mediaDic];
+        [mediaArray addObject:media];
+    }
+    [JIM.shared.momentManager addMoment:content
+                              mediaList:mediaArray
+                               complete:^(JErrorCode errorCode, JMoment * _Nullable moment) {
+        NSDictionary *momentDic = nil;
+    }];
 }
 
 #pragma mark - JConnectionDelegate
