@@ -1262,7 +1262,9 @@
     NSMutableArray <JMomentMedia *> *mediaArray = [NSMutableArray array];
     for (NSDictionary *mediaDic in mediaDicArray) {
         JMomentMedia *media = [JModelFactory momentMediaFromDic:mediaDic];
-        [mediaArray addObject:media];
+        if (media) {
+            [mediaArray addObject:media];
+        }
     }
     [JIM.shared.momentManager addMoment:content
                               mediaList:mediaArray

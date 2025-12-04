@@ -160,7 +160,7 @@
         [dic setObject:info.portrait forKey:@"portrait"];
     }
     if (info.extraDic) {
-        [dic setObject:info.extraDic forKey:@"extraDic"];
+        [dic setObject:info.extraDic forKey:@"extraMap"];
     }
     return [dic copy];
 }
@@ -177,7 +177,7 @@
         [dic setObject:member.groupDisplayName forKey:@"groupDisplayName"];
     }
     if (member.extraDic) {
-        [dic setObject:member.extraDic forKey:@"extraDic"];
+        [dic setObject:member.extraDic forKey:@"extraMap"];
     }
     return [dic copy];
 }

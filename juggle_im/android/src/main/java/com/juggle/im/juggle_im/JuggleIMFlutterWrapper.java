@@ -34,6 +34,8 @@ import com.juggle.im.model.MessageContent;
 import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageQueryOptions;
 import com.juggle.im.model.MessageReaction;
+import com.juggle.im.model.Moment;
+import com.juggle.im.model.MomentMedia;
 import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
 import com.juggle.im.model.messages.UnknownMessage;
@@ -274,8 +276,41 @@ import io.flutter.plugin.common.MethodChannel;
             case "callStartPreview":
                 callStartPreview(call.arguments, result);
                 break;
-            case "searchConversationsWithMessageContent":
-                searchConversationsWithMessageContent(call.arguments, result);
+            case "addMoment":
+                addMoment(call.arguments, result);
+                break;
+            case "removeMoment":
+                removeMoment(call.arguments, result);
+                break;
+            case "getCachedMomentList":
+                getCachedMomentList(call.arguments, result);
+                break;
+            case "getMomentList":
+                getMomentList(call.arguments, result);
+                break;
+            case "getMoment":
+                getMoment(call.arguments, result);
+                break;
+            case "addComment":
+                addComment(call.arguments, result);
+                break;
+            case "removeComment":
+                removeComment(call.arguments, result);
+                break;
+            case "getCommentList":
+                getCommentList(call.arguments, result);
+                break;
+            case "getCommentList":
+                getCommentList(call.arguments, result);
+                break;
+            case "addMomentReaction":
+                addMomentReaction(call.arguments, result);
+                break;
+            case "removeMomentReaction":
+                removeMomentReaction(call.arguments, result);
+                break;
+            case "getReactionList":
+                getReactionList(call.arguments, result);
                 break;
 
             default:
@@ -1660,6 +1695,40 @@ import io.flutter.plugin.common.MethodChannel;
             }
         }
         result.success(null);
+    }
+
+    private void addMoment(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String content = (String) map.get("content");
+        List<Map<String, Object>> mediaMapList = (List<Map<String, Object>>) map.get("mediaList");
+        List<MomentMedia> mediaList = new ArrayList<>();
+        if (mediaMapList != null) {
+            for (Map<String, Object> mediaMap : mediaMapList) {
+                MomentMedia media = ModelFactory.momentMediaFromMap(mediaMap);
+                if (media != null) {
+                    mediaList.add(media);
+                }
+            }
+        }
+        JIM.getInstance().getMomentManager().addMoment(content, mediaList, new JIMConst.IResultCallback<Moment>() {
+            @Override
+            public void onSuccess(Moment moment) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", 0);
+                if (moment != null) {
+                    Map<String, Object> momentMap = ModelFactory.momentToMap(moment);
+                    resultMap.put("moment", momentMap);
+                }
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
     }
 
     @Override
