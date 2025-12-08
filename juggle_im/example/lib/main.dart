@@ -121,10 +121,10 @@ class _MyAppState extends State<MyApp> {
           // m2.snapshotUrl = 'snapshot.com';
           // List<MomentMedia> l = [m1, m2];
           // Result<Moment> result = await _juggleImPlugin.addMoment(content, l);
-          // int removeResult = await _juggleImPlugin.removeMoment('n453266x2b6yhvgy');
-          // Result<MomentComment> comment = await _juggleImPlugin.addComment('n454cxxeaccyhvgy', 'flutter comment has parent', 'n454fu62jce4hvgy');
-          // int removeCommentResult = await _juggleImPlugin.removeMomentComment('n454cxxeaccyhvgy', 'n454g4uejcg4hvgy');
-          int addReactionResult = await _juggleImPlugin.addMomentReaction('n454cxxeaccyhvgy', 'shit');
+          // int removeResult = await _juggleImPlugin.removeMoment('n453x2rdjb2yhvgy');
+          // Result<MomentComment> comment = await _juggleImPlugin.addMomentComment('n454cxxeaccyhvgy', 'flutter comment has no parent', null);
+          // int removeCommentResult = await _juggleImPlugin.removeMomentComment('n454cxxeaccyhvgy', 'n49wk5sjsbg4hvgy');
+          // int addReactionResult = await _juggleImPlugin.addMomentReaction('n454cxxeaccyhvgy', 'shit');
           GetMomentOption o = GetMomentOption();
           List<Moment> cachedMomentList = await _juggleImPlugin.getCachedMomentList(o);
           ResultHasMore<List<Moment>> momentList = await _juggleImPlugin.getMomentList(o);

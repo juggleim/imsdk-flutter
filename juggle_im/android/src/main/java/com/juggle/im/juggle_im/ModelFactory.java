@@ -382,7 +382,7 @@ class ModelFactory {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("url", media.getUrl() == null ? "" : media.getUrl());
-        map.put("type", media.getType());
+        map.put("type", media.getType().getValue());
         map.put("snapshot_url", media.getSnapshotUrl() == null ? "" : media.getSnapshotUrl());
         map.put("height", media.getHeight());
         map.put("width", media.getWidth());
