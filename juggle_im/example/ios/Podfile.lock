@@ -2,7 +2,7 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - juggle_im (0.0.65):
+  - juggle_im (0.0.66):
     - Flutter
     - JuggleIM (= 1.8.29)
     - JuggleUlt (= 1.8.19.3)
