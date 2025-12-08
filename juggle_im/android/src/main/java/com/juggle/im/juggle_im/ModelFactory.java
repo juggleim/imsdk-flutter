@@ -13,6 +13,8 @@ import com.juggle.im.model.ConversationMentionInfo;
 import com.juggle.im.model.FavoriteMessage;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
+import com.juggle.im.model.GetMomentCommentOption;
+import com.juggle.im.model.GetMomentOption;
 import com.juggle.im.model.GroupInfo;
 import com.juggle.im.model.GroupMember;
 import com.juggle.im.model.GroupMessageMemberReadDetail;
@@ -24,6 +26,10 @@ import com.juggle.im.model.MessageMentionInfo;
 import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageReaction;
 import com.juggle.im.model.MessageReactionItem;
+import com.juggle.im.model.Moment;
+import com.juggle.im.model.MomentComment;
+import com.juggle.im.model.MomentMedia;
+import com.juggle.im.model.MomentReaction;
 import com.juggle.im.model.PushData;
 import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
@@ -38,6 +44,7 @@ import com.juggle.im.model.messages.VoiceMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +142,7 @@ class ModelFactory {
             map.put("portrait", info.getPortrait());
         }
         if (info.getExtra() != null) {
-            map.put("extraDic", info.getExtra());
+            map.put("extraMap", info.getExtra());
         }
         return map;
     }
@@ -155,7 +162,7 @@ class ModelFactory {
             map.put("portrait", info.getPortrait());
         }
         if (info.getExtra() != null) {
-            map.put("extraDic", info.getExtra());
+            map.put("extraMap", info.getExtra());
         }
         return map;
     }
@@ -175,7 +182,7 @@ class ModelFactory {
             map.put("groupDisplayName", member.getGroupDisplayName());
         }
         if (member.getExtra() != null) {
-            map.put("extraDic", member.getExtra());
+            map.put("extraMap", member.getExtra());
         }
         return map;
     }
@@ -369,6 +376,94 @@ class ModelFactory {
         return map;
     }
 
+    static Map<String, Object> momentMediaToMap(MomentMedia media) {
+        if (media == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("url", media.getUrl() == null ? "" : media.getUrl());
+        map.put("type", media.getType().getValue());
+        map.put("snapshot_url", media.getSnapshotUrl() == null ? "" : media.getSnapshotUrl());
+        map.put("height", media.getHeight());
+        map.put("width", media.getWidth());
+        map.put("duration", media.getDuration());
+        return map;
+    }
+
+    static Map<String, Object> momentReactionToMap(MomentReaction reaction) {
+        if (reaction == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> map = new HashMap<>();
+        List<Map<String, Object>> userDicArray = new ArrayList<>();
+        List<UserInfo> userArray = reaction.getUserList() == null ? Collections.emptyList() : reaction.getUserList();
+        for (UserInfo user : userArray) {
+            userDicArray.add(userInfoToMap(user));
+        }
+        map.put("key", reaction.getKey() == null ? "" : reaction.getKey());
+        map.put("userList", userDicArray);
+        return map;
+    }
+
+    static Map<String, Object> momentCommentToMap(MomentComment comment) {
+        if (comment == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("comment_id", comment.getCommentId() == null ? "" : comment.getCommentId());
+        map.put("moment_id", comment.getMomentId() == null ? "" : comment.getMomentId());
+        map.put("parent_comment_id", comment.getParentCommentId() == null ? "" : comment.getParentCommentId());
+        map.put("content", comment.getContent() == null ? "" : comment.getContent());
+        map.put("user_info", userInfoToMap(comment.getUserInfo()));
+        map.put("parent_user_info", userInfoToMap(comment.getParentUserInfo()));
+        map.put("comment_time", comment.getCreateTime());
+        return map;
+    }
+
+    static Map<String, Object> momentToMap(Moment moment) {
+        if (moment == null) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+
+        String momentId = moment.getMomentId() == null ? "" : moment.getMomentId();
+        resultMap.put("moment_id", momentId);
+
+        String contentText = moment.getContent() == null ? "" : moment.getContent();
+        Map<String, String> contentMap = new HashMap<>();
+        contentMap.put("text", contentText);
+        resultMap.put("content", contentMap);
+
+        resultMap.put("moment_time", moment.getCreateTime());
+
+        if (moment.getUserInfo() != null) {
+            resultMap.put("user_info", userInfoToMap(moment.getUserInfo()));
+        }
+
+        List<MomentMedia> mediaArray = moment.getMediaList() == null ? Collections.emptyList() : moment.getMediaList();
+        List<Map<String, Object>> mediasDicArray = new ArrayList<>(mediaArray.size());
+        for (MomentMedia media : mediaArray) {
+            mediasDicArray.add(momentMediaToMap(media));
+        }
+        resultMap.put("medias", mediasDicArray);
+
+        List<MomentReaction> reactionArray = moment.getReactionList() == null ? Collections.emptyList() : moment.getReactionList();
+        List<Map<String, Object>> reactionsDicArray = new ArrayList<>(reactionArray.size());
+        for (MomentReaction reaction : reactionArray) {
+            reactionsDicArray.add(momentReactionToMap(reaction));
+        }
+        resultMap.put("reactions", reactionsDicArray);
+
+        List<MomentComment> commentArray = moment.getCommentList() == null ? Collections.emptyList() : moment.getCommentList();
+        List<Map<String, Object>> commentsDicArray = new ArrayList<>(commentArray.size());
+        for (MomentComment comment : commentArray) {
+            commentsDicArray.add(momentCommentToMap(comment));
+        }
+        resultMap.put("top_comments", commentsDicArray);
+
+        return resultMap;
+    }
+
     static Conversation conversationFromMap(Map<?, ?> map) {
         Integer valueObj = (Integer) map.get("conversationType");
         int value = valueObj != null ? valueObj : 0;
@@ -492,6 +587,118 @@ class ModelFactory {
         return info;
     }
 
+    static MomentMedia momentMediaFromMap(Map<String, Object> map) {
+        if (map == null) {
+            return null;
+        }
+
+        MomentMedia media = new MomentMedia();
+
+        Object urlValue = map.get("url");
+        media.setUrl(urlValue instanceof String ? (String) urlValue : "");
+
+        Object snapshotUrlValue = map.get("snapshot_url");
+        media.setSnapshotUrl(snapshotUrlValue instanceof String ? (String) snapshotUrlValue : "");
+
+        Object typeValue = map.get("type");
+        int typeInt = typeValue instanceof Number ? ((Number) typeValue).intValue() : 0;
+        media.setType(MomentMedia.MomentMediaType.setValue(typeInt));
+
+        Object heightValue = map.get("height");
+        media.setHeight(heightValue instanceof Number ? ((Number) heightValue).intValue() : 0);
+
+        Object widthValue = map.get("width");
+        media.setWidth(widthValue instanceof Number ? ((Number) widthValue).intValue() : 0);
+
+        Object durationValue = map.get("duration");
+        media.setDuration(durationValue instanceof Number ? ((Number) durationValue).intValue() : 0);
+
+        return media;
+    }
+
+    static GetMomentOption getMomentOptionFromMap(Map<String, Object> map) {
+        if (map == null) {
+            GetMomentOption defaultOption = new GetMomentOption();
+            defaultOption.setStartTime(0);
+            defaultOption.setCount(10);
+            defaultOption.setDirection(JIMConst.PullDirection.OLDER);
+            return defaultOption;
+        }
+
+        GetMomentOption option = new GetMomentOption();
+        Object startTimeValue = map.get("startTime");
+        if (startTimeValue instanceof Number) {
+            option.setStartTime(((Number) startTimeValue).longValue());
+        } else {
+            option.setStartTime(0);
+        }
+
+        Object countValue = map.get("count");
+        if (countValue instanceof Number) {
+            option.setCount(((Number) countValue).intValue());
+        } else {
+            option.setCount(10);
+        }
+
+        Object directionValue = map.get("direction");
+        if (directionValue instanceof Number) {
+            int directionInt = ((Number) directionValue).intValue();
+            if (directionInt == 0) {
+                option.setDirection(JIMConst.PullDirection.NEWER);
+            } else {
+                option.setDirection(JIMConst.PullDirection.OLDER);
+            }
+        } else {
+            option.setDirection(JIMConst.PullDirection.OLDER);
+        }
+
+        return option;
+    }
+
+    static GetMomentCommentOption getMomentCommentOptionFromMap(Map<String, Object> map) {
+        if (map == null) {
+            GetMomentCommentOption defaultOption = new GetMomentCommentOption();
+            defaultOption.setMomentId("");
+            defaultOption.setStartTime(0);
+            defaultOption.setCount(10);
+            defaultOption.setDirection(JIMConst.PullDirection.OLDER);
+            return defaultOption;
+        }
+
+        GetMomentCommentOption option = new GetMomentCommentOption();
+
+        Object momentIdValue = map.get("momentId");
+        option.setMomentId(momentIdValue instanceof String ? (String) momentIdValue : "");
+
+        Object startTimeValue = map.get("startTime");
+        if (startTimeValue instanceof Number) {
+            option.setStartTime(((Number) startTimeValue).longValue());
+        } else {
+            option.setStartTime(0);
+        }
+
+        Object countValue = map.get("count");
+        if (countValue instanceof Number) {
+            option.setCount(((Number) countValue).intValue());
+        } else {
+            option.setCount(10);
+        }
+
+        Object directionValue = map.get("direction");
+        if (directionValue instanceof Number) {
+            int directionInt = ((Number) directionValue).intValue();
+            if (directionInt == 0) {
+                option.setDirection(JIMConst.PullDirection.NEWER);
+            } else {
+                option.setDirection(JIMConst.PullDirection.OLDER);
+            }
+        } else {
+            option.setDirection(JIMConst.PullDirection.OLDER);
+        }
+
+        return option;
+    }
+
     static UserInfo userInfoFromMap(Map<?, ?> map) {
         if (map == null) {
             return null;
@@ -500,7 +707,7 @@ class ModelFactory {
         info.setUserId((String) map.get("userId"));
         info.setUserName((String) map.get("userName"));
         info.setPortrait((String) map.get("portrait"));
-        info.setExtra((Map) map.get("extraDic"));
+        info.setExtra((Map) map.get("extraMap"));
         return info;
     }
 

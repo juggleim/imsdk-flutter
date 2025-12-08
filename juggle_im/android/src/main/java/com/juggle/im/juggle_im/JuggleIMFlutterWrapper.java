@@ -14,6 +14,8 @@ import com.juggle.im.call.ICallSession;
 import com.juggle.im.call.model.CallInfo;
 import com.juggle.im.model.FavoriteMessage;
 import com.juggle.im.model.GetFavoriteMessageOption;
+import com.juggle.im.model.GetMomentCommentOption;
+import com.juggle.im.model.GetMomentOption;
 import com.juggle.im.model.GroupMember;
 import com.juggle.im.interfaces.IConnectionManager;
 import com.juggle.im.interfaces.IConversationManager;
@@ -34,6 +36,10 @@ import com.juggle.im.model.MessageContent;
 import com.juggle.im.model.MessageOptions;
 import com.juggle.im.model.MessageQueryOptions;
 import com.juggle.im.model.MessageReaction;
+import com.juggle.im.model.Moment;
+import com.juggle.im.model.MomentComment;
+import com.juggle.im.model.MomentMedia;
+import com.juggle.im.model.MomentReaction;
 import com.juggle.im.model.SearchConversationsResult;
 import com.juggle.im.model.UserInfo;
 import com.juggle.im.model.messages.UnknownMessage;
@@ -274,8 +280,38 @@ import io.flutter.plugin.common.MethodChannel;
             case "callStartPreview":
                 callStartPreview(call.arguments, result);
                 break;
-            case "searchConversationsWithMessageContent":
-                searchConversationsWithMessageContent(call.arguments, result);
+            case "addMoment":
+                addMoment(call.arguments, result);
+                break;
+            case "removeMoment":
+                removeMoment(call.arguments, result);
+                break;
+            case "getCachedMomentList":
+                getCachedMomentList(call.arguments, result);
+                break;
+            case "getMomentList":
+                getMomentList(call.arguments, result);
+                break;
+            case "getMoment":
+                getMoment(call.arguments, result);
+                break;
+            case "addComment":
+                addComment(call.arguments, result);
+                break;
+            case "removeComment":
+                removeComment(call.arguments, result);
+                break;
+            case "getCommentList":
+                getCommentList(call.arguments, result);
+                break;
+            case "addMomentReaction":
+                addMomentReaction(call.arguments, result);
+                break;
+            case "removeMomentReaction":
+                removeMomentReaction(call.arguments, result);
+                break;
+            case "getReactionList":
+                getReactionList(call.arguments, result);
                 break;
 
             default:
@@ -1660,6 +1696,245 @@ import io.flutter.plugin.common.MethodChannel;
             }
         }
         result.success(null);
+    }
+
+    private void addMoment(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String content = (String) map.get("content");
+        List<Map<String, Object>> mediaMapList = (List<Map<String, Object>>) map.get("mediaList");
+        List<MomentMedia> mediaList = new ArrayList<>();
+        if (mediaMapList != null) {
+            for (Map<String, Object> mediaMap : mediaMapList) {
+                MomentMedia media = ModelFactory.momentMediaFromMap(mediaMap);
+                if (media != null) {
+                    mediaList.add(media);
+                }
+            }
+        }
+        JIM.getInstance().getMomentManager().addMoment(content, mediaList, new JIMConst.IResultCallback<Moment>() {
+            @Override
+            public void onSuccess(Moment moment) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", 0);
+                if (moment != null) {
+                    Map<String, Object> momentMap = ModelFactory.momentToMap(moment);
+                    resultMap.put("moment", momentMap);
+                }
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void removeMoment(Object arg, MethodChannel.Result result) {
+        String momentId = (String) arg;
+        JIM.getInstance().getMomentManager().removeMoment(momentId, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(JErrorCode.NONE);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void getCachedMomentList(Object arg, MethodChannel.Result result) {
+        Map<String, Object> map = (Map<String, Object>) arg;
+        GetMomentOption o = ModelFactory.getMomentOptionFromMap(map);
+        List<Moment> momentList = JIM.getInstance().getMomentManager().getCachedMomentList(o);
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        if (momentList != null && !momentList.isEmpty()) {
+            for (Moment moment : momentList) {
+                Map<String, Object> momentMap = ModelFactory.momentToMap(moment);
+                mapList.add(momentMap);
+            }
+        }
+        result.success(mapList);
+    }
+
+    private void getMomentList(Object arg, MethodChannel.Result result) {
+        Map<String, Object> map = (Map<String, Object>) arg;
+        GetMomentOption o = ModelFactory.getMomentOptionFromMap(map);
+        JIM.getInstance().getMomentManager().getMomentList(o, new JIMConst.IResultListCallback<Moment>() {
+            @Override
+            public void onSuccess(List<Moment> list, boolean isFinish) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                List<Map<String, Object>> momentMapList = new ArrayList<>();
+                for (Moment moment : list) {
+                    Map<String, Object> momentMap = ModelFactory.momentToMap(moment);
+                    momentMapList.add(momentMap);
+                }
+                resultMap.put("momentList", momentMapList);
+                resultMap.put("isFinish", isFinish);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void getMoment(Object arg, MethodChannel.Result result) {
+        String momentId = (String) arg;
+        JIM.getInstance().getMomentManager().getMoment(momentId, new JIMConst.IResultCallback<Moment>() {
+            @Override
+            public void onSuccess(Moment moment) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                Map<String, Object> momentMap = ModelFactory.momentToMap(moment);
+                resultMap.put("moment", momentMap);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void addComment(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String momentId = (String) map.get("momentId");
+        String content = (String) map.get("content");
+        String parentCommentId = (String) map.get("parentCommentId");
+        JIM.getInstance().getMomentManager().addComment(momentId, parentCommentId, content, new JIMConst.IResultCallback<MomentComment>() {
+            @Override
+            public void onSuccess(MomentComment momentComment) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                Map<String, Object> commentMap = ModelFactory.momentCommentToMap(momentComment);
+                resultMap.put("comment", commentMap);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void removeComment(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String momentId = (String) map.get("momentId");
+        String commentId = (String) map.get("commentId");
+        JIM.getInstance().getMomentManager().removeComment(momentId, commentId, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(JErrorCode.NONE);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void getCommentList(Object arg, MethodChannel.Result result) {
+        Map<String, Object> map = (Map<String, Object>) arg;
+        GetMomentCommentOption o = ModelFactory.getMomentCommentOptionFromMap(map);
+        JIM.getInstance().getMomentManager().getCommentList(o, new JIMConst.IResultListCallback<MomentComment>() {
+            @Override
+            public void onSuccess(List<MomentComment> list, boolean isFinish) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                List<Map<String, Object>> commentMapList = new ArrayList<>();
+                for (MomentComment comment : list) {
+                    Map<String, Object> commentMap = ModelFactory.momentCommentToMap(comment);
+                    commentMapList.add(commentMap);
+                }
+                resultMap.put("commentList", commentMapList);
+                resultMap.put("isFinish", isFinish);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                resultMap.put("isFinish", false);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void addMomentReaction(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String momentId = (String) map.get("momentId");
+        String key = (String) map.get("key");
+        JIM.getInstance().getMomentManager().addReaction(momentId, key, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(JErrorCode.NONE);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void removeMomentReaction(Object arg, MethodChannel.Result result) {
+        Map<?, ?> map = (Map<?, ?>) arg;
+        String momentId = (String) map.get("momentId");
+        String key = (String) map.get("key");
+        JIM.getInstance().getMomentManager().removeReaction(momentId, key, new IMessageManager.ISimpleCallback() {
+            @Override
+            public void onSuccess() {
+                result.success(JErrorCode.NONE);
+            }
+
+            @Override
+            public void onError(int i) {
+                result.success(i);
+            }
+        });
+    }
+
+    private void getReactionList(Object arg, MethodChannel.Result result) {
+        String momentId = (String) arg;
+        JIM.getInstance().getMomentManager().getReactionList(momentId, new JIMConst.IResultListCallback<MomentReaction>() {
+            @Override
+            public void onSuccess(List<MomentReaction> list, boolean isFinish) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", JErrorCode.NONE);
+                List<Map<String, Object>> reactionMapList = new ArrayList<>();
+                for (MomentReaction reaction: list) {
+                    Map<String, Object> reactionMap = ModelFactory.momentReactionToMap(reaction);
+                    reactionMapList.add(reactionMap);
+                }
+                resultMap.put("reactionList", reactionMapList);
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
     }
 
     @Override

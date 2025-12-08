@@ -15,6 +15,8 @@ import 'package:juggle_im/model/get_conversation_info_option.dart';
 import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/get_message_result.dart';
+import 'package:juggle_im/model/get_moment_comment_option.dart';
+import 'package:juggle_im/model/get_moment_option.dart';
 import 'package:juggle_im/model/group_info.dart';
 import 'package:juggle_im/model/group_member.dart';
 import 'package:juggle_im/model/group_message_member_read_detail.dart';
@@ -33,7 +35,12 @@ import 'package:juggle_im/model/message/voice_message.dart';
 import 'package:juggle_im/model/message_content.dart';
 import 'package:juggle_im/model/message_query_option.dart';
 import 'package:juggle_im/model/message_reaction.dart';
+import 'package:juggle_im/model/moment.dart';
+import 'package:juggle_im/model/moment_comment.dart';
+import 'package:juggle_im/model/moment_media.dart';
+import 'package:juggle_im/model/moment_reaction.dart';
 import 'package:juggle_im/model/result.dart';
+import 'package:juggle_im/model/result_has_more.dart';
 import 'package:juggle_im/model/search_conversation_result.dart';
 import 'package:juggle_im/model/send_message_option.dart';
 import 'package:juggle_im/model/top_message_result.dart';
@@ -593,6 +600,122 @@ class JuggleIm {
     }
     GroupMember member = GroupMember.fromMap(resultMap);
     return member;
+  }
+
+  //moment
+  Future<Result<Moment>> addMoment(String content, List<MomentMedia>? mediaList) async {
+    List<Map> mediaMapList = [];
+    if (mediaList != null) {
+      for (MomentMedia media in mediaList) {
+        Map mediaMap = media.toMap();
+        mediaMapList.add(mediaMap);
+      }
+    }
+    var map = {'content': content, 'mediaList': mediaMapList};
+    var resultMap = await _methodChannel.invokeMethod('addMoment', map);
+    var result = Result<Moment>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      Moment moment = Moment.fromMap(resultMap['moment']);
+      result.t = moment;
+    }
+    return result;
+  }
+
+  Future<int> removeMoment(String momentId) async {
+    return await _methodChannel.invokeMethod('removeMoment', momentId);
+  }
+
+  Future<List<Moment>> getCachedMomentList(GetMomentOption o) async {
+    Map map = o.toMap();
+    var resultMap = await _methodChannel.invokeMethod('getCachedMomentList', map);
+    List<Moment> momentList = [];
+    if (resultMap != null && resultMap is List) {
+      momentList = resultMap.map((item) {
+        return item is Map ? Moment.fromMap(item) : Moment();
+      }).toList();
+    }
+    return momentList;
+  }
+
+  Future<ResultHasMore<List<Moment>>> getMomentList(GetMomentOption o) async {
+    Map map = o.toMap();
+    var resultMap = await _methodChannel.invokeMethod('getMomentList', map);
+    var result = ResultHasMore<List<Moment>>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      List<Moment> momentList = resultMap['momentList'].map<Moment>((item) {
+        return item is Map ? Moment.fromMap(item) : Moment();
+      }).toList();
+      result.t = momentList;
+      result.hasMore = !resultMap['isFinish'];
+    }
+    return result;
+  }
+
+  Future<Result<Moment>> getMoment(String momentId) async {
+    var resultMap = await _methodChannel.invokeMethod('getMoment', momentId);
+    var result = Result<Moment>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      result.t = Moment.fromMap(resultMap['moment']);
+    }
+    return result;
+  }
+
+  Future<Result<MomentComment>> addMomentComment(String momentId, String content, [String? parentCommentId]) async {
+    Map map = {'momentId': momentId, 'content': content};
+    if (parentCommentId != null) {
+      map['parentCommentId'] = parentCommentId;
+    }
+    var resultMap = await _methodChannel.invokeMethod('addComment', map);
+    var result = Result<MomentComment>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      result.t = MomentComment.fromMap(resultMap['comment']);
+    }
+    return result;
+  }
+
+  Future<int> removeMomentComment(String momentId, String commentId) async {
+    Map map = {'momentId': momentId, 'commentId': commentId};
+    return await _methodChannel.invokeMethod('removeComment', map);
+  }
+
+  Future<ResultHasMore<List<MomentComment>>> getMomentCommentList(GetMomentCommentOption o) async {
+    Map map = o.toMap();
+    var resultMap = await _methodChannel.invokeMethod('getCommentList', map);
+    var result = ResultHasMore<List<MomentComment>>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      result.t = resultMap['commentList'].map<MomentComment>((item) {
+        return item is Map ? MomentComment.fromMap(item) : MomentComment();
+      }).toList();
+      result.hasMore = !resultMap['isFinish'];
+    }
+    return result;
+  }
+
+  Future<int> addMomentReaction(String momentId, String key) async {
+    Map map = {'momentId': momentId, 'key': key};
+    return await _methodChannel.invokeMethod('addMomentReaction', map);
+  }
+
+  Future<int> removeMomentReaction(String momentId, String key) async {
+    Map map = {'momentId': momentId, 'key': key};
+    return await _methodChannel.invokeMethod('removeMomentReaction', map);
+  }
+
+  Future<Result<List<MomentReaction>>> getMomentReactionList(String momentId) async {
+    var resultMap = await _methodChannel.invokeMethod('getReactionList', momentId);
+    var result = Result<List<MomentReaction>>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      result.t = resultMap['reactionList'].map<MomentReaction>((item) {
+        return item is Map ? MomentReaction.fromMap(item) : MomentReaction();
+      }).toList();
+    }
+    return result;
   }
 
   //call

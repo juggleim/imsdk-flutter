@@ -4,10 +4,10 @@ PODS:
     - Flutter
   - juggle_im (0.0.65):
     - Flutter
-    - JuggleIM (= 1.8.27.1)
+    - JuggleIM (= 1.8.29)
     - JuggleUlt (= 1.8.19.3)
     - JZegoCall (= 1.8.25)
-  - JuggleIM (1.8.27.1)
+  - JuggleIM (1.8.29)
   - JuggleUlt (1.8.19.3):
     - JuggleIM
   - JZegoCall (1.8.25):
@@ -38,8 +38,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  juggle_im: d6174441c4b245e6c936b74a36e79c71828fe801
-  JuggleIM: 4d0a1fe86e134afef3d7ac406954b839df370105
+  juggle_im: 5c108dee252c705a79867324432033d6e5b5f634
+  JuggleIM: f1ca701545871e263d115c976d59f7b551f0f4db
   JuggleUlt: 0a90059e9407ca68240439f16a5c0064c3cb5d92
   JZegoCall: 2764397dcaea833788cbb7be4d8613ed3de765ad
   ZegoExpressEngine: c1b01551fc817e6fd32b3a877a9d15de6d93f68e

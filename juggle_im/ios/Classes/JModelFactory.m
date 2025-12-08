@@ -142,7 +142,7 @@
         [dic setObject:info.portrait forKey:@"portrait"];
     }
     if (info.extraDic) {
-        [dic setObject:info.extraDic forKey:@"extraDic"];
+        [dic setObject:info.extraDic forKey:@"extraMap"];
     }
     [dic setObject:@(info.type) forKey:@"type"];
     return [dic copy];
@@ -160,7 +160,7 @@
         [dic setObject:info.portrait forKey:@"portrait"];
     }
     if (info.extraDic) {
-        [dic setObject:info.extraDic forKey:@"extraDic"];
+        [dic setObject:info.extraDic forKey:@"extraMap"];
     }
     return [dic copy];
 }
@@ -177,7 +177,7 @@
         [dic setObject:member.groupDisplayName forKey:@"groupDisplayName"];
     }
     if (member.extraDic) {
-        [dic setObject:member.extraDic forKey:@"extraDic"];
+        [dic setObject:member.extraDic forKey:@"extraMap"];
     }
     return [dic copy];
 }
@@ -345,6 +345,84 @@
     return [d copy];
 }
 
++ (NSDictionary *)momentMediaToDic:(JMomentMedia *)media {
+    if (!media) return @{};
+    return @{
+        @"url": media.url ?: @"",
+        @"type": @(media.type),
+        @"snapshot_url": media.snapshotUrl ?: @"",
+        @"height": @(media.height),
+        @"width": @(media.width),
+        @"duration": @(media.duration)
+    };
+}
+
++ (NSDictionary *)momentReactionToDic:(JMomentReaction *)reaction {
+    if (!reaction) return @{};
+    NSMutableArray *userDicArray = [NSMutableArray array];
+    for (JUserInfo *user in reaction.userArray ?: @[]) {
+        [userDicArray addObject:[self userInfoToDic:user]];
+    }
+    return @{
+        @"key": reaction.key ?: @"",
+        @"userList": userDicArray
+    };
+}
+
++ (NSDictionary *)momentCommentToDic:(JMomentComment *)comment {
+    if (!comment) return @{};
+    return @{
+        @"comment_id": comment.commentId ?: @"",
+        @"moment_id": comment.momentId ?: @"",
+        @"parent_comment_id": comment.parentCommentId ?: @"",
+        @"content": comment.content ?: @"",
+        @"user_info": [self userInfoToDic:comment.userInfo],
+        @"parent_user_info": [self userInfoToDic:comment.parentUserInfo],
+        @"comment_time": @(comment.createTime)
+    };
+}
+
++ (NSDictionary *)momentToDic:(JMoment *)moment {
+    if (!moment) return @{};
+    NSMutableDictionary *resultDic = [NSMutableDictionary dictionary];
+    NSString *momentId = moment.momentId ?: @"";
+    resultDic[@"moment_id"] = momentId;
+    NSString *contentText = moment.content ?: @"";
+    resultDic[@"content"] = @{@"text": contentText};
+    resultDic[@"moment_time"] = @(moment.createTime);
+    if (moment.userInfo && [moment.userInfo isKindOfClass:[JUserInfo class]]) {
+        resultDic[@"user_info"] = [self userInfoToDic:moment.userInfo];
+    }
+    NSArray *mediaArray = moment.mediaArray ?: @[];
+    NSMutableArray *mediasDicArray = [NSMutableArray arrayWithCapacity:mediaArray.count];
+    for (JMomentMedia *media in mediaArray) {
+        if (media && [media isKindOfClass:[JMomentMedia class]]) {
+            [mediasDicArray addObject:[self momentMediaToDic:media]];
+        }
+    }
+    resultDic[@"medias"] = mediasDicArray;
+    
+    NSArray *reactionArray = moment.reactionArray ?: @[];
+    NSMutableArray *reactionsDicArray = [NSMutableArray arrayWithCapacity:reactionArray.count];
+    for (JMomentReaction *reaction in reactionArray) {
+        if (reaction && [reaction isKindOfClass:[JMomentReaction class]]) {
+            [reactionsDicArray addObject:[self momentReactionToDic:reaction]];
+        }
+    }
+    resultDic[@"reactions"] = reactionsDicArray;
+    
+    NSArray *commentArray = moment.commentArray ?: @[];
+    NSMutableArray *commentsDicArray = [NSMutableArray arrayWithCapacity:commentArray.count];
+    for (JMomentComment *comment in commentArray) {
+        if (comment && [comment isKindOfClass:[JMomentComment class]]) {
+            [commentsDicArray addObject:[self momentCommentToDic:comment]];
+        }
+    }
+    resultDic[@"top_comments"] = commentsDicArray;
+    
+    return [resultDic copy];
+}
+
 #pragma mark - dic2Model
 + (JConversation *)conversationFromDic:(NSDictionary *)dic {
     JConversation *c = [JConversation new];
@@ -412,6 +490,96 @@
     return option;
 }
 
++ (JMomentMedia *)momentMediaFromDic:(NSDictionary *)dictionary {
+    if (!dictionary) {
+        return nil;
+    }
+    JMomentMedia *media = [[JMomentMedia alloc] init];
+    
+    media.url = dictionary[@"url"];
+    media.snapshotUrl = dictionary[@"snapshot_url"];
+    media.type = [dictionary[@"type"] intValue];
+    media.height = [dictionary[@"height"] intValue];
+    media.width = [dictionary[@"width"] intValue];
+    media.duration = [dictionary[@"duration"] intValue];
+    
+    return media;
+}
+
++ (JGetMomentOption *)getMomentOptionFromDic:(NSDictionary *)dic {
+    if (!dic || ![dic isKindOfClass:[NSDictionary class]]) {
+        JGetMomentOption *defaultOption = [[JGetMomentOption alloc] init];
+        defaultOption.startTime = 0;
+        defaultOption.count = 10;
+        defaultOption.direction = 0;
+        return defaultOption;
+    }
+    
+    JGetMomentOption *option = [[JGetMomentOption alloc] init];
+    id startTimeValue = dic[@"startTime"];
+    if ([startTimeValue isKindOfClass:[NSNumber class]]) {
+        option.startTime = [startTimeValue longLongValue];
+    } else {
+        option.startTime = 0;
+    }
+    
+    id countValue = dic[@"count"];
+    if ([countValue isKindOfClass:[NSNumber class]]) {
+        int count = [countValue intValue];
+        option.count = count;
+    } else {
+        option.count = 10;
+    }
+    
+    id directionValue = dic[@"direction"];
+    if ([directionValue isKindOfClass:[NSNumber class]]) {
+        NSInteger direction = [directionValue integerValue];
+        option.direction = (JPullDirection)direction;
+    } else {
+        option.direction = 0;
+    }
+    
+    return option;
+}
+
++ (JGetMomentCommentOption *)getMomentCommentOptionFromDic:(NSDictionary *)dic {
+    if (!dic || ![dic isKindOfClass:[NSDictionary class]]) {
+        JGetMomentCommentOption *defaultOption = [[JGetMomentCommentOption alloc] init];
+        defaultOption.momentId = @"";
+        defaultOption.startTime = 0;
+        defaultOption.count = 10;
+        defaultOption.direction =0;
+        return defaultOption;
+    }
+    
+    JGetMomentCommentOption *option = [[JGetMomentCommentOption alloc] init];
+    option.momentId = dic[@"momentId"];
+    
+    id startTimeValue = dic[@"startTime"];
+    if ([startTimeValue isKindOfClass:[NSNumber class]]) {
+        option.startTime = [startTimeValue longLongValue];
+    } else {
+        option.startTime = 0;
+    }
+    
+    id countValue = dic[@"count"];
+    if ([countValue isKindOfClass:[NSNumber class]]) {
+        option.count = [countValue intValue];
+    } else {
+        option.count = 10;
+    }
+    
+    id directionValue = dic[@"direction"];
+    if ([directionValue isKindOfClass:[NSNumber class]]) {
+        NSInteger direction = [directionValue integerValue];
+        option.direction = (JPullDirection)direction;
+    } else {
+        option.direction = 0;
+    }
+    
+    return option;
+}
+
 + (JMessageMentionInfo *)messageMentionInfoFromDic:(NSDictionary *)dic {
     JMessageMentionInfo *info = [JMessageMentionInfo new];
     info.type = [dic[@"type"] intValue];
@@ -432,7 +600,7 @@
     info.userId = dic[@"userId"];
     info.userName = dic[@"userName"];
     info.portrait = dic[@"portrait"];
-    info.extraDic = dic[@"extraDic"];
+    info.extraDic = dic[@"extraMap"];
     info.type = [dic[@"type"] intValue];
     return info;
 }
