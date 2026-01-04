@@ -28,6 +28,7 @@ import 'package:juggle_im/model/message_query_option.dart';
 import 'package:juggle_im/model/moment.dart';
 import 'package:juggle_im/model/moment_comment.dart';
 import 'package:juggle_im/model/moment_media.dart';
+import 'package:juggle_im/model/moment_reaction.dart';
 import 'package:juggle_im/model/result.dart';
 import 'package:juggle_im/model/result_has_more.dart';
 import 'package:juggle_im/model/search_conversation_result.dart';
@@ -125,6 +126,8 @@ class _MyAppState extends State<MyApp> {
           // Result<MomentComment> comment = await _juggleImPlugin.addMomentComment('n454cxxeaccyhvgy', 'flutter comment has no parent', null);
           // int removeCommentResult = await _juggleImPlugin.removeMomentComment('n454cxxeaccyhvgy', 'n49wk5sjsbg4hvgy');
           // int addReactionResult = await _juggleImPlugin.addMomentReaction('n454cxxeaccyhvgy', 'shit');
+          // int removeReactionResult = await _juggleImPlugin.removeMomentReaction('momentId', 'like');
+          // Result<List<MomentReaction>> reactionList = await JuggleIm.instance.getMomentReactionList('momentId');
           GetMomentOption o = GetMomentOption();
           List<Moment> cachedMomentList = await _juggleImPlugin.getCachedMomentList(o);
           ResultHasMore<List<Moment>> momentList = await _juggleImPlugin.getMomentList(o);
