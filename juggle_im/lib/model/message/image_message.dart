@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:juggle_im/juggle_const.dart';
 import 'package:juggle_im/model/media_message_content.dart';
 
 class ImageMessage extends MediaMessageContent {
@@ -19,7 +20,8 @@ class ImageMessage extends MediaMessageContent {
 
   @override
   String encode() {
-    Map map = {'url': url, 'thumbnail': thumbnailUrl, 'local': localPath, 'width': width, 'height': height, 'size': size, 'extra': extra, 'thumbnailLocalPath': thumbnailLocalPath};
+    String path = Utility.removePrivatePrefix(localPath);
+    Map map = {'url': url, 'thumbnail': thumbnailUrl, 'local': path, 'width': width, 'height': height, 'size': size, 'extra': extra, 'thumbnailLocalPath': thumbnailLocalPath};
     return json.encode(map);
   }
 

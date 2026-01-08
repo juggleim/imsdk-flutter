@@ -98,8 +98,7 @@ class _MyAppState extends State<MyApp> {
       // await _juggleImPlugin.init('nwm6fxqt2aeebhb7', config);
       await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
-      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCJQefp9NOXL23cc_ux0o53VypAkehIqxPVZZ2sbCi6tA==');
-      // await _juggleImPlugin.connect('ChBud202ZnhxdDJhZWViaGI3GiAAUR0yD9XzkXUx6XlF7IXkjoFQy7tYYsPhyZnktWV36A==');
+      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCDdV1aexE5r5vEKHjGkB85CCnitMKpvftPdy4G4uqMJA==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
@@ -258,24 +257,24 @@ class _MyAppState extends State<MyApp> {
 
 
 
-          // Conversation c2 = Conversation(1, 'YvoGswbXyqU');
+          Conversation c2 = Conversation(1, 'YvoGswbXyqU');
           // TextMessage textMessage = TextMessage.content('flutter text Android');
-          // ImageMessage image = ImageMessage();
-          // image.localPath = 'asdfadf';
-          // image.thumbnailLocalPath = '23232';
+          ImageMessage image = ImageMessage();
+          image.localPath = '/private/var/mobile/Containers/Data/Application/04E5AE67-633E-41F9-A5F9-85EA5801C814/tmp/定制系列定瓷产品介绍-2025.pdf';
+          image.thumbnailLocalPath = '23232';
           // GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
           // groupNotifyMessage.content = 'This is content';
           // groupNotifyMessage.aaa = 'This is aaa';
-          // callback(message, errorCode) {
-          //     if (errorCode == 0) {
-          //       print("sendMessage success, messageId is " + message.messageId!);
-          //     } else {
-          //       print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
-          //     }
-          // }
-          // progressCallback(message, progress) {
+          callback(message, errorCode) {
+              if (errorCode == 0) {
+                print("sendMessage success, messageId is " + message.messageId!);
+              } else {
+                print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
+              }
+          }
+          progressCallback(message, progress) {
 
-          // }
+          }
           // Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
           // Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
 
@@ -285,8 +284,8 @@ class _MyAppState extends State<MyApp> {
           // await _juggleImPlugin.setMute(c2, true);
           
 
-          // Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
-          // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
+          Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
+          print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
           // await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
           // List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
           // GetMessageOption op = GetMessageOption();
