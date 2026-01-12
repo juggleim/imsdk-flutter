@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'juggle_im'
-  s.version          = '0.0.67'
+  s.version          = '0.10.67'
   s.summary          = 'A new Flutter plugin project.'
   s.description      = <<-DESC
 A new Flutter plugin project.
@@ -20,7 +20,6 @@ A new Flutter plugin project.
   s.static_framework = false
 
   s.dependency 'JuggleIM', '1.8.32'
-  s.dependency 'JZegoCall', '1.8.25'
   s.dependency 'JuggleUlt', '1.8.19.3'
 
   # Flutter.framework does not contain a i386 slice.
