@@ -280,6 +280,9 @@ import io.flutter.plugin.common.MethodChannel;
             case "callStartPreview":
                 callStartPreview(call.arguments, result);
                 break;
+            case "searchConversationsWithMessageContent":
+                searchConversationsWithMessageContent(call.arguments, result);
+                break;
             case "addMoment":
                 addMoment(call.arguments, result);
                 break;
