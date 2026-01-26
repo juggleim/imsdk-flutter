@@ -200,6 +200,10 @@
         [self removeMomentReaction:call.arguments result:result];
     } else if ([@"getReactionList" isEqualToString:call.method]) {
         [self getReactionList:call.arguments result:result];
+    } else if ([@"fetchUserInfo" isEqualToString:call.method]) {
+        [self fetchUserInfo:call.arguments result:result];
+    } else if ([@"fetchGroupInfo" isEqualToString:call.method]) {
+        [self fetchGroupInfo:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -1053,6 +1057,30 @@
     JGroupMember *member = [JIM.shared.userInfoManager getGroupMember:groupId userId:userId];
     NSDictionary *resultDic = [JModelFactory groupMemberToDic:member];
     result(resultDic);
+}
+
+- (void)fetchUserInfo:(id)arg
+               result:(FlutterResult)result {
+    NSString *userId = arg;
+    [JIM.shared.userInfoManager fetchUserInfo:userId
+                                      success:^(JUserInfo *userInfo) {
+        NSDictionary *resultDic = @{@"userInfo": [JModelFactory userInfoToDic:userInfo], @"errorCode": @(0)};
+        result(resultDic);
+    } error:^(JErrorCode code) {
+        result(@{@"errorCode": @(code)});
+    }];
+}
+
+- (void)fetchGroupInfo:(id)arg
+                result:(FlutterResult)result {
+    NSString *groupId = arg;
+    [JIM.shared.userInfoManager fetchGroupInfo:groupId
+                                       success:^(JGroupInfo *groupInfo) {
+        NSDictionary *resultDic = @{@"groupInfo": [JModelFactory groupInfoToDic:groupInfo], @"errorCode": @(0)};
+        result(resultDic);
+    } error:^(JErrorCode code) {
+        result(@{@"errorCode": @(code)});
+    }];
 }
 
 #pragma mark - call

@@ -16,6 +16,8 @@ import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
 import 'package:juggle_im/model/get_moment_comment_option.dart';
 import 'package:juggle_im/model/get_moment_option.dart';
+import 'package:juggle_im/model/group_info.dart';
+import 'package:juggle_im/model/group_member.dart';
 import 'package:juggle_im/model/init_config.dart';
 import 'package:juggle_im/model/message.dart';
 import 'package:juggle_im/model/message/file_message.dart';
@@ -98,13 +100,23 @@ class _MyAppState extends State<MyApp> {
       // await _juggleImPlugin.init('nwm6fxqt2aeebhb7', config);
       await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
-      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiCDdV1aexE5r5vEKHjGkB85CCnitMKpvftPdy4G4uqMJA==');
+      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiAtbmOiVtaTjmV69wNQ9yjpN5KKIDSoozpXcmZ83lWgtQ==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
         int? s = await _juggleImPlugin.getConnectionStatus();
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
+          var userInfo = await JuggleIm.instance.fetchUserInfo('YvoGswbXyqU');
+          var userInfo2 = await JuggleIm.instance.fetchUserInfo('adfasdf');
+          var groupInfo = await JuggleIm.instance.fetchGroupInfo('aKiA6n8Vrfy');
+          var groupInfo2 = await JuggleIm.instance.fetchGroupInfo('asdfasdf');
+          int i = 1;
+
+
+          // UserInfo? userInfo = await JuggleIm.instance.getUserInfo("userId");
+          // GroupInfo? groupInfo = await JuggleIm.instance.getGroupInfo("groupId");
+          // GroupMember? member = await JuggleIm.instance.getGroupMember("groupId", "userId");
           // String content = 'flutter moment';
           // MomentMedia m1 = MomentMedia();
           // m1.url = 'www.baidu.com';
@@ -127,14 +139,14 @@ class _MyAppState extends State<MyApp> {
           // int addReactionResult = await _juggleImPlugin.addMomentReaction('n454cxxeaccyhvgy', 'shit');
           // int removeReactionResult = await _juggleImPlugin.removeMomentReaction('momentId', 'like');
           // Result<List<MomentReaction>> reactionList = await JuggleIm.instance.getMomentReactionList('momentId');
-          GetMomentOption o = GetMomentOption();
-          List<Moment> cachedMomentList = await _juggleImPlugin.getCachedMomentList(o);
-          ResultHasMore<List<Moment>> momentList = await _juggleImPlugin.getMomentList(o);
-          Result<Moment> moment = await _juggleImPlugin.getMoment('n45334nrjcayhvgy');
-          GetMomentCommentOption commentOption = GetMomentCommentOption();
-          commentOption.momentId = 'n454cxxeaccyhvgy';
-          ResultHasMore<List<MomentComment>> commentList = await _juggleImPlugin.getMomentCommentList(commentOption);
-          int i = 1;
+          // GetMomentOption o = GetMomentOption();
+          // List<Moment> cachedMomentList = await _juggleImPlugin.getCachedMomentList(o);
+          // ResultHasMore<List<Moment>> momentList = await _juggleImPlugin.getMomentList(o);
+          // Result<Moment> moment = await _juggleImPlugin.getMoment('n45334nrjcayhvgy');
+          // GetMomentCommentOption commentOption = GetMomentCommentOption();
+          // commentOption.momentId = 'n454cxxeaccyhvgy';
+          // ResultHasMore<List<MomentComment>> commentList = await _juggleImPlugin.getMomentCommentList(commentOption);
+          // int i = 1;
 
 
 
@@ -257,57 +269,57 @@ class _MyAppState extends State<MyApp> {
 
 
 
-          Conversation c2 = Conversation(1, 'YvoGswbXyqU');
-          // TextMessage textMessage = TextMessage.content('flutter text Android');
-          ImageMessage image = ImageMessage();
-          image.localPath = '/private/var/mobile/Containers/Data/Application/04E5AE67-633E-41F9-A5F9-85EA5801C814/tmp/定制系列定瓷产品介绍-2025.pdf';
-          image.thumbnailLocalPath = '23232';
-          // GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
-          // groupNotifyMessage.content = 'This is content';
-          // groupNotifyMessage.aaa = 'This is aaa';
-          callback(message, errorCode) {
-              if (errorCode == 0) {
-                print("sendMessage success, messageId is " + message.messageId!);
-              } else {
-                print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
-              }
-          }
-          progressCallback(message, progress) {
+          // Conversation c2 = Conversation(1, 'YvoGswbXyqU');
+          // // TextMessage textMessage = TextMessage.content('flutter text Android');
+          // ImageMessage image = ImageMessage();
+          // image.localPath = '/private/var/mobile/Containers/Data/Application/04E5AE67-633E-41F9-A5F9-85EA5801C814/tmp/定制系列定瓷产品介绍-2025.pdf';
+          // image.thumbnailLocalPath = '23232';
+          // // GroupNotifyMessage groupNotifyMessage = GroupNotifyMessage();
+          // // groupNotifyMessage.content = 'This is content';
+          // // groupNotifyMessage.aaa = 'This is aaa';
+          // callback(message, errorCode) {
+          //     if (errorCode == 0) {
+          //       print("sendMessage success, messageId is " + message.messageId!);
+          //     } else {
+          //       print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + message.clientMsgNo!.toString());
+          //     }
+          // }
+          // progressCallback(message, progress) {
 
-          }
-          // Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
-          // Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
+          // }
+          // // Message? message = await _juggleImPlugin.sendMessage(textMessage, c2, callback);
+          // // Message? message2 = await _juggleImPlugin.resendMessage(message, callback);
 
-          // Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
-          // ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
+          // // Conversation cError = Conversation(1, 'asdfasdfasdfasdf');
+          // // ConversationInfo? info = await _juggleImPlugin.getConversationInfo(cError);
 
-          // await _juggleImPlugin.setMute(c2, true);
+          // // await _juggleImPlugin.setMute(c2, true);
           
 
-          Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
-          print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
-          // await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
-          // List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
-          // GetMessageOption op = GetMessageOption();
-          // op.count = 20;
-          // var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
+          // Message? message = await _juggleImPlugin.sendMediaMessage(image, c2, callback, progressCallback);
+          // print('after sendMessage, message clientMsgNo is ' + message!.clientMsgNo!.toString());
+          // // await _juggleImPlugin.setMessageLocalAttribute(message.clientMsgNo, "asdfasdfasdfasdfasdf");
+          // // List<Message> localAttributeMessageList = await _juggleImPlugin.getMessagesByClientMsgNoList([message.clientMsgNo]);
+          // // GetMessageOption op = GetMessageOption();
+          // // op.count = 20;
+          // // var localAttributeMessageList2 = await _juggleImPlugin.getMessages(c2, 1, op);
 
-          // var userIdList = ['YvoGswbXyqU'];
-          // var userId = 'YvoGswbXyqU';
-          // CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
-          // callSession2 = await _juggleImPlugin.getCallSession(callSession!.callId);
-          // VideoView view = VideoView(viewId: 'viewId');
-          // await callSession2?.setVideoView(userId, view);
-          callSession2?.onCallFinish = (finishReason){
-            print('onCallFinish ' + finishReason.toString());
-          };
-          // callSession2?.onSoundLevelUpdate = (map) {
-          //   print('onSoundLevelUpdate: $map');
+          // // var userIdList = ['YvoGswbXyqU'];
+          // // var userId = 'YvoGswbXyqU';
+          // // CallSession? callSession = await _juggleImPlugin.startMultiCall(userIdList, 0);
+          // // callSession2 = await _juggleImPlugin.getCallSession(callSession!.callId);
+          // // VideoView view = VideoView(viewId: 'viewId');
+          // // await callSession2?.setVideoView(userId, view);
+          // callSession2?.onCallFinish = (finishReason){
+          //   print('onCallFinish ' + finishReason.toString());
           // };
-          callSession2?.onCallConnect = (){
-            print('onCallConnect');
-            callSession2?.hangup();
-          };
+          // // callSession2?.onSoundLevelUpdate = (map) {
+          // //   print('onSoundLevelUpdate: $map');
+          // // };
+          // callSession2?.onCallConnect = (){
+          //   print('onCallConnect');
+          //   callSession2?.hangup();
+          // };
 
 
           

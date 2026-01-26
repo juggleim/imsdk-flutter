@@ -229,6 +229,12 @@ import io.flutter.plugin.common.MethodChannel;
             case "getGroupMember":
                 getGroupMember(call.arguments, result);
                 break;
+            case "fetchUserInfo":
+                fetchUserInfo(call.arguments, result);
+                break;
+            case "fetchGroupInfo":
+                fetchGroupInfo(call.arguments, result);
+                break;
             case "initZegoEngine":
                 initZegoEngine(call.arguments, result);
                 break;
@@ -1457,6 +1463,46 @@ import io.flutter.plugin.common.MethodChannel;
             Map<String, Object> resultMap = ModelFactory.groupMemberToMap(member);
             result.success(resultMap);
         }
+    }
+
+    private void fetchUserInfo(Object arg, MethodChannel.Result result) {
+        String userId = (String)arg;
+        JIM.getInstance().getUserInfoManager().fetchUserInfo(userId, new JIMConst.IResultCallback<UserInfo>() {
+            @Override
+            public void onSuccess(UserInfo userInfo) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", 0);
+                resultMap.put("userInfo", ModelFactory.userInfoToMap(userInfo));
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void fetchGroupInfo(Object arg, MethodChannel.Result result) {
+        String groupId = (String) arg;
+        JIM.getInstance().getUserInfoManager().fetchGroupInfo(groupId, new JIMConst.IResultCallback<GroupInfo>() {
+            @Override
+            public void onSuccess(GroupInfo groupInfo) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", 0);
+                resultMap.put("groupInfo", ModelFactory.groupInfoToMap(groupInfo));
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
     }
 
     private void initZegoEngine(Object arg, MethodChannel.Result result) {

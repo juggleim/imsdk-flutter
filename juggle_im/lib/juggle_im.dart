@@ -602,6 +602,28 @@ class JuggleIm {
     return member;
   }
 
+  Future<Result<UserInfo>> fetchUserInfo(String userId) async {
+    var resultMap = await _methodChannel.invokeMethod('fetchUserInfo', userId);
+    var result = Result<UserInfo>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      UserInfo userInfo = UserInfo.fromMap(resultMap['userInfo']);
+      result.t = userInfo;
+    }
+    return result;
+  }
+
+  Future<Result<GroupInfo>> fetchGroupInfo(String groupId) async {
+    var resultMap = await _methodChannel.invokeMethod('fetchGroupInfo', groupId);
+    var result = Result<GroupInfo>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      GroupInfo groupInfo = GroupInfo.fromMap(resultMap['groupInfo']);
+      result.t = groupInfo;
+    }
+    return result;
+  }
+
   //moment
   Future<Result<Moment>> addMoment(String content, List<MomentMedia>? mediaList) async {
     List<Map> mediaMapList = [];
