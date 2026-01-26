@@ -704,25 +704,29 @@
 
 #pragma mark - extension
 + (void)extendDic:(NSMutableDictionary *)dic forConversationInfo:(JConversationInfo *)info {
+    NSString *displayName = info.displayName;
+    if (displayName.length > 0) {
+        [dic setObject:displayName forKey:@"displayName"];
+    }
+    NSString *alias = info.alias;
+    if (alias.length > 0) {
+        [dic setObject:alias forKey:@"alias"];
+    }
+    NSString *name = info.name;
+    if (name.length > 0) {
+        [dic setObject:name forKey:@"name"];
+    }
+    NSString *portrait = info.portrait;
+    if (portrait.length > 0) {
+        [dic setObject:portrait forKey:@"portrait"];
+    }
     if (info.conversation.conversationType == JConversationTypePrivate) {
         JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:info.conversation.conversationId];
-        if (userInfo.userName.length > 0) {
-            [dic setObject:userInfo.userName forKey:@"name"];
-        }
-        if (userInfo.portrait.length > 0) {
-            [dic setObject:userInfo.portrait forKey:@"portrait"];
-        }
         if (userInfo.extraDic.count > 0) {
             [dic setObject:userInfo.extraDic forKey:@"extra"];
         }
     } else if (info.conversation.conversationType == JConversationTypeGroup) {
         JGroupInfo *groupInfo = [JIM.shared.userInfoManager getGroupInfo:info.conversation.conversationId];
-        if (groupInfo.groupName.length > 0) {
-            [dic setObject:groupInfo.groupName forKey:@"name"];
-        }
-        if (groupInfo.portrait.length > 0) {
-            [dic setObject:groupInfo.portrait forKey:@"portrait"];
-        }
         if (groupInfo.extraDic.count > 0) {
             [dic setObject:groupInfo.extraDic forKey:@"extra"];
         }
@@ -731,6 +735,18 @@
 
 + (void)extendDic:(NSMutableDictionary *)dic
        forMessage:(JMessage *)message {
+    NSString *senderDisplayName = message.senderDisplayName;
+    if (senderDisplayName.length > 0) {
+        [dic setObject:senderDisplayName forKey:@"senderDisplayName"];
+    }
+    NSString *friendAlias = message.friendAlias;
+    if (friendAlias.length > 0) {
+        [dic setObject:friendAlias forKey:@"friendAlias"];
+    }
+    NSString *groupMemberAlias = message.groupMemberAlias;
+    if (groupMemberAlias.length > 0) {
+        [dic setObject:groupMemberAlias forKey:@"groupMemberAlias"];
+    }
     JUserInfo *userInfo = [JIM.shared.userInfoManager getUserInfo:message.senderUserId];
     if (userInfo) {
         NSDictionary *userInfoDic = [JModelFactory userInfoToDic:userInfo];

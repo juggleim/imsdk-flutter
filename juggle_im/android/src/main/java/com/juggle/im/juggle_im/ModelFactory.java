@@ -842,38 +842,48 @@ class ModelFactory {
         if (info == null) {
             return;
         }
+        String displayName = info.getDisplayName();
+        if (!TextUtils.isEmpty(displayName)) {
+            map.put("displayName", displayName);
+        }
+        String alias = info.getAlias();
+        if (!TextUtils.isEmpty(alias)) {
+            map.put("alias", alias);
+        }
+        String name = info.getName();
+        if (!TextUtils.isEmpty(name)) {
+            map.put("name", name);
+        }
+        String portrait = info.getPortrait();
+        if (!TextUtils.isEmpty(portrait)) {
+            map.put("portrait", portrait);
+        }
         if (info.getConversation().getConversationType() == Conversation.ConversationType.PRIVATE) {
             UserInfo userInfo = JIM.getInstance().getUserInfoManager().getUserInfo(info.getConversation().getConversationId());
-            if (userInfo == null) {
-                return;
-            }
-            if (!TextUtils.isEmpty(userInfo.getUserName())) {
-                map.put("name", userInfo.getUserName());
-            }
-            if (!TextUtils.isEmpty(userInfo.getPortrait())) {
-                map.put("portrait", userInfo.getPortrait());
-            }
-            if (userInfo.getExtra() != null) {
+            if (userInfo != null && userInfo.getExtra() != null) {
                 map.put("extra", userInfo.getExtra());
             }
         } else if (info.getConversation().getConversationType() == Conversation.ConversationType.GROUP) {
             GroupInfo groupInfo = JIM.getInstance().getUserInfoManager().getGroupInfo(info.getConversation().getConversationId());
-            if (groupInfo == null) {
-                return;
-            }
-            if (!TextUtils.isEmpty(groupInfo.getGroupName())) {
-                map.put("name", groupInfo.getGroupName());
-            }
-            if (!TextUtils.isEmpty(groupInfo.getPortrait())) {
-                map.put("portrait", groupInfo.getPortrait());
-            }
-            if (groupInfo.getExtra() != null) {
+            if (groupInfo != null && groupInfo.getExtra() != null) {
                 map.put("extra", groupInfo.getExtra());
             }
         }
     }
 
     static void extendMapForMessage(Map<String, Object> map, Message message) {
+        String senderDisplayName = message.getSenderDisplayName();
+        if (!TextUtils.isEmpty(senderDisplayName)) {
+            map.put("senderDisplayName", senderDisplayName);
+        }
+        String friendAlias = message.getFriendAlias();
+        if (!TextUtils.isEmpty(friendAlias)) {
+            map.put("friendAlias", friendAlias);
+        }
+        String groupMemberAlias = message.getGroupMemberAlias();
+        if (!TextUtils.isEmpty(groupMemberAlias)) {
+        map.put("groupMemberAlias", groupMemberAlias);
+        }
         UserInfo userInfo = JIM.getInstance().getUserInfoManager().getUserInfo(message.getSenderUserId());
         if (userInfo != null) {
             Map<String, Object> userInfoMap = ModelFactory.userInfoToMap(userInfo);

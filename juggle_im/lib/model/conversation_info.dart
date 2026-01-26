@@ -16,6 +16,8 @@ class ConversationInfo {
   ConversationMentionInfo? mentionInfo;
   String name = '';
   String portrait = '';
+  String displayName = '';
+  String alias = '';
   Map<String, String>? extra;
 
   ConversationInfo(this.conversation);
@@ -42,7 +44,10 @@ class ConversationInfo {
     if (mentionInfoMap != null) {
       result.mentionInfo = ConversationMentionInfo.fromMap(mentionInfoMap);
     }
+    
     result.name = map['name'] ?? '';
+    result.displayName = map['displayName'] ?? '';
+    result.alias = map['alias'] ?? '';
     result.portrait = map['portrait'] ?? '';
     result.extra = (map['extra'] as Map?)?.cast<String, String>() ?? {};
 

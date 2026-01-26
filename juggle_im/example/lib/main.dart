@@ -107,11 +107,11 @@ class _MyAppState extends State<MyApp> {
         int? s = await _juggleImPlugin.getConnectionStatus();
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
-          var userInfo = await JuggleIm.instance.fetchUserInfo('YvoGswbXyqU');
-          var userInfo2 = await JuggleIm.instance.fetchUserInfo('adfasdf');
-          var groupInfo = await JuggleIm.instance.fetchGroupInfo('aKiA6n8Vrfy');
-          var groupInfo2 = await JuggleIm.instance.fetchGroupInfo('asdfasdf');
-          int i = 1;
+          // var userInfo = await JuggleIm.instance.fetchUserInfo('YvoGswbXyqU');
+          // var userInfo2 = await JuggleIm.instance.fetchUserInfo('adfasdf');
+          // var groupInfo = await JuggleIm.instance.fetchGroupInfo('aKiA6n8Vrfy');
+          // var groupInfo2 = await JuggleIm.instance.fetchGroupInfo('asdfasdf');
+          // int i = 1;
 
 
           // UserInfo? userInfo = await JuggleIm.instance.getUserInfo("userId");
@@ -180,17 +180,19 @@ class _MyAppState extends State<MyApp> {
           
           
 
-          // List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
-          // int length = 0;
+          List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
+          int length = 0;
           // if (l != null) {
           //   length = l.length;
           // }
           // print("getConversationInfoList, count is " + length.toString());
           // int difference = await _juggleImPlugin.getTimeDifference();
 
-          // Conversation cc = Conversation(2, 'YvoGswbXyqU');
-          // GetMessageOption o = GetMessageOption();
-          // o.count = 50;
+          Conversation cc = Conversation(1, 'YvoGswbXyqU');
+          GetMessageOption o = GetMessageOption();
+          o.count = 50;
+          var messageList = await _juggleImPlugin.getMessages(cc, 1, o);
+          int i = 1;
 
 
 

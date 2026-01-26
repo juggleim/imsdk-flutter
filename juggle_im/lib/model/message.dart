@@ -35,6 +35,9 @@ class Message {
   String localAttribute = '';
   bool isEdit = false;
   UserInfo? sender;
+  String senderDisplayName = '';
+  String friendAlias = '';
+  String groupMemberAlias = '';
   int destroyTime = 0;
   int lifeTimeAfterRead = 0;
 
@@ -72,6 +75,9 @@ class Message {
     if (map['sender'] != null) {
       m.sender = UserInfo.fromMap(map['sender']);
     }
+    m.senderDisplayName = map['senderDisplayName'] ?? '';
+    m.friendAlias = map['friendAlias'] ?? '';
+    m.groupMemberAlias = map['groupMemberAlias'] ?? '';
     m.destroyTime = map['destroyTime'] ?? 0;
     m.lifeTimeAfterRead = map['lifeTimeAfterRead'] ?? 0;
 
