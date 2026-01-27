@@ -13,6 +13,7 @@ import com.juggle.im.call.ICallManager;
 import com.juggle.im.call.ICallSession;
 import com.juggle.im.call.model.CallInfo;
 import com.juggle.im.model.FavoriteMessage;
+import com.juggle.im.model.FriendInfo;
 import com.juggle.im.model.GetFavoriteMessageOption;
 import com.juggle.im.model.GetMomentCommentOption;
 import com.juggle.im.model.GetMomentOption;
@@ -229,11 +230,17 @@ import io.flutter.plugin.common.MethodChannel;
             case "getGroupMember":
                 getGroupMember(call.arguments, result);
                 break;
+            case "getFriendInfo":
+                getFriendInfo(call.arguments, result);
+                break;
             case "fetchUserInfo":
                 fetchUserInfo(call.arguments, result);
                 break;
             case "fetchGroupInfo":
                 fetchGroupInfo(call.arguments, result);
+                break;
+            case "fetchFriendInfo":
+                fetchFriendInfo(call.arguments, result);
                 break;
             case "initZegoEngine":
                 initZegoEngine(call.arguments, result);
@@ -1465,6 +1472,13 @@ import io.flutter.plugin.common.MethodChannel;
         }
     }
 
+     private void getFriendInfo(Object arg, MethodChannel.Result result) {
+        String userId = (String) arg;
+         FriendInfo friendInfo = JIM.getInstance().getUserInfoManager().getFriendInfo(userId);
+         Map<String, Object> map = ModelFactory.friendInfoToMap(friendInfo);
+         result.success(map);
+     }
+
     private void fetchUserInfo(Object arg, MethodChannel.Result result) {
         String userId = (String)arg;
         JIM.getInstance().getUserInfoManager().fetchUserInfo(userId, new JIMConst.IResultCallback<UserInfo>() {
@@ -1493,6 +1507,26 @@ import io.flutter.plugin.common.MethodChannel;
                 Map<String, Object> resultMap = new HashMap<>();
                 resultMap.put("errorCode", 0);
                 resultMap.put("groupInfo", ModelFactory.groupInfoToMap(groupInfo));
+                result.success(resultMap);
+            }
+
+            @Override
+            public void onError(int i) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", i);
+                result.success(resultMap);
+            }
+        });
+    }
+
+    private void fetchFriendInfo(Object arg, MethodChannel.Result result) {
+        String userId = (String) arg;
+        JIM.getInstance().getUserInfoManager().fetchFriendInfo(userId, new JIMConst.IResultCallback<FriendInfo>() {
+            @Override
+            public void onSuccess(FriendInfo friendInfo) {
+                Map<String, Object> resultMap = new HashMap<>();
+                resultMap.put("errorCode", 0);
+                resultMap.put("friendInfo", ModelFactory.friendInfoToMap(friendInfo));
                 result.success(resultMap);
             }
 

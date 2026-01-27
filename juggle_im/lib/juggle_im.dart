@@ -11,6 +11,7 @@ import 'package:juggle_im/model/conversation.dart';
 import 'package:juggle_im/model/conversation_info.dart';
 import 'package:juggle_im/model/favorite_message.dart';
 import 'package:juggle_im/model/favorite_message_result.dart';
+import 'package:juggle_im/model/friend_info.dart';
 import 'package:juggle_im/model/get_conversation_info_option.dart';
 import 'package:juggle_im/model/get_favorite_message_option.dart';
 import 'package:juggle_im/model/get_message_option.dart';
@@ -602,6 +603,15 @@ class JuggleIm {
     return member;
   }
 
+  Future<FriendInfo?> getFriendInfo(String userId) async {
+    var resultMap = await _methodChannel.invokeMethod('getFriendInfo', userId);
+    if (resultMap.isEmpty) {
+      return null;
+    }
+    FriendInfo friendInfo = FriendInfo.fromMap(resultMap);
+    return friendInfo;
+  }
+
   Future<Result<UserInfo>> fetchUserInfo(String userId) async {
     var resultMap = await _methodChannel.invokeMethod('fetchUserInfo', userId);
     var result = Result<UserInfo>();
@@ -620,6 +630,17 @@ class JuggleIm {
     if (result.errorCode == 0) {
       GroupInfo groupInfo = GroupInfo.fromMap(resultMap['groupInfo']);
       result.t = groupInfo;
+    }
+    return result;
+  }
+
+  Future<Result<FriendInfo>> fetchFriendInfo(String userId) async {
+    var resultMap = await _methodChannel.invokeMethod('fetchFriendInfo', userId);
+    var result = Result<FriendInfo>();
+    result.errorCode = resultMap['errorCode'];
+    if (result.errorCode == 0) {
+      FriendInfo friendInfo = FriendInfo.fromMap(resultMap['friendInfo']);
+      result.t = friendInfo;
     }
     return result;
   }

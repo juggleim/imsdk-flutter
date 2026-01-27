@@ -11,6 +11,7 @@ import com.juggle.im.model.Conversation;
 import com.juggle.im.model.ConversationInfo;
 import com.juggle.im.model.ConversationMentionInfo;
 import com.juggle.im.model.FavoriteMessage;
+import com.juggle.im.model.FriendInfo;
 import com.juggle.im.model.GetConversationOptions;
 import com.juggle.im.model.GetMessageOptions;
 import com.juggle.im.model.GetMomentCommentOption;
@@ -183,6 +184,21 @@ class ModelFactory {
         }
         if (member.getExtra() != null) {
             map.put("extraMap", member.getExtra());
+        }
+        return map;
+    }
+
+    static Map<String, Object> friendInfoToMap(FriendInfo info) {
+        Map<String, Object> map = new HashMap<>();
+        if (info == null) {
+            return map;
+        }
+        if (!TextUtils.isEmpty(info.getUserId())) {
+            map.put("userId", info.getUserId());
+        }
+        map.put("isFriend", info.isFriend());
+        if (!TextUtils.isEmpty(info.getAlias())) {
+            map.put("alias", info.getAlias());
         }
         return map;
     }

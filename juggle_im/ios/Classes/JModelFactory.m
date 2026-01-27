@@ -132,6 +132,9 @@
 
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!info) {
+        return [dic copy];
+    }
     if (info.userId) {
         [dic setObject:info.userId forKey:@"userId"];
     }
@@ -150,6 +153,9 @@
 
 + (NSDictionary *)groupInfoToDic:(JGroupInfo *)info {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!info) {
+        return [dic copy];
+    }
     if (info.groupId) {
         [dic setObject:info.groupId forKey:@"groupId"];
     }
@@ -167,6 +173,9 @@
 
 + (NSDictionary *)groupMemberToDic:(JGroupMember *)member {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!member) {
+        return [dic copy];
+    }
     if (member.groupId) {
         [dic setObject:member.groupId forKey:@"groupId"];
     }
@@ -178,6 +187,21 @@
     }
     if (member.extraDic) {
         [dic setObject:member.extraDic forKey:@"extraMap"];
+    }
+    return [dic copy];
+}
+
++ (NSDictionary *)friendInfoToDic:(JFriendInfo *)friendInfo {
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    if (!friendInfo) {
+        return [dic copy];
+    }
+    if (friendInfo.userId) {
+        [dic setObject:friendInfo.userId forKey:@"userId"];
+    }
+    [dic setObject:@(friendInfo.isFriend) forKey:@"isFriend"];
+    if (friendInfo.alias) {
+        [dic setObject:friendInfo.alias forKey:@"alias"];
     }
     return [dic copy];
 }

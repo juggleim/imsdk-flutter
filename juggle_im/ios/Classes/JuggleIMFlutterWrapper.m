@@ -130,6 +130,8 @@
         [self getGroupInfo:call.arguments result:result];
     } else if ([@"getGroupMember" isEqualToString:call.method]) {
         [self getGroupMember:call.arguments result:result];
+    } else if ([@"getFriendInfo" isEqualToString:call.method]) {
+        [self getFriendInfo:call.arguments result:result];
     } else if ([@"initZegoEngine" isEqualToString:call.method]) {
         [self initZegoEngine:call.arguments result:result];
     } else if ([@"initAgoraEngine" isEqualToString:call.method]) {
@@ -204,6 +206,8 @@
         [self fetchUserInfo:call.arguments result:result];
     } else if ([@"fetchGroupInfo" isEqualToString:call.method]) {
         [self fetchGroupInfo:call.arguments result:result];
+    } else if ([@"fetchFriendInfo" isEqualToString:call.method]) {
+        [self fetchFriendInfo:call.arguments result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -1059,6 +1063,14 @@
     result(resultDic);
 }
 
+- (void)getFriendInfo:(id)arg
+               result:(FlutterResult)result {
+    NSString *userId = arg;
+    JFriendInfo *friendInfo = [JIM.shared.userInfoManager getFriendInfo:userId];
+    NSDictionary *resultDic = [JModelFactory friendInfoToDic:friendInfo];
+    result(resultDic);
+}
+
 - (void)fetchUserInfo:(id)arg
                result:(FlutterResult)result {
     NSString *userId = arg;
@@ -1082,6 +1094,19 @@
         result(@{@"errorCode": @(code)});
     }];
 }
+
+- (void)fetchFriendInfo:(id)arg
+                 result:(FlutterResult)result {
+    NSString *userId = arg;
+    [JIM.shared.userInfoManager fetchFriendInfo:userId
+                                        success:^(JFriendInfo *friendInfo) {
+        NSDictionary *resultDic = @{@"friendInfo": [JModelFactory friendInfoToDic:friendInfo], @"errorCode": @(0)};
+        result(resultDic);
+    } error:^(JErrorCode code) {
+        result(@{@"errorCode": @(code)});
+    }];
+}
+
 
 #pragma mark - call
 - (void)initZegoEngine:(id)arg

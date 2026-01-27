@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)userInfoToDic:(JUserInfo *)info;
 + (NSDictionary *)groupInfoToDic:(JGroupInfo *)info;
 + (NSDictionary *)groupMemberToDic:(JGroupMember *)member;
++ (NSDictionary *)friendInfoToDic:(JFriendInfo *)friendInfo;
 + (NSDictionary *)messageMentionInfoToDic:(JMessageMentionInfo *)info;
 + (NSDictionary *)messageToDic:(JMessage *)message;
 + (NSDictionary *)favoriteMessageToDic:(JFavoriteMessage *)message;

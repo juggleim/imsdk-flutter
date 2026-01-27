@@ -108,6 +108,13 @@ class _MyAppState extends State<MyApp> {
         int? s = await _juggleImPlugin.getConnectionStatus();
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
+
+          var f1 = await _juggleImPlugin.getFriendInfo('wD-ALcb3JNK');
+          var f2 = await _juggleImPlugin.getFriendInfo('asdfadf');
+          var f3 = await _juggleImPlugin.fetchFriendInfo("wD-ALcb3JNK");
+          var f4 = await _juggleImPlugin.fetchFriendInfo('sdfasdf');
+          int sadfasf = 1;
+
           // var userInfo = await JuggleIm.instance.fetchUserInfo('YvoGswbXyqU');
           // var userInfo2 = await JuggleIm.instance.fetchUserInfo('adfasdf');
           // var groupInfo = await JuggleIm.instance.fetchGroupInfo('aKiA6n8Vrfy');
