@@ -35,6 +35,21 @@ class Utility {
     }
     return path;
   }
+
+  static Map<String, String>? objectMapToStringMap(Map<Object?, Object?>? oMap) {
+    if (oMap == null) {
+      return null;
+    }
+    Map<String, String> stringMap = {};
+    oMap.forEach((key, value) {
+      String? keyStr = key?.toString();
+      String? valueStr = value?.toString();
+      if (keyStr != null && valueStr != null) {
+        stringMap[keyStr] = valueStr;
+      }
+    });
+    return stringMap;
+  }
 }
 
 typedef DataCallback<T> = void Function(T t, int errorCode);
