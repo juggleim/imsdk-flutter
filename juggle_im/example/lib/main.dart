@@ -100,7 +100,8 @@ class _MyAppState extends State<MyApp> {
       // await _juggleImPlugin.init('nwm6fxqt2aeebhb7', config);
       await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
-      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiAtbmOiVtaTjmV69wNQ9yjpN5KKIDSoozpXcmZ83lWgtQ==');
+      // await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiAtbmOiVtaTjmV69wNQ9yjpN5KKIDSoozpXcmZ83lWgtQ==');
+      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiDriFDWQYL1j_gwGMPgcP6Jo_Ae8qRmm-SitJyDZgJwjw==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
@@ -181,6 +182,10 @@ class _MyAppState extends State<MyApp> {
           
 
           List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
+          // var m = l[0].extra;
+          // var sss = m?["level"];
+          // var fffff = m?["room"];
+
           int length = 0;
           // if (l != null) {
           //   length = l.length;
@@ -188,11 +193,11 @@ class _MyAppState extends State<MyApp> {
           // print("getConversationInfoList, count is " + length.toString());
           // int difference = await _juggleImPlugin.getTimeDifference();
 
-          Conversation cc = Conversation(1, 'YvoGswbXyqU');
-          GetMessageOption o = GetMessageOption();
-          o.count = 50;
-          var messageList = await _juggleImPlugin.getMessages(cc, 1, o);
-          int i = 1;
+          // Conversation cc = Conversation(1, 'YvoGswbXyqU');
+          // GetMessageOption o = GetMessageOption();
+          // o.count = 50;
+          // var messageList = await _juggleImPlugin.getMessages(cc, 1, o);
+          // int i = 1;
 
 
 

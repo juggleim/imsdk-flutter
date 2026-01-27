@@ -1,3 +1,5 @@
+import 'package:juggle_im/juggle_const.dart';
+
 class GroupMember {
   String groupId = '';
   String userId = '';
@@ -9,7 +11,7 @@ class GroupMember {
     info.groupId = map['groupId'] ?? '';
     info.userId = map['userId'] ?? '';
     info.groupDisplayName = map['groupDisplayName'] ?? '';
-    info.extraMap = map['extraMap'];
+    info.extraMap = Utility.objectMapToStringMap(map['extraMap']);
     return info;
   }
 

@@ -1,3 +1,5 @@
+import 'package:juggle_im/juggle_const.dart';
+
 class UserType {
   static const int normal = 0;
   static const int bot = 1;
@@ -15,7 +17,7 @@ class UserInfo {
     info.userId = map['userId'] ?? '';
     info.userName = map['userName'] ?? '';
     info.portrait = map['portrait'] ?? '';
-    info.extraMap = map['extraMap'];
+    info.extraMap = Utility.objectMapToStringMap(map['extraMap']);
     info.type = map['type'] ?? 0;
     return info;
   }
