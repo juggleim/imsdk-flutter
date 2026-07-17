@@ -5,6 +5,7 @@ class ConversationType {
   static const int group = 2;
   static const int chatroom = 3;
   static const int system = 4;
+  static const int privateE2EE = 11;
 }
 
 class Conversation {

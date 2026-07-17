@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
       platformVersion =
           await _juggleImPlugin.getPlatformVersion() ?? 'Unknown platform version';
       
-      await _juggleImPlugin.setServers(["wss://ws.juggleim.com"]);
+      await _juggleImPlugin.setServers(["ws://ws.juggleim.com"]);
       // await _juggleImPlugin.setServers(["wss://im.secretchat.im"]);
       InitConfig config = InitConfig();
       LogConfig logConfig = LogConfig();
@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
       await _juggleImPlugin.initZegoEngine(1881186044, '');
       _juggleImPlugin.registerMessageType(() => GroupNotifyMessage());
       // await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiAtbmOiVtaTjmV69wNQ9yjpN5KKIDSoozpXcmZ83lWgtQ==');
-      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiDriFDWQYL1j_gwGMPgcP6Jo_Ae8qRmm-SitJyDZgJwjw==');
+      await _juggleImPlugin.connect('ChBuc3czc3VlNzJiZWd5djd5GiB3AczDXoAft408RQtWl8DnHOuJniNDaOvTJM5S9bzuhw==');
 
       _juggleImPlugin.onConnectionStatusChange = (status, code, extra) async {
         print('onConnectionStatusChange, status is ' + status.toString() + ', code is ' + code.toString());
@@ -109,11 +109,11 @@ class _MyAppState extends State<MyApp> {
         print('getConnectionStatus status is ' + s.toString());
         if (status == ConnectionStatus.connected) {
 
-          var f1 = await _juggleImPlugin.getFriendInfo('wD-ALcb3JNK');
-          var f2 = await _juggleImPlugin.getFriendInfo('asdfadf');
-          var f3 = await _juggleImPlugin.fetchFriendInfo("wD-ALcb3JNK");
-          var f4 = await _juggleImPlugin.fetchFriendInfo('sdfasdf');
-          int sadfasf = 1;
+          // var f1 = await _juggleImPlugin.getFriendInfo('wD-ALcb3JNK');
+          // var f2 = await _juggleImPlugin.getFriendInfo('asdfadf');
+          // var f3 = await _juggleImPlugin.fetchFriendInfo("wD-ALcb3JNK");
+          // var f4 = await _juggleImPlugin.fetchFriendInfo('sdfasdf');
+          // int sadfasf = 1;
 
           // var userInfo = await JuggleIm.instance.fetchUserInfo('YvoGswbXyqU');
           // var userInfo2 = await JuggleIm.instance.fetchUserInfo('adfasdf');
@@ -188,12 +188,12 @@ class _MyAppState extends State<MyApp> {
           
           
 
-          List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
+          // List<ConversationInfo>? l = await _juggleImPlugin.getConversationInfoList();
           // var m = l[0].extra;
           // var sss = m?["level"];
           // var fffff = m?["room"];
 
-          int length = 0;
+          // int length = 0;
           // if (l != null) {
           //   length = l.length;
           // }
@@ -208,18 +208,21 @@ class _MyAppState extends State<MyApp> {
 
 
 
-          // // TextMessage ttt = TextMessage.content('flutter text');
+          TextMessage ttt = TextMessage.content('Hello flutter e2ee');
+          Conversation cc = Conversation(ConversationType.privateE2EE, 'YvoGswbXyqU');
 
 
-          // DataCallback<Message> callback = (mmmm, errorCode) {
-          //   if (errorCode == 0) {
-          //     print("sendMessage success, messageId is " + mmmm.messageId!);
-          //   } else {
-          //     print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
-          //   }
-          // };
+          DataCallback<Message> callback = (mmmm, errorCode) {
+            if (errorCode == 0) {
+              print("sendMessage success, messageId is " + mmmm.messageId!);
+            } else {
+              print('sendMessage error, errorCode is ' + errorCode.toString() + ', clientMsgNo is ' + mmmm.clientMsgNo!.toString());
+            }
+          };
 
-          // Message? m1 = await _juggleImPlugin.sendMessage(mm, cc, callback);
+
+          Message? m1 = await _juggleImPlugin.sendMessage(ttt, cc, callback);
+          int i = 1;
 
           // var v = await _juggleImPlugin.getMergedMessageList('n2hsmcpfjbcgzrn9');
           
